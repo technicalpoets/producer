@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    //"AzureWebJobsTableUri":
+    //"AzureWebJobsStorage": "",
+    "AzureWebJobsStorage": "",
+    "AzureWebJobsDashboard": "",
+    "AzureMediaServicesAccount": "",
+    "AzureMediaServicesKey": "",
+    "AzureNotificationHubConnection": "",
+    "AzureWebJobsDocumentDBConnectionString": ""
+  }
+}
