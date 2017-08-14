@@ -296,3 +296,4 @@ project.lock.json
 *.paw
 
 Producer/Producer.Functions/local.settings.json
+
