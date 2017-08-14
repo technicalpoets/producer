@@ -18,22 +18,19 @@ namespace Producer.Functions
 
 	public static class StorageTokenGenerator
 	{
-
-		//const string containerName = "uploads-avcontent";
-
-		//const string connString = "MS_AzureStorageAccountConnectionString";
+		static readonly string _storageAccountConnection = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
 
 		static CloudBlobClient _blobClient;
 
-		public static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse ("%AzureWebJobsStorage%").CreateCloudBlobClient ());
+		public static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (_storageAccountConnection).CreateCloudBlobClient ());
 
 #if !DEBUG
 		[Authorize]
 #endif
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId:alpha}/{contentId:alpha}")]HttpRequestMessage req,
-			[DocumentDB ("Content", "collectionId", Id = "contentId")] AvContent avContent,
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{contentId}")]HttpRequestMessage req,
+			[DocumentDB ("Content", "{collectionId}", Id = "{contentId}")] AvContent avContent,
 			string collectionId,
 			string contentId,
 			TraceWriter log)
@@ -49,14 +46,18 @@ namespace Producer.Functions
 
 			if (avContent == null)
 			{
-				//throw new HttpResponseException (req.CreateBadRequestResponse ("No item in database matching the contentId paramater {0}", contentId));
+				log.Info ($"No item in database matching the contentId paramater {contentId}");
+
 				return req.CreateErrorResponse (HttpStatusCode.NotFound, $"No item in database matching the contentId paramater {contentId}");
+			}
+			else
+			{
+				log.Info ($"Successfully found document in database matching the contentId paramater {contentId}");
 			}
 
 			var containerName = $"uploads-{collectionId}";
 
-
-
+			
 			// Errors creating the storage container result in a 500 Internal Server Error
 			var container = BlobClient.GetContainerReference (containerName);
 
