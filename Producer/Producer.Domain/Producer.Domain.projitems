@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{2C6335E4-7B3E-4E28-BEFD-0EA82470CFAC}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Producer.Domain</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Content\Content.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\AvContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\Product.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StorageToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\AvContentTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UnixDateTimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)User\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)User\UserRoles.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)User\UserFavorite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Content\Entity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+    <Folder Include="$(MSBuildThisFileDirectory)User\" />
+  </ItemGroup>
+</Project>

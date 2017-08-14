@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{F94D1CC0-49D5-4A5C-A279-1FEBBDE97F5F}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Producer.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Bootstrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingAccessors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Keys\Keys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Keys\PrivateKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Clients\AzureStorageClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Clients\ProducerClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Track.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Clients\ContentClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Clients\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Utilities\" />
+  </ItemGroup>
+</Project>
