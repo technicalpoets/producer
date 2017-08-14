@@ -55,7 +55,7 @@ namespace Producer.Functions
 				log.Info ($"Successfully found document in database matching the contentId paramater {contentId}");
 			}
 
-			var containerName = $"uploads-{collectionId}";
+			var containerName = $"uploads-{collectionId.ToLower()}"; // uploads-avcontent
 
 			
 			// Errors creating the storage container result in a 500 Internal Server Error
@@ -67,7 +67,7 @@ namespace Producer.Functions
 			// TODO: Check if there's already a blob with a name matching the Id
 
 
-			var sasUri = getBlobSasUri (container, avContent.Name);
+			var sasUri = getBlobSasUri (container, avContent.Id);
 
 			var token = new StorageToken
 			{
