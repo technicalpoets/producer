@@ -102,7 +102,7 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 ### Spacing
 
 ![spacing](images/code-format-spacing.png)
-im
+
 ### Wrapping
 
 ![wrapping](images/code-format-wrapping.png)
