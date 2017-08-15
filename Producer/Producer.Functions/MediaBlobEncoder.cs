@@ -43,6 +43,10 @@ namespace Producer.Functions
 
 			try
 			{
+//#if DEBUG
+//				inputBlob.Metadata [DocumentUpdatedMessage.DocumentIdKey] = "92910fae-c12a-4d4f-9209-d6f917b2be7b";
+//				inputBlob.Metadata [DocumentUpdatedMessage.CollectionIdKey] = "AvContent";
+//#endif
 
 				// check contententId before we take the time to encode
 				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.DocumentIdKey, out string documentId) || string.IsNullOrWhiteSpace (documentId))

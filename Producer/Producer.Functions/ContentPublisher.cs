@@ -14,7 +14,7 @@ namespace Producer.Functions
 	{
 
 #if !DEBUG
-		[Authorize]
+		//[Authorize]
 #endif
 		[FunctionName ("ContentPublisher")]
 		public static bool Run (
@@ -27,12 +27,12 @@ namespace Producer.Functions
 			TraceWriter log)
 		{
 #if !DEBUG
-			if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
-			{
-				log.Info ("Not authenticated");
+			//if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
+			//{
+			//	log.Info ("Not authenticated");
 
-				return req.CreateResponse (HttpStatusCode.Unauthorized);
-			}
+			//	return req.CreateResponse (HttpStatusCode.Unauthorized);
+			//}
 #endif
 
 			log.Info ("new DocumentUpdatedMessage");

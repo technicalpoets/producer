@@ -24,7 +24,7 @@ namespace Producer.Functions
 		public static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (_storageAccountConnection).CreateCloudBlobClient ());
 
 #if !DEBUG
-		[Authorize]
+		//[Authorize]
 #endif
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
@@ -35,12 +35,12 @@ namespace Producer.Functions
 			TraceWriter log)
 		{
 #if !DEBUG
-			if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
-			{
-				log.Info ("Not authenticated");
+			//if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
+			//{
+			//	log.Info ("Not authenticated");
 
-				return req.CreateResponse (HttpStatusCode.Unauthorized);
-			}
+			//	return req.CreateResponse (HttpStatusCode.Unauthorized);
+			//}
 #endif
 
 			//if (document == null)

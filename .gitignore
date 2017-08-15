@@ -297,3 +297,4 @@ project.lock.json
 
 Producer/Producer.Functions/local.settings.json
 
+Producer/Producer.Functions/Properties/PublishProfiles/producer - Web Deploy.pubxml
