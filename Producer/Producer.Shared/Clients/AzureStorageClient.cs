@@ -24,9 +24,9 @@ namespace Producer.Shared
 
 				var blockBlob = new CloudBlockBlob (sasUri);
 
-				blockBlob.Metadata [StorageToken.ContentIdParam] = avContent.Id;
+				blockBlob.Metadata [DocumentUpdatedMessage.DocumentIdKey] = avContent.Id;
 
-				blockBlob.Metadata ["displayName"] = avContent.Name.SplitOnLast ('.').FirstOrDefault () ?? avContent.Name;
+				blockBlob.Metadata [DocumentUpdatedMessage.CollectionIdKey] = typeof (AvContent).Name;
 
 				await blockBlob.UploadFromFileAsync (avContent.LocalInboxPath);
 

@@ -1,26 +1,22 @@
-﻿using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
-using SettingsStudio;
-using System.Threading.Tasks;
-using Producer.Domain;
-using System;
-using System.Xml.Schema;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
+
 using Newtonsoft.Json;
+
+using SettingsStudio;
+
+using Producer.Domain;
+
 
 namespace Producer.Shared
 {
-	public enum ClientStatus
-	{
-		Unknown,
-		NotInitialized,
-		Initializing,
-		Initialized
-	}
-
 	public class ContentClient
 	{
 		static ContentClient _shared;

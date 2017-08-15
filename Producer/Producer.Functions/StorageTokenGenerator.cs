@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ namespace Producer.Functions
 
 	public static class StorageTokenGenerator
 	{
-		static readonly string _storageAccountConnection = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+		static readonly string _storageAccountConnection = Environment.GetEnvironmentVariable ("AzureWebJobsStorage");
 
 		static CloudBlobClient _blobClient;
 
@@ -29,10 +28,10 @@ namespace Producer.Functions
 #endif
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{contentId}")]HttpRequestMessage req,
-			[DocumentDB ("Content", "{collectionId}", Id = "{contentId}")] AvContent avContent,
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{documentId}")]HttpRequestMessage req,
+			//[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Resource document,
 			string collectionId,
-			string contentId,
+			string documentId,
 			TraceWriter log)
 		{
 #if !DEBUG
@@ -44,20 +43,19 @@ namespace Producer.Functions
 			}
 #endif
 
-			if (avContent == null)
-			{
-				log.Info ($"No item in database matching the contentId paramater {contentId}");
+			//if (document == null)
+			//{
+			//	log.Info ($"No item in database matching the documentId paramater {documentId}");
 
-				return req.CreateErrorResponse (HttpStatusCode.NotFound, $"No item in database matching the contentId paramater {contentId}");
-			}
-			else
-			{
-				log.Info ($"Successfully found document in database matching the contentId paramater {contentId}");
-			}
+			//	return req.CreateErrorResponse (HttpStatusCode.NotFound, $"No item in database matching the documentId paramater {documentId}");
+			//}
 
-			var containerName = $"uploads-{collectionId.ToLower()}"; // uploads-avcontent
+			log.Info ($"Successfully found document in database matching the documentId paramater {documentId}");
 
-			
+
+			var containerName = $"uploads-{collectionId.ToLower ()}"; // uploads-avcontent
+
+
 			// Errors creating the storage container result in a 500 Internal Server Error
 			var container = BlobClient.GetContainerReference (containerName);
 
@@ -67,14 +65,9 @@ namespace Producer.Functions
 			// TODO: Check if there's already a blob with a name matching the Id
 
 
-			var sasUri = getBlobSasUri (container, avContent.Id);
+			var sasUri = getBlobSasUri (container, documentId);
 
-			var token = new StorageToken
-			{
-				ContentId = avContent.Id,
-				SasUri = sasUri
-			};
-
+			var token = new StorageToken (documentId, sasUri);
 
 			return req.CreateResponse (HttpStatusCode.OK, token);
 		}
@@ -113,19 +106,6 @@ namespace Producer.Functions
 
 			// Return the URI string for the container, including the SAS token.
 			return blob.Uri + sasBlobToken;
-		}
-
-
-		static string getContentIdParamater (HttpRequestMessage request)
-		{
-			var contentId = request.GetQueryNameValuePairs ().FirstOrDefault (kv => kv.Key == StorageToken.ContentIdParam).Value;
-
-			if (string.IsNullOrEmpty (contentId))
-			{
-				//throw new HttpResponseException (request.CreateBadRequestResponse ("The paramater {0} is required", StorageToken.ContentIdParam));
-			}
-
-			return contentId;
 		}
 	}
 }

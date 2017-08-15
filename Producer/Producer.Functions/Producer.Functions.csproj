@@ -17,11 +17,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Domain\AvContent.cs" />
-    <Compile Remove="Domain\AzureEntity.cs" />
-    <Compile Remove="Domain\Content.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DocumentDB" Version="1.1.0-beta1" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.NotificationHubs" Version="1.1.0-beta1" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.0" />

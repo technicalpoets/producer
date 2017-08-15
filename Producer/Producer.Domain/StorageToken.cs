@@ -1,13 +1,17 @@
-﻿namespace Producer.Domain
+﻿using System;
+
+namespace Producer.Domain
 {
 	public class StorageToken
 	{
-		public const string ContentIdParam = "contentId";
+		public string DocumentId { get; private set; }
 
-		public const string RequestApiName = "getStorageToken";
+		public string SasUri { get; private set; }
 
-		public string ContentId { get; set; }
-
-		public string SasUri { get; set; }
+		public StorageToken (string documentId, string sasUri)
+		{
+			DocumentId = documentId ?? throw new ArgumentNullException (nameof (documentId));
+			SasUri = sasUri ?? throw new ArgumentNullException (nameof (sasUri));
+		}
 	}
 }

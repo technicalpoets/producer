@@ -19,9 +19,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)User\UserRoles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User\UserFavorite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ContentEncodedMessage.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
     <Folder Include="$(MSBuildThisFileDirectory)User\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Messages\" />
   </ItemGroup>
 </Project>

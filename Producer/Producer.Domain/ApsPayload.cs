@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
 
-namespace Producer.Functions
+namespace Producer.Domain
 {
-
 	public class ApsPayload
 	{
 		[JsonProperty ("aps")]
 		public Aps Aps { get; set; }
+
+		[JsonProperty ("collectionId")]
+		public string CollectionId { get; set; }
 
 		public ApsPayload (Aps aps)
 		{
@@ -26,7 +28,29 @@ namespace Producer.Functions
 			};
 		}
 
+
+		public ApsPayload (string title, string body, string collectionId)
+			: this (title, body, !string.IsNullOrWhiteSpace (collectionId))
+		{
+			CollectionId = string.IsNullOrWhiteSpace (collectionId) ? null : collectionId;
+		}
+
+
+		public ApsPayload (string collectionId)
+		{
+			Aps = new Aps
+			{
+				ContentAvailable = string.IsNullOrWhiteSpace (collectionId) ? 0 : 1
+			};
+
+			CollectionId = string.IsNullOrWhiteSpace (collectionId) ? null : collectionId;
+		}
+
 		public static ApsPayload Create (string title, string body, bool contentAvailable) => new ApsPayload (title, body, contentAvailable);
+
+		public static ApsPayload Create (string title, string body, string collectionId) => new ApsPayload (title, body, collectionId);
+
+		public static ApsPayload Create (string collectionId) => new ApsPayload (collectionId);
 
 		public string Serialize () => JsonConvert.SerializeObject (this, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 	}

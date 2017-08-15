@@ -77,7 +77,7 @@
 
 //				await refreshAvContentAsync ();
 
-//				var paramDictionary = new Dictionary<string, string> { { StorageToken.ContentIdParam, avContent.Id } };
+//				var paramDictionary = new Dictionary<string, string> { { BlobMetadata.ContentId, avContent.Id } };
 
 //				//var storageToken = await azureClient.MobileServiceClient.InvokeApiAsync<StorageToken> (StorageToken.RequestApiName, HttpMethod.Get, paramDictionary);
 

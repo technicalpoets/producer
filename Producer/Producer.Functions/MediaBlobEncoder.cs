@@ -10,6 +10,7 @@ using Microsoft.WindowsAzure.MediaServices.Client;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
+using Producer.Domain;
 
 namespace Producer.Functions
 {
@@ -30,21 +31,23 @@ namespace Producer.Functions
 		static MediaServicesCredentials _cachedCredentials;
 
 
-		[FunctionName ("EncodeBlob")]
+		[FunctionName ("EncodeAvContent")]
 		public static void Run (
 			[BlobTrigger ("uploads-avcontent/{fileName}.{fileExtension}"/*, Connection = "AzureWebJobsStorage"*/)]CloudBlockBlob inputBlob,
 			string fileName,
 			string fileExtension,
-			[Queue ("message-queue-avcontent"/*, Connection = "AzureWebJobsStorage"*/)] out ContentEncodedMessage storageUriQueueItem,
+			[Queue ("message-queue-avcontent"/*, Connection = "AzureWebJobsStorage"*/)] out ContentEncodedMessage contentMessage,
 			TraceWriter log)
 		{
 			try
 			{
-				string contentId = null;
+				// check contententId before we take the time to encode
+				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.DocumentIdKey, out string documentId) || string.IsNullOrWhiteSpace (documentId))
+					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.DocumentIdKey}");
 
 				// check contententId before we take the time to encode
-				if (!inputBlob.Metadata.TryGetValue ("contentId", out contentId) || string.IsNullOrWhiteSpace (contentId))
-					throw new Exception ("inputBlob does not contain metadata item for contentId");
+				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.CollectionIdKey, out string collectionId) || string.IsNullOrWhiteSpace (collectionId))
+					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.CollectionIdKey}");
 
 
 				_cachedCredentials = new MediaServicesCredentials (_mediaServicesAccountName, _mediaServicesAccountKey);
@@ -58,6 +61,7 @@ namespace Producer.Functions
 
 
 				var job = _context.Jobs.CreateWithSingleTask (encoderProcessorName, encoderTaskConfigName, newAsset, newAssetName, AssetCreationOptions.None);
+
 				job.Submit ();
 
 
@@ -88,10 +92,9 @@ namespace Producer.Functions
 				var hlsUri = outputAsset.GetHlsUri ();
 
 
-				log.Info ($"Output Asset - contentId: {contentId}, hlsUri: {hlsUri}");
+				log.Info ($"Output Asset - documentId: {documentId}, collectionId: {collectionId}, hlsUri: {hlsUri}");
 
-
-				storageUriQueueItem = new ContentEncodedMessage (contentId, hlsUri);
+				contentMessage = new ContentEncodedMessage (documentId, collectionId, hlsUri);
 
 			}
 			catch (Exception ex)
