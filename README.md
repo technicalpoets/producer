@@ -107,7 +107,7 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 
 ![indentation](images/code-format-indentation.png)
 ![new-lines](images/code-format-new-lines.png)
-![spacing](images/code-format-spacing.png)
+![spacing](images/code-format-spacing2.png)
 ![wrapping](images/code-format-wrapping.png)
 ![style](images/code-format-style.png)
 
