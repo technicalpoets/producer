@@ -17,6 +17,9 @@ namespace Producer.Functions
 			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
+			log.Info ("new DocumentUpdatedMessage");
+			log.Info (Newtonsoft.Json.JsonConvert.SerializeObject (updateMessage));
+
 			try
 			{
 				if (string.IsNullOrEmpty (updateMessage.CollectionId))

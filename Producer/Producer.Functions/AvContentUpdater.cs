@@ -12,10 +12,13 @@ namespace Producer.Functions
 		[FunctionName ("UpdateAvContent")]
 		public static void Run (
 			[QueueTrigger ("message-queue-avcontent", Connection = "AzureWebJobsStorage")]ContentEncodedMessage contentMessage,
-			[DocumentDB ("Content", "AvContent", Id = "documentId")] AvContent avContent,
+			[DocumentDB ("Content", "AvContent", Id = "{documentId}")] AvContent avContent,
 			[Queue ("message-queue-document-update")] out DocumentUpdatedMessage updatedMessage,
 			TraceWriter log)
 		{
+			log.Info ("new ContentEncodedMessage");
+			log.Info (Newtonsoft.Json.JsonConvert.SerializeObject (contentMessage));
+
 			if (avContent != null)
 			{
 				try

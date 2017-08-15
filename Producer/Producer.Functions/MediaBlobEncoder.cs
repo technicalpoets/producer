@@ -39,8 +39,11 @@ namespace Producer.Functions
 			[Queue ("message-queue-avcontent"/*, Connection = "AzureWebJobsStorage"*/)] out ContentEncodedMessage contentMessage,
 			TraceWriter log)
 		{
+			log.Info ("Starting Function: EncodeAvContent");
+
 			try
 			{
+
 				// check contententId before we take the time to encode
 				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.DocumentIdKey, out string documentId) || string.IsNullOrWhiteSpace (documentId))
 					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.DocumentIdKey}");
