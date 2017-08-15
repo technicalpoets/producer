@@ -93,12 +93,23 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 
 ### Indentation
 
-- [x] Indent block contents
-- [ ] Indent open and close brackets
-- [x] Indent case contents
-- [x] Indent case labels
+![indentation](images/code-format-indentation.png)
 
 ### New Lines
+
+![new-lines](images/code-format-new-lines.png)
+
+### Spacing
+
+![spacing](images/code-format-spacing.png)
+im
+### Wrapping
+
+![wrapping](images/code-format-wrapping.png)
+
+### Style
+
+![style](images/code-format-style.png)
 
 
 [0]:https://guides.github.com/introduction/flow/
