@@ -72,17 +72,27 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 ## Azure
 
 
-# Code Format
+# Code 
+
+## C#
+
 
 ### General
 
 - Don't use `this` unless absolutely necessary
 - Don't use `private` it is implied
 
+### Structure
+
+- Fields
+- Properties
+- Constructors
+- Methods
+
 ### Comments
 
 - Comment your damn code
-- Don't check-in commented code (including `TODO:`)
+- Don't check-in commented out code (including `TODO:`)
 
 ### Naming
 
@@ -90,25 +100,15 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 - Public members start with uppercase
 - Private members start with lowercase letters
 - Don't prepend underscores unless it's a backing field
+- Don't append `Async` to method names unless there's a non-async version
 
-### Indentation
+
+## Visual Studio C# Formatting Settings
 
 ![indentation](images/code-format-indentation.png)
-
-### New Lines
-
 ![new-lines](images/code-format-new-lines.png)
-
-### Spacing
-
 ![spacing](images/code-format-spacing.png)
-
-### Wrapping
-
 ![wrapping](images/code-format-wrapping.png)
-
-### Style
-
 ![style](images/code-format-style.png)
 
 

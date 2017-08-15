@@ -132,6 +132,7 @@ Global
 		$2.SpaceAfterMethodCallName = True
 		$2.SpaceBeforeOpenSquareBracket = True
 		$2.scope = text/x-csharp
+		$2.SpaceAfterCast = True
 		$0.TextStylePolicy = $3
 		$3.inheritsSet = null
 		$3.scope = application/android+xml
