@@ -71,11 +71,28 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 
 ## Azure
 
+This app utilizes the following Azure services:
+
+- Azure App Service
+- Azure Functions
+- Azure Storage
+- Azure Cosmos DB, DocumentDB
+- Azure Notification Hubs
+- Azure Media Service
+- Azure CDN
+- Application Insights
+
 Ping me (Colby) for access to the resources group.
+
+
+## Mobile Center
+
+This app uses Mobile Center, ping me (Colby) for the app keys.
+
 
 # Code 
 
-## C#
+## C# Code
 
 
 ### General
