@@ -72,6 +72,33 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 ## Azure
 
 
+# Code Format
+
+### General
+
+- Don't use `this` unless absolutely necessary
+- Don't use `private` it is implied
+
+### Comments
+
+- Comment your damn code
+- Don't check-in commented code (including `TODO:`)
+
+### Naming
+
+- Names should be descriptive
+- Public members start with uppercase
+- Private members start with lowercase letters
+- Don't prepend underscores unless it's a backing field
+
+### Indentation
+
+- [x] Indent block contents
+- [ ] Indent open and close brackets
+- [x] Indent case contents
+- [x] Indent case labels
+
+### New Lines
 
 
 [0]:https://guides.github.com/introduction/flow/
