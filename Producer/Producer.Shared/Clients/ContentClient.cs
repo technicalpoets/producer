@@ -44,9 +44,9 @@ namespace Producer.Shared
 				throw new Exception ();
 			}
 
-			Log.Debug ($"Creating DocumentClient for DocumentDB at: {Settings.DocumentDbUrl}");
+			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {Settings.DocumentDbKey}");
 
-			client = new DocumentClient (Settings.DocumentDbUrl, "");
+			client = new DocumentClient (Settings.DocumentDbUrl, Settings.DocumentDbKey);
 		}
 
 

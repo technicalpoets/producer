@@ -15,18 +15,27 @@ PreparePreferenceFile
 		AddNewToggleSwitchPreference -k "TestProducer" 	-d true 	-t "Producer"
 
 
-	AddNewPreferenceGroup	-t "Azure Functions Urls"
-		AddNewStringNode 	-e "FunctionsFooterText" 	-v "Example: producer.azurewebsites.net"
+	# Azure Functions
+	AddNewPreferenceGroup	-t "Azure Functions"
 		AddNewToggleSwitchPreference 	-k "UseLocalFunctions" 		-d true 	-t "Use Local Functions"
+
+	AddNewPreferenceGroup	-t "Local Azure Functions"
 		AddNewTextFieldPreference		-k "LocalFunctionsUrl"		-d "" 		-t "Local"
+
+	AddNewPreferenceGroup	-t "Local Azure Functions"
 		AddNewTextFieldPreference		-k "RemoteFunctionsUrl"		-d "" 		-t "Remote"
 
-
-	AddNewPreferenceGroup	-t "Azure DocumentDB Urls"
-		AddNewStringNode 	-e "DocumentDbFooterText" 	-v "Example: producer.documents.azure.com"
+	# Azure Document DB
+	AddNewPreferenceGroup	-t "Azure DocumentDB"
 		AddNewToggleSwitchPreference 	-k "UseLocalDocumentDb" 	-d true 	-t "Use Local DocumentDB"
-		AddNewTextFieldPreference		-k "LocalDocumentDbUrl"		-d "" 		-t "Local"
-		AddNewTextFieldPreference		-k "RemoteDocumentDbUrl"	-d "" 		-t "Remote"
+		
+	AddNewPreferenceGroup	-t "Local Azure DocumentDB"
+		AddNewTextFieldPreference		-k "LocalDocumentDbUrl"		-d "" 		-t "https://"
+		AddNewTextFieldPreference		-k "LocalDocumentDbKey"		-d "" 		-t "Key"
+
+	AddNewPreferenceGroup	-t "Remote Azure DocumentDB"
+		AddNewTextFieldPreference		-k "RemoteDocumentDbUrl"	-d "" 		-t "https://"
+		AddNewTextFieldPreference		-k "RemoteDocumentDbKey"	-d "" 		-t "Key"
 
 
 	AddNewPreferenceGroup 	-t "Embedded Social Key"

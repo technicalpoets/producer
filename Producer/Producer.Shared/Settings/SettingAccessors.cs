@@ -130,6 +130,26 @@ namespace SettingsStudio
 		}
 
 
+		public static string LocalDocumentDbKey
+		{
+			get => StringForKey (SettingsKeys.LocalDocumentDbKey);
+			set => SetSetting (SettingsKeys.LocalDocumentDbKey, value ?? string.Empty);
+		}
+
+
+		public static string RemoteDocumentDbKey
+		{
+			get => StringForKey (SettingsKeys.RemoteDocumentDbKey);
+			set => SetSetting (SettingsKeys.RemoteDocumentDbKey, value ?? string.Empty);
+		}
+
+
+		static string _documentDbKey;
+
+		public static string DocumentDbKey => _documentDbKey ?? (_documentDbKey = (UseLocalDocumentDb ? LocalDocumentDbKey : RemoteDocumentDbKey) ?? throw new Exception ("No DocumentDB Key"));
+
+
+
 		public static string EmbeddedSocialKey
 		{
 			get => StringForKey (SettingsKeys.EmbeddedSocialKey);

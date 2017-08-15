@@ -24,6 +24,8 @@ namespace SettingsStudio
 
 		public const string LocalFunctionsUrl = "LocalFunctionsUrl";
 
+		public const string LocalDocumentDbKey = "LocalDocumentDbKey";
+
 		public const string RemoteFunctionsUrl = "RemoteFunctionsUrl";
 
 		public const string UseLocalDocumentDb = "UseLocalDocumentDb";
@@ -31,6 +33,8 @@ namespace SettingsStudio
 		public const string LocalDocumentDbUrl = "LocalDocumentDbUrl";
 
 		public const string RemoteDocumentDbUrl = "RemoteDocumentDbUrl";
+
+		public const string RemoteDocumentDbKey = "RemoteDocumentDbKey";
 
 		public const string EmbeddedSocialKey = "EmbeddedSocialKey";
 
