@@ -71,6 +71,7 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 
 ## Azure
 
+Ping me (Colby) for access to the resources group.
 
 # Code 
 
