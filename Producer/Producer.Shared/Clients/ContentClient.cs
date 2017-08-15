@@ -56,17 +56,19 @@ namespace Producer.Shared
 		}
 
 
-		public async Task CreateAvContent (AvContent item)
+		public async Task<AvContent> CreateAvContent (AvContent item)
 		{
 			var newItem = await Create (item);
 
 			AvContent [newItem.PublishedTo].Insert (0, newItem);
 
 			AvContentChanged?.Invoke (this, newItem.PublishedTo);
+
+			return newItem;
 		}
 
 
-		public async Task UpdateAvContent (AvContent item, UserRoles? role = null)
+		public async Task UpdateAvContent (AvContent item, UserRoles? role = null, bool publish = true)
 		{
 			if (role.HasValue && AvContent [role.Value].Remove (item))
 			{
@@ -86,6 +88,17 @@ namespace Producer.Shared
 			//AvContent[newItem.PublishedTo].Sort(x, y)
 
 			AvContentChanged?.Invoke (this, newItem.PublishedTo);
+
+			if (publish)
+			{
+				await ProducerClient.Shared.Publish (item, role.HasValue ? item.DisplayName : null, role.HasValue ? "New Content!" : null);
+			}
+		}
+
+
+		public async Task PublishAvContent (AvContent item)
+		{
+
 		}
 
 

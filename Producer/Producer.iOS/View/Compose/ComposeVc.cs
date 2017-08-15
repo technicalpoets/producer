@@ -94,133 +94,135 @@ namespace Producer.iOS
 		}
 
 
-		partial void createButtonClicked (NSObject sender)
-		{
-			createButton.Enabled = true;
-			fileNameTextField.Enabled = true;
-			fileDisplayNameTextField.Enabled = true;
-			descriptionTextField.Enabled = true;
-
-
-			avContent = new AvContent
-			{
-				Name = fileNameTextField.Text,
-				DisplayName = fileDisplayNameTextField.Text,
-				Description = descriptionTextField.Text,
-				ProducerId = "admin", // TODO: fix this
-				ContentType = utiData.Item1 == UTType.Audio ? AvContentTypes.Audio : utiData.Item1 == UTType.Movie ? AvContentTypes.Video : AvContentTypes.Unknown
-			};
-
-			UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
-
-
-			Task.Run (async () =>
-			{
-				try
-				{
-					await ContentClient.Shared.CreateAvContent (avContent);
-				}
-				catch (Exception ex)
-				{
-					Log.Debug (ex.Message);
-				}
-				finally
-				{
-					BeginInvokeOnMainThread (() =>
-					{
-						UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-
-						NavigationController.PopViewController (true);
-					});
-				}
-			});
-		}
-
-
 		//partial void createButtonClicked (NSObject sender)
 		//{
-		//	createButton.Enabled = false;
-		//	fileNameTextField.Enabled = false;
-		//	fileDisplayNameTextField.Enabled = false;
-		//	descriptionTextField.Enabled = false;
+		//	createButton.Enabled = true;
+		//	fileNameTextField.Enabled = true;
+		//	fileDisplayNameTextField.Enabled = true;
+		//	descriptionTextField.Enabled = true;
 
 
-		//	if (avContent != null) // editing existing item
+		//	avContent = new AvContent
 		//	{
-		//		if (updateAvContentItem ())
+		//		Name = fileNameTextField.Text,
+		//		DisplayName = fileDisplayNameTextField.Text,
+		//		Description = descriptionTextField.Text,
+		//		ProducerId = "admin", // TODO: fix this
+		//		ContentType = utiData.Item1 == UTType.Audio ? AvContentTypes.Audio : utiData.Item1 == UTType.Movie ? AvContentTypes.Video : AvContentTypes.Unknown
+		//	};
+
+		//	UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+
+
+		//	Task.Run (async () =>
+		//	{
+		//		try
 		//		{
-		//			//Settings.LastAvContentDescription = avContent.Description ?? string.Empty;
-
-		//			Task.Run (async () =>
+		//			await ContentClient.Shared.CreateAvContent (avContent);
+		//		}
+		//		catch (Exception ex)
+		//		{
+		//			Log.Debug (ex.Message);
+		//		}
+		//		finally
+		//		{
+		//			BeginInvokeOnMainThread (() =>
 		//			{
-		//				await ProducerClient.Shared.UpdateItemAsync (avContent);
+		//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
 
-		//				BeginInvokeOnMainThread (() => NavigationController.PopViewController (true));
+		//				NavigationController.PopViewController (true);
 		//			});
 		//		}
-		//	}
-		//	else // creating new draft
-		//	{
-		//		avContent = new AvContent
-		//		{
-		//			Name = fileNameTextField.Text,
-		//			DisplayName = fileDisplayNameTextField.Text,
-		//			Description = descriptionTextField.Text,
-		//			ProducerId = "admin", // TODO: fix this
-		//			ContentType = utiData.Item1 == UTType.Audio ? AvContentTypes.Audio : utiData.Item1 == UTType.Movie ? AvContentTypes.Video : AvContentTypes.Unknown
-		//		};
-
-		//		UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
-
-
-		//		Task.Run (async () =>
-		//		{
-		//			var storageToken = await ProducerClient.Shared.SaveNewItemAsync (avContent);
-
-		//			if (storageToken != null)
-		//			{
-		//				// store the inbox path incase upload fails, is interrupted, app
-		//				// crashes, etc. and we need to reinitialize the upload later
-		//				avContent.LocalInboxPath = filePath.Path;
-
-		//				var success = await AzureStorageClient.Shared.AddNewFileAsync (avContent, storageToken);
-
-		//				BeginInvokeOnMainThread (() =>
-		//				{
-		//					UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-
-		//					if (success)
-		//					{
-		//						Settings.LastAvContentDescription = avContent.Description ?? string.Empty;
-
-		//						NavigationController.PopViewController (true);
-
-		//						// TODO: Remove this file once we get a successful streaming url
-		//						//NSError error;
-
-		//						//NSFileManager.DefaultManager.Remove (filePath.Path, out error);
-
-		//						//if (error != null)
-		//						//{
-		//						//	System.Diagnostics.Debug.WriteLine ($"{error}");
-		//						//	System.Diagnostics.Debug.WriteLine ($"Error trying to get resource attributes\n\t{error.Code}\n\t{error.Domain}\n\t{error.Description}");
-		//						//}
-		//					}
-		//					else
-		//					{
-		//						// TODO: show failed/retry alert
-		//					}
-
-		//					UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-		//				});
-		//			}
-		//			else
-		//			{
-		//				BeginInvokeOnMainThread (() => { UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false; });
-		//			}
-		//		});
-		//	}
+		//	});
 		//}
+
+
+		partial void createButtonClicked (NSObject sender)
+		{
+			createButton.Enabled = false;
+			fileNameTextField.Enabled = false;
+			fileDisplayNameTextField.Enabled = false;
+			descriptionTextField.Enabled = false;
+
+
+			if (avContent != null) // editing existing item
+			{
+				if (updateAvContentItem ())
+				{
+					//Settings.LastAvContentDescription = avContent.Description ?? string.Empty;
+
+					Task.Run (async () =>
+					{
+						await ContentClient.Shared.UpdateAvContent (avContent);
+
+						BeginInvokeOnMainThread (() => NavigationController.PopViewController (true));
+					});
+				}
+			}
+			else // creating new draft
+			{
+				avContent = new AvContent
+				{
+					Name = fileNameTextField.Text,
+					DisplayName = fileDisplayNameTextField.Text,
+					Description = descriptionTextField.Text,
+					ProducerId = "admin", // TODO: fix this
+					ContentType = utiData.UTType == UTType.Audio ? AvContentTypes.Audio : utiData.UTType == UTType.Movie ? AvContentTypes.Video : AvContentTypes.Unknown
+				};
+
+				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
+
+
+				Task.Run (async () =>
+				{
+					avContent = await ContentClient.Shared.CreateAvContent (avContent);
+
+					var storageToken = await ProducerClient.Shared.GetStorageToken (avContent);
+
+					if (storageToken != null)
+					{
+						// store the inbox path incase upload fails, is interrupted, app
+						// crashes, etc. and we need to reinitialize the upload later
+						avContent.LocalInboxPath = filePath.Path;
+
+						var success = await AzureStorageClient.Shared.AddNewFileAsync (avContent, storageToken);
+
+						BeginInvokeOnMainThread (() =>
+						{
+							UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+
+							if (success)
+							{
+								Settings.LastAvContentDescription = avContent.Description ?? string.Empty;
+
+								NavigationController.PopViewController (true);
+
+								// TODO: Remove this file once we get a successful streaming url
+								//NSError error;
+
+								//NSFileManager.DefaultManager.Remove (filePath.Path, out error);
+
+								//if (error != null)
+								//{
+								//	System.Diagnostics.Debug.WriteLine ($"{error}");
+								//	System.Diagnostics.Debug.WriteLine ($"Error trying to get resource attributes\n\t{error.Code}\n\t{error.Domain}\n\t{error.Description}");
+								//}
+							}
+							else
+							{
+								// TODO: show failed/retry alert
+							}
+
+							UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+						});
+					}
+					else
+					{
+						BeginInvokeOnMainThread (() => { UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false; });
+					}
+				});
+			}
+		}
 
 
 		bool updateAvContentItem ()
