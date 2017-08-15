@@ -4,7 +4,7 @@ iOS: [![Build status](https://build.mobile.azure.com/v0.1/apps/507c64e8-f770-454
 Android: [![Build status](https://build.mobile.azure.com/v0.1/apps/8721f631-cf9b-4cc3-8d66-0d6ec10166bd/branches/master/badge)](https://mobile.azure.com)
 
 
-# Project Workflow
+# Project Guidelines
 
 From a high level, we'll follow [GitHub Flow][0] - a lightweight, branch-based workflow.
 
@@ -26,7 +26,19 @@ All UI contributions (new screens, etc.) will be created in two separate steps; 
 In the **_Build_** phase of a new screen or other UI element, you're just getting the required data on the screen and implementing that screen/UI element's functionality - **without making it "pretty"** _(formatting, colors, fonts, animations, etc.)_.  This allows us to **a)** make updates/tweaks/changes to the data/functionality before those changes could effect the layout, animations, etc., and **b)** benchmark the performance of data/functionality to ensure we don't degrade the performance during the **_Paint_** phase.
 
 ### 2. 🎨 - Paint
-Formatting, colors, fonts, animations, etc. are added during the **_Paint_** phase of the screen/element. This will be a **separate branch, pull request, etc. than the screen/element's **_Build_** phase.
+Formatting, colors, fonts, animations, etc. are added during the **_Paint_** phase of the screen/element. This will be a **separate branch and pull request than the screen/element's _Build_ phase branch.**
+
+
+## 📘 Documentation
+
+This project **must** be well documented. We'll have docs outlining the data, architecture, flow, etc.
+
+### Guidelines
+
+- Everything must be documented clearly and concisely - these documents will be public
+- All documentation will be in markdown, and during development, saved in the repo's `docs` directory
+- Upon project completion, they'll be moved to the repo's wiki
+
 
 
 # Project Setup
@@ -59,11 +71,6 @@ All keys, connection strings, etc. are in `local.settings.json`.  This file is i
 
 ## Azure
 
-
-
-# Documentation
-
-Docs outlining the data, architecture, etc. are at the top of the todo list.
 
 
 
