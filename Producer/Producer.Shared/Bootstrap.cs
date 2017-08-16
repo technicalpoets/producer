@@ -31,9 +31,9 @@ namespace Producer
 			Settings.RegisterDefaultSettings ();
 
 #if __MOBILE__
-
+#if __IOS__
 			configureProducerSettings ();
-
+#endif
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>
 			{
@@ -84,15 +84,15 @@ namespace Producer
 				using (var data = Foundation.NSData.FromFile (path))
 				{
 					var json = Foundation.NSString.FromData (data, Foundation.NSStringEncoding.ASCIIStringEncoding).ToString ();
-#elif __ANDROID__
-					var path = $"{name}.json";
+					//#elif __ANDROID__
+					//var path = $"{name}.json";
 
-					if (assetList.Contains(path))
-					{
-						using (var sr = new System.IO.StreamReader (context.Assets.Open (path)))
-						{
-							var json = sr.ReadToEnd ();
-#endif
+					//if (assetList.Contains(path))
+					//{
+					//using (var sr = new System.IO.StreamReader (context.Assets.Open (path)))
+					//{
+					//var json = sr.ReadToEnd ();
+					//#endif
 					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (json);
 
 					Log.Debug (producerSettings.ToString ());
@@ -100,6 +100,7 @@ namespace Producer
 					Settings.ConfigureSettings (producerSettings);
 				}
 			}
+#endif
 		}
 	}
 }
