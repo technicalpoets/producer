@@ -56,10 +56,10 @@ namespace Producer.iOS
 			Log.Debug ($"RegisteredForRemoteNotifications");
 
 			// Connection string from your azure dashboard
-			var cs = SBConnectionString.CreateListenAccess (new NSUrl (Settings.NotificationsUrl), Settings.NotificationsUrl);
+			// var cs = SBConnectionString.CreateListenAccess (new NSUrl (Settings.NotificationsUrl), Settings.NotificationsUrl);
 
 			// Register our info with Azure
-			var hub = new SBNotificationHub (cs, Settings.NotificationsName);
+			var hub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
 
 			hub.RegisterNativeAsync (deviceToken, null, err =>
 			   {

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using SettingsStudio;
 
 using Producer.Domain;
+using System.Text;
 
 namespace Producer.Shared
 {
@@ -39,7 +40,7 @@ namespace Producer.Shared
 						Message = notificationMessage
 					};
 
-					var response = await client.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage)));
+					var response = await client.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, "application/json"));
 
 					Log.Debug (response.ToString ());
 

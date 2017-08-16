@@ -260,7 +260,7 @@ Create an account and listen to new music before it drops.</string>
                                 <rect key="frame" x="0.0" y="662" width="375" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wKq-JN-oUf" id="7oJ-b4-1sb">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="63.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="0.1489986479" green="0.1490316391" blue="0.14899659160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -335,11 +335,6 @@ Create an account and listen to new music before it drops.</string>
                     <navigationItem key="navigationItem" id="17G-I8-BzI">
                         <nil key="title"/>
                         <barButtonItem key="backBarButtonItem" title=" " id="Mcc-Iy-CJb"/>
-                        <barButtonItem key="leftBarButtonItem" image="i_tab_compose" id="AZV-Wz-kHZ">
-                            <connections>
-                                <segue destination="oRw-Ma-a46" kind="show" id="WxV-wn-7tf"/>
-                            </connections>
-                        </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="Kl5-72-RUw">
                             <rect key="frame" x="101" y="7" width="173" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -391,7 +386,7 @@ Create an account and listen to new music before it drops.</string>
                         <viewControllerLayoutGuide type="bottom" id="9HG-lV-p5h"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="I83-F4-dqt">
-                        <rect key="frame" x="0.0" y="64" width="375" height="559"/>
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="QuW-6c-KjI">
@@ -529,8 +524,5 @@ Create an account and listen to new music before it drops.</string>
         <image name="i_tab_profile" width="25" height="25"/>
         <image name="i_tab_record" width="25" height="25"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="WxV-wn-7tf"/>
-    </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.90196078431372551" green="0.30588235294117649" blue="0.29803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

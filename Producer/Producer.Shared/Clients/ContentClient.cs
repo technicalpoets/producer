@@ -96,6 +96,17 @@ namespace Producer.Shared
 		}
 
 
+		public async Task DeleteAvContent (AvContent item)
+		{
+			if (AvContent [item.PublishedTo].Remove (item))
+			{
+				AvContentChanged?.Invoke (this, item.PublishedTo);
+			}
+
+			var deletedItem = await Delete (item);
+		}
+
+
 		public async Task PublishAvContent (AvContent item)
 		{
 
@@ -312,7 +323,12 @@ namespace Producer.Shared
 
 				var result = await client.DeleteDocumentAsync (item.SelfLink);
 
-				return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+				if (!string.IsNullOrEmpty (result?.Resource?.ToString ()))
+				{
+					return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+				}
+
+				return null;
 			}
 			catch (DocumentClientException dex)
 			{

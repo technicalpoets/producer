@@ -300,3 +300,5 @@ Producer/Producer.Functions/local.settings.json
 Producer/Producer.Functions/Properties/PublishProfiles/producer - Web Deploy.pubxml
 
 Producer/Producer.iOS/ProducerSettings.plist
+
+Producer/Producer.iOS/ProducerSettings.plist

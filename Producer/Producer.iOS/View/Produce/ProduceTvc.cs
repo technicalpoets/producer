@@ -41,7 +41,7 @@ namespace Producer.iOS
 
 			segmentControl.SelectedSegment = Settings.ProducerListSelectedRole;
 
-			role = (UserRoles)Math.Abs (segmentControl.SelectedSegment - 2);
+			role = (UserRoles) Math.Abs (segmentControl.SelectedSegment - 2);
 
 			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
 
@@ -86,9 +86,9 @@ namespace Producer.iOS
 
 		partial void segmentControlValueChanged (NSObject sender)
 		{
-			Settings.ProducerListSelectedRole = (int)segmentControl.SelectedSegment;
+			Settings.ProducerListSelectedRole = (int) segmentControl.SelectedSegment;
 
-			role = (UserRoles)Math.Abs (segmentControl.SelectedSegment - 2);
+			role = (UserRoles) Math.Abs (segmentControl.SelectedSegment - 2);
 
 			TableView.ReloadData ();
 
@@ -137,7 +137,7 @@ namespace Producer.iOS
 					break;
 			}
 
-			alertController.AddAction (UIAlertAction.Create ("Delete Item", UIAlertActionStyle.Destructive, handleAlertControllerActionDeleteItem));
+			alertController.AddAction (UIAlertAction.Create ("Delete Item", UIAlertActionStyle.Destructive, handleAlertControllerActionDeleteItemConfirm));
 
 			alertController.AddAction (UIAlertAction.Create ("Cancel", UIAlertActionStyle.Cancel, handleAlertControllerActionDismiss));
 
@@ -166,6 +166,9 @@ namespace Producer.iOS
 		}
 
 
+		void handleAlertControllerActionDismiss (UIAlertAction obj) => DismissViewController (true, null);
+
+
 		void handleAlertControllerActionPublishToEveryone (UIAlertAction obj) => updatePublishedTo (UserRoles.General);
 
 
@@ -173,6 +176,12 @@ namespace Producer.iOS
 
 
 		void handleAlertControllerActionPublishToDrafts (UIAlertAction obj) => updatePublishedTo (UserRoles.Producer);
+
+
+		void handleAlertControllerActionDeleteItemConfirm (UIAlertAction obj) => deleteItemConfirm ();
+
+
+		void handleAlertControllerActionDeleteItem (UIAlertAction obj) => deleteItem ();
 
 
 		void updatePublishedTo (UserRoles userRole)
@@ -190,16 +199,34 @@ namespace Producer.iOS
 		}
 
 
-		void handleAlertControllerActionDeleteItem (UIAlertAction obj)
+		void deleteItemConfirm ()
 		{
 			var asset = content [indexPathCache.Row];
 
-			// TODO: Prompt for confirmation explaining that actual asset will be deleted
-			//		 Then delete
+			if (asset != null)
+			{
+				var alertController = UIAlertController.Create ("Delete Item", $"{asset.DisplayName} will be deleted from the server and all user's devices.  This cannot be undone.", UIAlertControllerStyle.Alert);
+
+				alertController.AddAction (UIAlertAction.Create ("Cancel", UIAlertActionStyle.Cancel, handleAlertControllerActionDismiss));
+
+				alertController.AddAction (UIAlertAction.Create ("Delete Item", UIAlertActionStyle.Destructive, handleAlertControllerActionDeleteItem));
+
+				PresentViewController (alertController, true, null);
+			}
 		}
 
 
-		void handleAlertControllerActionDismiss (UIAlertAction obj) => DismissViewController (true, null);
+		void deleteItem ()
+		{
+			var asset = content [indexPathCache.Row];
+
+			if (asset != null)
+			{
+				Task.Run (() => ContentClient.Shared.DeleteAvContent (asset));
+			}
+		}
+
+
 
 		#endregion
 	}

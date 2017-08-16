@@ -171,6 +171,13 @@ namespace SettingsStudio
 		}
 
 
+		public static string NotificationsConnectionString
+		{
+			get => StringForKey (SettingsKeys.NotificationsConnectionString);
+			set => SetSetting (SettingsKeys.NotificationsConnectionString, value ?? string.Empty);
+		}
+
+
 		public static string EmbeddedSocialKey
 		{
 			get => StringForKey (SettingsKeys.EmbeddedSocialKey);

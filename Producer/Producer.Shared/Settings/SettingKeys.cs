@@ -45,6 +45,8 @@ namespace SettingsStudio
 
 		public const string NotificationsKey = "NotificationsKey";
 
+		public const string NotificationsConnectionString = "NotificationsConnectionString";
+
 		public const string UserReferenceKey = "UserReferenceKey";
 
 
@@ -64,7 +66,8 @@ namespace SettingsStudio
 			EmbeddedSocialKey,
 			NotificationsName,
 			NotificationsUrl,
-			NotificationsKey
+			NotificationsKey,
+			NotificationsConnectionString
 		};
 
 
