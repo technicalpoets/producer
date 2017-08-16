@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Linq;
 
-////using NomadCode.Azure;
+using Newtonsoft.Json;
+
+using SettingsStudio;
 
 using Producer.Domain;
-using SettingsStudio;
-using Newtonsoft.Json;
 
 namespace Producer.Shared
 {

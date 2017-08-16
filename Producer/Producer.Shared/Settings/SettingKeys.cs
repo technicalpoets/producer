@@ -2,6 +2,7 @@
  *
  * Copyright © 2015 Colby Williams. All Rights Reserved.
  */
+using System.Collections.Generic;
 
 namespace SettingsStudio
 {
@@ -38,10 +39,33 @@ namespace SettingsStudio
 
 		public const string EmbeddedSocialKey = "EmbeddedSocialKey";
 
+		public const string NotificationsName = "NotificationsName";
+
+		public const string NotificationsUrl = "NotificationsUrl";
+
+		public const string NotificationsKey = "NotificationsKey";
+
 		public const string UserReferenceKey = "UserReferenceKey";
 
 
 		#endregion
+
+
+		public static List<string> ProducerSettingsKeys = new List<string>
+		{
+			UseLocalFunctions,
+			LocalFunctionsUrl,
+			LocalDocumentDbKey,
+			RemoteFunctionsUrl,
+			UseLocalDocumentDb,
+			LocalDocumentDbUrl,
+			RemoteDocumentDbUrl,
+			RemoteDocumentDbKey,
+			EmbeddedSocialKey,
+			NotificationsName,
+			NotificationsUrl,
+			NotificationsKey
+		};
 
 
 		#region Hidden Settings

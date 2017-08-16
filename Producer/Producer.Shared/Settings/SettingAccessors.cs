@@ -150,6 +150,27 @@ namespace SettingsStudio
 
 
 
+		public static string NotificationsName
+		{
+			get => StringForKey (SettingsKeys.NotificationsName);
+			set => SetSetting (SettingsKeys.NotificationsName, value ?? string.Empty);
+		}
+
+
+		public static string NotificationsUrl
+		{
+			get => StringForKey (SettingsKeys.NotificationsUrl);
+			set => SetSetting (SettingsKeys.NotificationsUrl, value ?? string.Empty);
+		}
+
+
+		public static string NotificationsKey
+		{
+			get => StringForKey (SettingsKeys.NotificationsKey);
+			set => SetSetting (SettingsKeys.NotificationsKey, value ?? string.Empty);
+		}
+
+
 		public static string EmbeddedSocialKey
 		{
 			get => StringForKey (SettingsKeys.EmbeddedSocialKey);

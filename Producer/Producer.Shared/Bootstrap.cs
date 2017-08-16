@@ -15,10 +15,6 @@ using Plugin.VersionTracking;
 
 using SettingsStudio;
 
-//using NomadCode.Azure;
-
-//using Producer.Domain;
-
 
 namespace Producer
 {
@@ -33,6 +29,26 @@ namespace Producer
 			Settings.RegisterDefaultSettings ();
 
 #if __MOBILE__
+
+#if __IOS__
+
+			var producerSettings = Foundation.NSDictionary.FromFile ("ProducerSettings.plist");
+
+			if (producerSettings == null)
+			{
+				throw new System.IO.FileNotFoundException ("Must be present to use azure services", "ProducerSettings.plist");
+			}
+
+			foreach (var key in SettingsKeys.ProducerSettingsKeys)
+			{
+				var val = producerSettings [key].ToString ();
+
+				Log.Debug ($"ProducerSettings: {key.PadRight (20)}: {val}");
+
+				Settings.SetSetting (key, val ?? string.Empty);
+			}
+
+#endif
 
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>

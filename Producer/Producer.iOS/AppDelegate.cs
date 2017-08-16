@@ -4,13 +4,9 @@ using Foundation;
 using UIKit;
 using UserNotifications;
 
-//using Microsoft.WindowsAzure.MobileServices;
-
-//using NomadCode.Azure;
-
 using Producer.Shared;
+using WindowsAzure.Messaging;
 using SettingsStudio;
-using Producer.Domain;
 
 namespace Producer.iOS
 {
@@ -57,9 +53,23 @@ namespace Producer.iOS
 		{
 			Log.Debug ($"RegisteredForRemoteNotifications");
 
-			//var push = AzureClient.Shared.MobileServiceClient.GetPush ();
+			// Connection string from your azure dashboard
+			var cs = SBConnectionString.CreateListenAccess (new NSUrl (Settings.NotificationsUrl), Settings.NotificationsUrl);
 
-			//push.RegisterAsync (deviceToken);
+			// Register our info with Azure
+			var hub = new SBNotificationHub (cs, Settings.NotificationsName);
+
+			hub.RegisterNativeAsync (deviceToken, null, err =>
+			   {
+				   if (err != null)
+				   {
+					   Log.Debug ($"Error: {err.Description}");
+				   }
+				   else
+				   {
+					   Log.Debug ("Successfully Registered for Notifications");
+				   }
+			   });
 		}
 
 
@@ -80,6 +90,9 @@ namespace Producer.iOS
 		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 		{
+			// Process a notification received while the app was already open
+
+
 			Log.Debug ($"DidReceiveRemoteNotification:");
 
 			for (int i = 0; i < userInfo.Keys.Length; i++)

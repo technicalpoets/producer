@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<!-- Azure Functions -->
+		<key>UseLocalFunctions</key>
+		<false/>
+		<key>LocalFunctionsUrl</key>
+		<string>localhost:7071</string>
+		<key>RemoteFunctionsUrl</key>
+		<string>producer.azurewebsites.net</string>
+		<!-- Azure DocumentDB -->
+		<key>UseLocalDocumentDb</key>
+		<false/>
+		<key>LocalDocumentDbUrl</key>
+		<string>192.168.86.1:8081</string>
+		<key>LocalDocumentDbKey</key>
+		<string>+JgdRtj2ObzvMl3mtAEDbtaSA7i+Cl2QjE2ppGly/VLNFKabwppoW/WSdfaYClayTn+pjFFHB/cQN1EyuLWPig==</string>
+		<key>RemoteDocumentDbUrl</key>
+		<string>producer.documents.azure.com</string>
+		<key>RemoteDocumentDbKey</key>
+		<string>e5HZdVjX7EmThOECe7DCADLZjI8KCNAdHQRjR9e29hatKTmR8VLf2BDQMIPxg3ayqS2ZLdBAdnVPLtImbO4CCA==</string>
+		<!-- Azure Notification Hubs -->
+		<key>NotificationsName</key>
+		<string>producer</string>
+		<key>NotificationsUrl</key>
+		<string>sb://producer.servicebus.windows.net/</string>
+		<key>NotificationsKey</key>
+		<string>14RzlGYJqu0M7diG6NS+d2399yMUllnAgpn0Vse6y6M=</string>
+		<!-- Embedded Social -->
+		<key>EmbeddedSocialKey</key>
+		<string></string>
+	</dict>
+</plist>
