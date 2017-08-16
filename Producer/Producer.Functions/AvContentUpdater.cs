@@ -7,11 +7,12 @@ using Producer.Domain;
 
 namespace Producer.Functions
 {
+	[StorageAccount ("AzureWebJobsStorage")]
 	public static class AvContentUpdater
 	{
 		[FunctionName ("UpdateAvContent")]
 		public static void Run (
-			[QueueTrigger ("message-queue-avcontent", Connection = "AzureWebJobsStorage")]ContentEncodedMessage contentMessage,
+			[QueueTrigger ("message-queue-avcontent")] ContentEncodedMessage contentMessage,
 			[DocumentDB ("Content", "AvContent", Id = "{documentId}")] AvContent avContent,
 			[Queue ("message-queue-document-update")] out DocumentUpdatedMessage updatedMessage,
 			TraceWriter log)

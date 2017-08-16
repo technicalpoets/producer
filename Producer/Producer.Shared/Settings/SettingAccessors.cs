@@ -3,6 +3,7 @@
  * Copyright © 2015 Colby Williams. All Rights Reserved.
  */
 using System;
+using Producer.Domain;
 
 namespace SettingsStudio
 {
@@ -198,6 +199,23 @@ namespace SettingsStudio
 			set => SetSetting (SettingsKeys.UserReferenceKey, value ?? "anonymous");
 		}
 
+
+		public static void ConfigureSettings (ProducerSettings producerSettings)
+		{
+			RemoteFunctionsUrl = producerSettings.RemoteFunctionsUrl;
+			RemoteDocumentDbUrl = producerSettings.RemoteDocumentDbUrl;
+			RemoteDocumentDbKey = producerSettings.RemoteDocumentDbKey;
+			EmbeddedSocialKey = producerSettings.EmbeddedSocialKey;
+			NotificationsName = producerSettings.NotificationsName;
+			NotificationsUrl = producerSettings.NotificationsUrl;
+			NotificationsKey = producerSettings.NotificationsKey;
+			NotificationsConnectionString = producerSettings.NotificationsConnectionString;
+#if __IOS__
+			MobileCenterKey = producerSettings.MobileCenterKeyiOS;
+#else
+			MobileCenterKey = producerSettings.MobileCenterKeyAndroid;
+#endif
+		}
 
 		#endregion
 

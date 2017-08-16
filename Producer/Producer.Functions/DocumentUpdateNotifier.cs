@@ -13,7 +13,7 @@ namespace Producer.Functions
 	{
 		[FunctionName ("UpdateNotifier")]
 		public static async Task Run (
-			[QueueTrigger ("message-queue-document-update", Connection = "AzureWebJobsStorage")]DocumentUpdatedMessage updateMessage,
+			[QueueTrigger ("message-queue-document-update", Connection = "AzureWebJobsStorage")] DocumentUpdatedMessage updateMessage,
 			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
@@ -32,6 +32,7 @@ namespace Producer.Functions
 				log.Info ($"Sending Notification payload: {payload}");
 
 				await notification.AddAsync (new AppleNotification (payload));
+
 			}
 			catch (Exception ex)
 			{

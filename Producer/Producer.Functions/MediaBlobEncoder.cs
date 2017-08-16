@@ -33,26 +33,20 @@ namespace Producer.Functions
 
 		[FunctionName ("EncodeAvContent")]
 		public static void Run (
-			[BlobTrigger ("uploads-avcontent/{fileName}.{fileExtension}"/*, Connection = "AzureWebJobsStorage"*/)]CloudBlockBlob inputBlob,
-			string fileName,
-			string fileExtension,
-			[Queue ("message-queue-avcontent"/*, Connection = "AzureWebJobsStorage"*/)] out ContentEncodedMessage contentMessage,
+			[BlobTrigger ("uploads-avcontent/{fileName}.{fileExtension}")] CloudBlockBlob inputBlob,
+			string fileName, string fileExtension,
+			[Queue ("message-queue-avcontent")] out ContentEncodedMessage contentMessage,
 			TraceWriter log)
 		{
 			log.Info ("Starting Function: EncodeAvContent");
 
 			try
 			{
-//#if DEBUG
-//				inputBlob.Metadata [DocumentUpdatedMessage.DocumentIdKey] = "92910fae-c12a-4d4f-9209-d6f917b2be7b";
-//				inputBlob.Metadata [DocumentUpdatedMessage.CollectionIdKey] = "AvContent";
-//#endif
-
-				// check contententId before we take the time to encode
+				// check documentID before we take the time to encode
 				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.DocumentIdKey, out string documentId) || string.IsNullOrWhiteSpace (documentId))
 					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.DocumentIdKey}");
 
-				// check contententId before we take the time to encode
+				// check collectionId before we take the time to encode
 				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.CollectionIdKey, out string collectionId) || string.IsNullOrWhiteSpace (collectionId))
 					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.CollectionIdKey}");
 
@@ -188,6 +182,7 @@ namespace Producer.Functions
 
 			return asset;
 		}
+
 
 		static SharedAccessBlobPolicy adHocSasPolicy => new SharedAccessBlobPolicy
 		{

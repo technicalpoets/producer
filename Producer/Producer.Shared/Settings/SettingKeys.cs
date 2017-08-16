@@ -55,25 +55,6 @@ namespace SettingsStudio
 		#endregion
 
 
-		public static List<string> ProducerSettingsKeys = new List<string>
-		{
-			UseLocalFunctions,
-			LocalFunctionsUrl,
-			LocalDocumentDbKey,
-			RemoteFunctionsUrl,
-			UseLocalDocumentDb,
-			LocalDocumentDbUrl,
-			RemoteDocumentDbUrl,
-			RemoteDocumentDbKey,
-			EmbeddedSocialKey,
-			NotificationsName,
-			NotificationsUrl,
-			NotificationsKey,
-			NotificationsConnectionString,
-			MobileCenterKey
-		};
-
-
 		#region Hidden Settings
 
 

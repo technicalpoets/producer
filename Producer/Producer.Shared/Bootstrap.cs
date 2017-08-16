@@ -15,6 +15,8 @@ using Plugin.VersionTracking;
 
 using SettingsStudio;
 
+using Producer.Domain;
+
 
 namespace Producer
 {
@@ -32,21 +34,18 @@ namespace Producer
 
 #if __IOS__
 
-			var producerSettings = Foundation.NSDictionary.FromFile ("ProducerSettings.plist");
+			var producerSettingsJson = Foundation.NSBundle.MainBundle.PathForResource ("ProducerSettings", "json");
 
-			if (producerSettings == null)
+			if (string.IsNullOrEmpty (producerSettingsJson))
 			{
 				throw new System.IO.FileNotFoundException ("Must be present to use azure services", "ProducerSettings.plist");
 			}
 
-			foreach (var key in SettingsKeys.ProducerSettingsKeys)
-			{
-				var val = producerSettings [key].ToString ();
+			var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (producerSettingsJson);
 
-				Log.Debug ($"ProducerSettings: {key.PadRight (30)}: {val}");
+			Log.Debug (producerSettings.ToString ());
 
-				Settings.SetSetting (key, val ?? string.Empty);
-			}
+			Settings.ConfigureSettings (producerSettings);
 
 #endif
 

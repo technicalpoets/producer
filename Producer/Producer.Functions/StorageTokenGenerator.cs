@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
+
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -14,7 +14,6 @@ using Producer.Domain;
 
 namespace Producer.Functions
 {
-
 	public static class StorageTokenGenerator
 	{
 		static readonly string _storageAccountConnection = Environment.GetEnvironmentVariable ("AzureWebJobsStorage");
@@ -28,11 +27,9 @@ namespace Producer.Functions
 #endif
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{documentId}")]HttpRequestMessage req,
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{documentId}")] HttpRequestMessage req,
 			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content,
-			string collectionId,
-			string documentId,
-			TraceWriter log)
+			string collectionId, string documentId, TraceWriter log)
 		{
 #if !DEBUG
 			//if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)

@@ -404,6 +404,7 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />
+    <BundleResource Include="ProducerSettings.json" />
     <BundleResource Include="ProducerSettings.plist" />
   </ItemGroup>
   <Import Project="..\Producer.Domain\Producer.Domain.projitems" Label="Shared" Condition="Exists('..\Producer.Domain\Producer.Domain.projitems')" />

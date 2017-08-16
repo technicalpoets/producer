@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ContentEncodedMessage.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+    <Compile Include="$(MSBuildThisFileDirectory)ProducerSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
