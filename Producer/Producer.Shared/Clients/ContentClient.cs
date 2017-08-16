@@ -107,10 +107,7 @@ namespace Producer.Shared
 		}
 
 
-		public async Task PublishAvContent (AvContent item)
-		{
-
-		}
+		// public async Task PublishAvContent (AvContent item) {  }
 
 
 		async Task refreshAvContentAsync ()

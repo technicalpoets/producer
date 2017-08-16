@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MOBILECENTER_SOURCE_DIRECTORY="/Users/colbywilliams/GitHub/producer"
+# MOBILECENTER_SOURCE_DIRECTORY="/Users/colbywilliams/GitHub/producer"
 
 if [[ MOBILECENTER_SOURCE_DIRECTORY ]];
 	then

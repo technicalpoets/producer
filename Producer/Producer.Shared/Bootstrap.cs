@@ -32,22 +32,7 @@ namespace Producer
 
 #if __MOBILE__
 
-#if __IOS__
-
-			var producerSettingsJson = Foundation.NSBundle.MainBundle.PathForResource ("ProducerSettings", "json");
-
-			if (string.IsNullOrEmpty (producerSettingsJson))
-			{
-				throw new System.IO.FileNotFoundException ("Must be present to use azure services", "ProducerSettings.plist");
-			}
-
-			var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (producerSettingsJson);
-
-			Log.Debug (producerSettings.ToString ());
-
-			Settings.ConfigureSettings (producerSettings);
-
-#endif
+			configureProducerSettings ();
 
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>
@@ -86,6 +71,35 @@ namespace Producer
 #endif
 
 #endif
+		}
+
+		static void configureProducerSettings ()
+		{
+			var name = typeof (ProducerSettings).Name;
+#if __IOS__
+			var path = Foundation.NSBundle.MainBundle.PathForResource (name, "json");
+
+			if (!string.IsNullOrEmpty (path))
+			{
+				using (var data = Foundation.NSData.FromFile (path))
+				{
+					var json = Foundation.NSString.FromData (data, Foundation.NSStringEncoding.ASCIIStringEncoding).ToString ();
+#elif __ANDROID__
+					var path = $"{name}.json";
+
+					if (assetList.Contains(path))
+					{
+						using (var sr = new System.IO.StreamReader (context.Assets.Open (path)))
+						{
+							var json = sr.ReadToEnd ();
+#endif
+					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (json);
+
+					Log.Debug (producerSettings.ToString ());
+
+					Settings.ConfigureSettings (producerSettings);
+				}
+			}
 		}
 	}
 }
