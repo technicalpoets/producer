@@ -4,9 +4,11 @@ using Foundation;
 using UIKit;
 using UserNotifications;
 
-using Producer.Shared;
 using WindowsAzure.Messaging;
+
 using SettingsStudio;
+
+using Producer.Shared;
 
 namespace Producer.iOS
 {

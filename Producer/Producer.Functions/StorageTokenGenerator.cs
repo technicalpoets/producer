@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -29,7 +29,7 @@ namespace Producer.Functions
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{documentId}")]HttpRequestMessage req,
-			//[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Resource document,
+			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content,
 			string collectionId,
 			string documentId,
 			TraceWriter log)
@@ -43,17 +43,17 @@ namespace Producer.Functions
 			//}
 #endif
 
-			//if (document == null)
-			//{
-			//	log.Info ($"No item in database matching the documentId paramater {documentId}");
+			if (content == null)
+			{
+				log.Info ($"No item in database matching the documentId paramater {documentId}");
 
-			//	return req.CreateErrorResponse (HttpStatusCode.NotFound, $"No item in database matching the documentId paramater {documentId}");
-			//}
+				return req.CreateErrorResponse (HttpStatusCode.NotFound, $"No item in database matching the documentId paramater {documentId}");
+			}
 
 			log.Info ($"Successfully found document in database matching the documentId paramater {documentId}");
 
 
-			var containerName = $"uploads-{collectionId.ToLower ()}"; // uploads-avcontent
+			var containerName = $"uploads-{collectionId.ToLower ()}"; // Example: uploads-avcontent
 
 
 			// Errors creating the storage container result in a 500 Internal Server Error
@@ -65,9 +65,9 @@ namespace Producer.Functions
 			// TODO: Check if there's already a blob with a name matching the Id
 
 
-			var sasUri = getBlobSasUri (container, documentId);
+			var sasUri = getBlobSasUri (container, content.Name);
 
-			var token = new StorageToken (documentId, sasUri);
+			var token = new StorageToken (content.Name, sasUri);
 
 			return req.CreateResponse (HttpStatusCode.OK, token);
 		}

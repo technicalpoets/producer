@@ -22,6 +22,8 @@ namespace Producer.Shared
 			{
 				var sasUri = new Uri (storageToken.SasUri);
 
+				Log.Debug ($"SasUri: {storageToken.SasUri}");
+
 				var blockBlob = new CloudBlockBlob (sasUri);
 
 				blockBlob.Metadata [DocumentUpdatedMessage.DocumentIdKey] = avContent.Id;
