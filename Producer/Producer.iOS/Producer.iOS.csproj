@@ -127,6 +127,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <MtouchFloat32>true</MtouchFloat32>
   </PropertyGroup>
+  <Target Name="ProducerSettings" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
+    <Exec Command="/bin/bash '$(SolutionDir)/scripts/key_import_utility.sh'" />
+  </Target>
   <Target Name="RootPlist" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
     <Exec Command="/bin/bash '$(SolutionDir)/scripts/plist_utility.sh' -p '$(ProjectDir)' -c 'Made with ♥ by Technical Poets' -r '$(Configuration)'" />
   </Target>
