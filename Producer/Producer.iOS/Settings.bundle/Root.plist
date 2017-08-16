@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
-			<string>0.3.1 (35)</string>
+			<string>0.3.1 (36)</string>
 			<key>Key</key>
 			<string>VersionNumber</string>
 			<key>Title</key>
@@ -32,6 +32,26 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Mobile Center App Secret</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Key</key>
+			<string>MobileCenterKey</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>Title</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Example Url: producer.azurewebsites.net (do not include https:// or a trailing /)</string>
+			<key>Title</key>
 			<string>Azure Functions</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
@@ -47,12 +67,6 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Title</key>
-			<string>Local Azure Functions</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>Key</key>
@@ -60,15 +74,9 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Local</string>
+			<string>Local Url:</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Local Azure Functions</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -78,11 +86,13 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Remote</string>
+			<string>Remote Url:</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
+			<key>FooterText</key>
+			<string>Example Url: producer.documents.azure.com (do not include https:// or a trailing /)</string>
 			<key>Title</key>
 			<string>Azure DocumentDB</string>
 			<key>Type</key>
@@ -99,12 +109,6 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Title</key>
-			<string>Local Azure DocumentDB</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>Key</key>
@@ -112,7 +116,7 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>https://</string>
+			<string>Local Url:</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
@@ -124,15 +128,9 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Key</string>
+			<string>Local Key:</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Remote Azure DocumentDB</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -142,7 +140,7 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>https://</string>
+			<string>Remote Url:</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
@@ -154,7 +152,39 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Key</string>
+			<string>Remote Key:</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Your Notification Hub Connection String</string>
+			<key>Title</key>
+			<string>Azure Notification Hub</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Key</key>
+			<string>NotificationsName</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>Title</key>
+			<string>Hub Name:</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Key</key>
+			<string>NotificationsConnectionString</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>Title</key>
+			<string></string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
@@ -172,7 +202,7 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Key</string>
+			<string></string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>

@@ -43,7 +43,7 @@ namespace Producer
 			{
 				var val = producerSettings [key].ToString ();
 
-				Log.Debug ($"ProducerSettings: {key.PadRight (20)}: {val}");
+				Log.Debug ($"ProducerSettings: {key.PadRight (30)}: {val}");
 
 				Settings.SetSetting (key, val ?? string.Empty);
 			}
@@ -56,11 +56,11 @@ namespace Producer
 				ErrorAttachmentLog.AttachmentWithText (CrossVersionTracking.Current.ToString (), "versionhistory.txt")
 			};
 
-			if (!string.IsNullOrEmpty (Keys.MobileCenter.AppSecret))
+			if (!string.IsNullOrEmpty (Settings.MobileCenterKey))
 			{
 				Log.Debug ("Starting Mobile Center...");
 
-				MobileCenter.Start (Keys.MobileCenter.AppSecret, typeof (Analytics), typeof (Crashes), typeof (Distribute));
+				MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
 			}
 			else
 			{
@@ -86,25 +86,7 @@ namespace Producer
 
 #endif
 
-			//InitializeDataStore ();
-
-			//Task.Run (async () =>
-			//{
-			//	var blobs = await AzureStorageClient.Shared.ListPublicBlobsAsync ();
-
-			//	foreach (var blob in blobs)
-			//	{
-			//		System.Diagnostics.Debug.WriteLine ($"{blob}");
-			//	}
-			//});
 #endif
-		}
-
-		public static async Task InitializeDataStoreAsync ()
-		{
-			//AzureClient.Shared.RegisterTable<AvContent> ();
-
-			//await AzureClient.Shared.InitializeAzync (Settings.ServerUrl);
 		}
 	}
 }

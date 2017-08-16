@@ -47,6 +47,8 @@ namespace SettingsStudio
 
 		public const string NotificationsConnectionString = "NotificationsConnectionString";
 
+		public const string MobileCenterKey = "MobileCenterKey";
+
 		public const string UserReferenceKey = "UserReferenceKey";
 
 
@@ -67,7 +69,8 @@ namespace SettingsStudio
 			NotificationsName,
 			NotificationsUrl,
 			NotificationsKey,
-			NotificationsConnectionString
+			NotificationsConnectionString,
+			MobileCenterKey
 		};
 
 

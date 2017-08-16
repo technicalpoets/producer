@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 
+using SettingsStudio;
+
 using Producer.Domain;
-using System.Threading.Tasks;
 
 namespace Producer
 {
@@ -28,7 +30,7 @@ namespace Producer
 
 		public static void Event (string name, IDictionary<string, string> properties = null)
 		{
-			if (!string.IsNullOrEmpty (Keys.MobileCenter.AppSecret))
+			if (!string.IsNullOrEmpty (Settings.MobileCenterKey))
 			{
 				Task.Run (async () =>
 				{

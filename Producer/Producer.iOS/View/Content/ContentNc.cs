@@ -29,19 +29,12 @@ namespace Producer.iOS
 
 			Task.Run (async () =>
 			{
-				await Bootstrap.InitializeDataStoreAsync ();
-
 				await ContentClient.Shared.GetAllAvContent ();
 
 				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
 
 				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 			});
-
-			//if (!Settings.TestProducer)
-			//{
-			//	SetViewControllers (new UIViewController [] { ViewControllers [0], ViewControllers [1], ViewControllers [3], ViewControllers [4] }, false);
-			//}
 		}
 
 

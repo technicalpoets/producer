@@ -185,6 +185,13 @@ namespace SettingsStudio
 		}
 
 
+		public static string MobileCenterKey
+		{
+			get => StringForKey (SettingsKeys.MobileCenterKey);
+			set => SetSetting (SettingsKeys.MobileCenterKey, value ?? string.Empty);
+		}
+
+
 		public static string UserReferenceKey
 		{
 			get => StringForKey (SettingsKeys.UserReferenceKey);

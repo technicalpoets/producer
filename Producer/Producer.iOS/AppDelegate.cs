@@ -15,6 +15,7 @@ namespace Producer.iOS
 	[Register ("AppDelegate")]
 	public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate
 	{
+
 		public override UIWindow Window { get; set; }
 
 
