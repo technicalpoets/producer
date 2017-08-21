@@ -12,8 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bootstrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingAccessors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingKeys.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Keys\Keys.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Keys\PrivateKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\AzureStorageClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\ProducerClient.cs" />
