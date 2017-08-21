@@ -13,8 +13,8 @@ namespace Producer.Droid
 	{
 		Context context;
 		List<Fragment> fragments = new List<Fragment> ();
-		List<string> titles = new List<string> ();
-		List<int> icons = new List<int> ();
+		readonly List<string> titles = new List<string> ();
+		readonly List<int> icons = new List<int> ();
 
 		public StaticFragmentPagerAdapter (Context context, FragmentManager manager) : base (manager)
 		{
@@ -60,9 +60,10 @@ namespace Producer.Droid
 
 		public virtual View GetTabView (int position)
 		{
+			//get the item view and set the text + icon/image
 			var tabItemView = LayoutInflater.From (context).Inflate (Resource.Layout.StackedTabLayout, null);
-			var tabText = (TextView) tabItemView.FindViewById (Resource.Id.tabText);
-			var tabImage = (ImageView) tabItemView.FindViewById (Resource.Id.tabIcon);
+			var tabText = tabItemView.FindViewById<TextView> (Resource.Id.tabText);
+			var tabImage = tabItemView.FindViewById<ImageView> (Resource.Id.tabIcon);
 
 			tabText.Text = titles [position];
 

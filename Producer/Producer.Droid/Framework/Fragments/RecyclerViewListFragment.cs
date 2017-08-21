@@ -30,6 +30,7 @@ namespace Producer.Droid
 			LayoutManager = new LinearLayoutManager (Activity);
 			RecyclerView.SetLayoutManager (LayoutManager);
 
+			//adds item divider lines if ShowDividers == true
 			if (ShowDividers)
 			{
 				RecyclerView.AddItemDecoration (new DividerItemDecoration (Activity, DividerItemDecoration.VerticalList));

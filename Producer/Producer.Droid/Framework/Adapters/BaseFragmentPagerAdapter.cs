@@ -26,11 +26,10 @@ namespace Producer.Droid
 			{
 				var obj = base.InstantiateItem (container, position);
 
-				if (obj is Fragment)
+				// record the fragment tag here
+				if (obj is Fragment fragment)
 				{
-					// record the fragment tag here
-					var f = (Fragment) obj;
-					var tag = f.Tag;
+					var tag = fragment.Tag;
 					Tags [position] = tag;
 				}
 

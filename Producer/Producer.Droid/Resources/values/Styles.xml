@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<!-- Inherit from the Material Theme (We will be using the toolbar so no need to show ActionBar) -->
-	<style name="Theme.Producer" parent="Theme.AppCompat.Light.NoActionBar">
+	<style name="Theme.Producer" parent="Theme.AppCompat.NoActionBar">
 		<item name="colorPrimary">@color/primary</item>
 		<item name="colorPrimaryDark">@color/primary_dark</item>
 		<item name="colorAccent">@color/accent</item>
