@@ -12,9 +12,26 @@ namespace Producer.iOS
 	[Register ("LoginVc")]
 	partial class LoginVc
 	{
+		[Outlet]
+		UIKit.UIStackView buttonStackView { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint buttonStackViewHeightConstraint { get; set; }
+
+		[Action ("cancelClicked:")]
+		partial void cancelClicked (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (buttonStackView != null) {
+				buttonStackView.Dispose ();
+				buttonStackView = null;
+			}
+
+			if (buttonStackViewHeightConstraint != null) {
+				buttonStackViewHeightConstraint.Dispose ();
+				buttonStackViewHeightConstraint = null;
+			}
 		}
 	}
 }

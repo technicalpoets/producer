@@ -13,10 +13,8 @@ using SettingsStudio;
 using Producer.Domain;
 using Producer.Shared;
 
-
 namespace Producer.iOS
 {
-
 	public partial class ContentTvc : UITableViewController
 	{
 
@@ -100,6 +98,23 @@ namespace Producer.iOS
 			}
 
 			yCache = y;
+		}
+
+
+		partial void profileButtonClicked (NSObject sender)
+		{
+			if (ProducerClient.Shared.AuthUser == null)
+			{
+				var loginNc = Storyboard.Instantiate<LoginNc> ();
+
+				PresentViewController (loginNc, true, null);
+			}
+			else
+			{
+				var userNc = Storyboard.Instantiate<UserNc> ();
+
+				PresentViewController (userNc, true, null);
+			}
 		}
 
 

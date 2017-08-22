@@ -126,7 +126,7 @@
                         <barButtonItem key="backBarButtonItem" title=" " id="O1R-rF-pqK"/>
                         <barButtonItem key="leftBarButtonItem" image="i_tab_profile" id="ZeW-rN-yhU">
                             <connections>
-                                <segue destination="koo-NW-qjR" kind="presentation" id="mKy-9z-unR"/>
+                                <action selector="profileButtonClicked:" destination="DED-KZ-6YO" id="F5D-ae-lVT"/>
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="QA5-UF-2Ty">
@@ -199,11 +199,48 @@
                         <viewControllerLayoutGuide type="bottom" id="cxl-1b-r73"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="olK-tw-Pkm">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l1d-HB-abj">
+                                <rect key="frame" x="57.5" y="146.5" width="260" height="115"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="260" id="cKM-Gz-kBY"/>
+                                </constraints>
+                                <string key="text">Howdy.
+
+Sign in to listen to new music before it drops.</string>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                                <color key="textColor" red="0.57248467209999998" green="0.57258617879999996" blue="0.57247823480000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="mnw-db-pgQ">
+                                <rect key="frame" x="67" y="301.5" width="240" height="52"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="52" id="6Kg-3A-hsd"/>
+                                    <constraint firstAttribute="width" constant="240" id="Gxj-Mw-Nf7"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.14899864792823792" green="0.14903163909912109" blue="0.14899659156799316" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="mnw-db-pgQ" firstAttribute="centerX" secondItem="olK-tw-Pkm" secondAttribute="centerX" id="bVA-JI-VKG"/>
+                            <constraint firstItem="l1d-HB-abj" firstAttribute="centerX" secondItem="olK-tw-Pkm" secondAttribute="centerX" id="eex-il-XJq"/>
+                            <constraint firstItem="l1d-HB-abj" firstAttribute="bottom" secondItem="olK-tw-Pkm" secondAttribute="centerY" constant="-40" id="q4k-1H-MzG"/>
+                            <constraint firstItem="mnw-db-pgQ" firstAttribute="top" secondItem="l1d-HB-abj" secondAttribute="bottom" constant="40" id="rkr-gU-vT2"/>
+                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="5zk-dM-1fb"/>
+                    <navigationItem key="navigationItem" id="5zk-dM-1fb">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="1nR-SK-BbX">
+                            <connections>
+                                <action selector="cancelClicked:" destination="7vG-KE-XqJ" id="Eon-kC-sw7"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="buttonStackView" destination="mnw-db-pgQ" id="FxV-GE-2Cb"/>
+                        <outlet property="buttonStackViewHeightConstraint" destination="6Kg-3A-hsd" id="alW-jF-Lvu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="A6Z-cL-ExY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -538,9 +575,10 @@ Sign in to listen to new music before it drops.</string>
             <objects>
                 <navigationController storyboardIdentifier="LoginNc" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="0Vk-0M-Hsd" customClass="LoginNc" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="MvA-F3-afn">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="MvA-F3-afn">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.1097869948" green="0.1098136529" blue="0.1097853258" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

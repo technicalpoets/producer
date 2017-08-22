@@ -33,6 +33,9 @@ namespace Producer.iOS
 		[Action ("accessoryButtonClicked:")]
 		partial void accessoryButtonClicked (Foundation.NSObject sender);
 
+		[Action ("profileButtonClicked:")]
+		partial void profileButtonClicked (Foundation.NSObject sender);
+
 		[Action ("refreshValueChanged:")]
 		partial void refreshValueChanged (Foundation.NSObject sender);
 
@@ -44,6 +47,11 @@ namespace Producer.iOS
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (composeButton != null) {
+				composeButton.Dispose ();
+				composeButton = null;
+			}
+
 			if (nextButton != null) {
 				nextButton.Dispose ();
 				nextButton = null;
@@ -67,11 +75,6 @@ namespace Producer.iOS
 			if (titleButton != null) {
 				titleButton.Dispose ();
 				titleButton = null;
-			}
-
-			if (composeButton != null) {
-				composeButton.Dispose ();
-				composeButton = null;
 			}
 		}
 	}

@@ -74,23 +74,13 @@ namespace Producer.iOS
 			base.ViewDidDisappear (animated);
 		}
 
+		partial void cancelClicked (NSObject sender) => DismissViewController (true, null);
 
 		void initSignInButtons ()
 		{
-			var stackView = new UIStackView
-			{
-				TranslatesAutoresizingMaskIntoConstraints = false,
-				Axis = UILayoutConstraintAxis.Vertical,
-				Spacing = 10,
-				Alignment = UIStackViewAlignment.Fill,
-				Distribution = UIStackViewDistribution.FillEqually
-			};
-
-			View.AddSubview (stackView);
-
 #if NC_AUTH_GOOGLE
 
-			stackView.AddArrangedSubview (AuthButtonGoogle);
+			buttonStackView.AddArrangedSubview (AuthButtonGoogle);
 
 			SignIn.SharedInstance.UIDelegate = this;
 			SignIn.SharedInstance.Delegate = this;
@@ -122,8 +112,7 @@ namespace Producer.iOS
 #if NC_AUTH_TWITTER
 			stackView.AddArrangedSubview (AuthButtonTwitter);
 #endif
-
-			stackView.ConstrainToParentCenter (240, stackView.ArrangedSubviews.Length * 52);
+			buttonStackViewHeightConstraint.Constant = buttonStackView.ArrangedSubviews.Length * 52;
 		}
 
 
@@ -199,7 +188,7 @@ namespace Producer.iOS
 			{
 				if (action.Title == "Complain")
 				{
-					var issueUrl = @"https://github.com/colbylwilliams/Producer.Auth/issues/new";
+					var issueUrl = @"https://github.com/technicalpoets/producer/issues/new";
 
 					UIApplication.SharedApplication.OpenUrl (new NSUrl (issueUrl));
 
