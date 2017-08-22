@@ -1,22 +1,16 @@
-﻿#if __MOBILE__
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 using Microsoft.Azure.Mobile.Distribute;
 
-#endif
-
-using System.Threading.Tasks;
-
 using Plugin.VersionTracking;
 
 using SettingsStudio;
 
 using Producer.Domain;
-
 
 namespace Producer
 {
@@ -30,10 +24,8 @@ namespace Producer
 
 			Settings.RegisterDefaultSettings ();
 
-#if __MOBILE__
-#if __IOS__
 			configureProducerSettings ();
-#endif
+
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>
 			{
@@ -44,7 +36,7 @@ namespace Producer
 			{
 				Log.Debug ("Starting Mobile Center...");
 
-				MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
+				//MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
 			}
 			else
 			{
@@ -67,11 +59,9 @@ namespace Producer
 			Settings.VersionNumber = CrossVersionTracking.Current.CurrentVersion;
 
 			Settings.BuildNumber = CrossVersionTracking.Current.CurrentBuild;
-
-#endif
-
 #endif
 		}
+
 
 		static void configureProducerSettings ()
 		{
@@ -95,7 +85,7 @@ namespace Producer
 					//#endif
 					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (json);
 
-					Log.Debug (producerSettings.ToString ());
+					Log.Debug ($"\n{producerSettings}");
 
 					Settings.ConfigureSettings (producerSettings);
 				}

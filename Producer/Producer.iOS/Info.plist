@@ -41,8 +41,27 @@
 	<string>Andrew</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.3.1</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.209705403340-mfn8i3ha2nkr7c6kjad3q676hg6fs03k</string>
+			</array>
+			<key>CFBundleURLTypes</key>
+			<string>Editor</string>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.colbylwilliams.producer</string>
+			</array>
+			<key>CFBundleURLTypes</key>
+			<string>Editor</string>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>43</string>
+	<string>45</string>
 	<key>Custom Property</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
