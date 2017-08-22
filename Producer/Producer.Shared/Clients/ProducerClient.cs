@@ -68,7 +68,7 @@ namespace Producer.Shared
 
 				try
 				{
-					//TODO: cache token
+					//TODO: cache token and delete anonymous read-only token when user logs in
 
 					var response = await httpClient.GetAsync (url);
 
@@ -85,6 +85,8 @@ namespace Producer.Shared
 
 			return null;
 		}
+
+
 
 
 		public async Task<string> GetContentToken<T> ()

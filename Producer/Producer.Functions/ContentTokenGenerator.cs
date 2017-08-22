@@ -44,7 +44,7 @@ namespace Producer.Functions
 
 						log.Info ($"userId = {userId}");
 
-						var token = await getToken (client, userId, collectionId, userReadId, PermissionMode.Read);
+						var token = await getToken (client, userId, collectionId, userReadId, PermissionMode.Read, log);
 
 						if (!string.IsNullOrEmpty (token))
 						{
@@ -57,7 +57,7 @@ namespace Producer.Functions
 
 				log.Info ("User is not authenticated, retrieving anonymous read token");
 
-				var anonymousToken = await getToken (client, anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read);
+				var anonymousToken = await getToken (client, anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read, log);
 
 				if (!string.IsNullOrEmpty (anonymousToken))
 				{
@@ -93,7 +93,7 @@ namespace Producer.Functions
 
 					try
 					{
-						var token = await getToken (client, userId, collectionId, userWriteId, PermissionMode.All);
+						var token = await getToken (client, userId, collectionId, userWriteId, PermissionMode.All, log);
 
 						if (!string.IsNullOrEmpty (token))
 						{
@@ -117,39 +117,61 @@ namespace Producer.Functions
 		}
 
 
-		static async Task<string> getToken (DocumentClient client, string userId, string collectionId, string permissionId, PermissionMode permissionMode)
+		static async Task<string> getToken (DocumentClient client, string userId, string collectionId, string permissionId, PermissionMode permissionMode, TraceWriter log)
 		{
-			var response = await client.ReadUserAsync (UriFactory.CreateUserUri (databaseId, userId));
-
-			var user = response?.Resource;
-
-			if (user == null)
+			try
 			{
-				response = await client.CreateUserAsync (UriFactory.CreateDatabaseUri (databaseId), new User { Id = userId });
+				var collection = await client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId));
 
-				user = response?.Resource;
+				User user = null;
 
-				if (!string.IsNullOrEmpty (user?.SelfLink))
+				try
 				{
-					var permResponse = await client.CreatePermissionAsync (user.SelfLink, new Permission { Id = permissionId, ResourceLink = UriFactory.CreateDocumentCollectionUri (databaseId, collectionId).LocalPath, PermissionMode = permissionMode });
+					var response = await client.ReadUserAsync (UriFactory.CreateUserUri (databaseId, userId));
+
+					user = response?.Resource;
 				}
+				catch (DocumentClientException dcx)
+				{
+					if (dcx.StatusCode == System.Net.HttpStatusCode.NotFound)
+					{
+						log.Info ($"Did not find user with Id {userId} - creating...");
+
+						var response = await client.CreateUserAsync (UriFactory.CreateDatabaseUri (databaseId), new User { Id = userId });
+
+						user = response?.Resource;
+
+						if (!string.IsNullOrEmpty (user?.SelfLink))
+						{
+							var newPermission = new Permission { Id = permissionId, ResourceLink = collection.Resource.SelfLink, PermissionMode = permissionMode };
+
+							var permResponse = await client.CreatePermissionAsync (user.SelfLink, newPermission);
+						}
+					}
+				}
+
+				var permissions = new List<Permission> ();
+
+				if (!string.IsNullOrEmpty (user?.PermissionsLink))
+				{
+					var readPermissions = await client.ReadPermissionFeedAsync (user.PermissionsLink);
+
+					foreach (var perm in readPermissions)
+					{
+						permissions.Add (perm);
+					}
+				}
+
+				var permission = permissions.FirstOrDefault ();
+
+				return permission?.Token;
+
 			}
-
-			var permissions = new List<Permission> ();
-
-			if (!string.IsNullOrEmpty (user?.PermissionsLink))
+			catch (Exception ex)
 			{
-				var readPermissions = await client.ReadPermissionFeedAsync (user.PermissionsLink);
-
-				foreach (var perm in readPermissions)
-				{
-					permissions.Add (perm);
-				}
+				log.Error (ex.Message);
+				throw;
 			}
-
-			var permission = permissions.FirstOrDefault ();
-
-			return permission?.Token;
 		}
 	}
 }
