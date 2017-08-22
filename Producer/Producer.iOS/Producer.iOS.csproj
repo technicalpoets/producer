@@ -406,6 +406,7 @@
     <Folder Include="Assets.xcassets\nc_clientauth_i_google.imageset\" />
     <Folder Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\" />
     <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
+    <Folder Include="View\Login\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -469,13 +470,13 @@
     <Compile Include="View\Produce\ProduceTvCell.designer.cs">
       <DependentUpon>ProduceTvCell.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoginVc.cs" />
-    <Compile Include="LoginVc.designer.cs">
-      <DependentUpon>LoginVc.cs</DependentUpon>
-    </Compile>
-    <Compile Include="LoginNc.cs" />
-    <Compile Include="LoginNc.designer.cs">
+    <Compile Include="View\Login\LoginNc.cs" />
+    <Compile Include="View\Login\LoginNc.designer.cs">
       <DependentUpon>LoginNc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Login\LoginVc.cs" />
+    <Compile Include="View\Login\LoginVc.designer.cs">
+      <DependentUpon>LoginVc.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
