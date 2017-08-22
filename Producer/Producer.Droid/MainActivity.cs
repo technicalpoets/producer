@@ -33,8 +33,8 @@ namespace Producer.Droid
 		void setupViewPager ()
 		{
 			PagerAdapter = new TabFragmentPagerAdapter (this, SupportFragmentManager);
-			//PagerAdapter.AddFragment (new PartnerRecyclerFragment ());
-			//PagerAdapter.AddFragment (new TeamRecyclerFragment ());
+			PagerAdapter.AddFragment (new ContentRecyclerFragment ());
+			PagerAdapter.AddFragment (new ContentRecyclerFragment ());
 			//PagerAdapter.AddFragment (new ResourcesFragment ());
 
 			var viewPager = FindViewById<ViewPager> (Resource.Id.main_viewPager);

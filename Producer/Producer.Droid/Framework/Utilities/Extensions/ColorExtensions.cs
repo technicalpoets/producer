@@ -1,4 +1,6 @@
-﻿using Android.Graphics;
+﻿using Android.Content;
+using Android.Graphics;
+using Android.Support.V4.Content;
 
 namespace Producer.Droid
 {
@@ -38,6 +40,18 @@ namespace Producer.Droid
 #pragma warning disable IDE0004 // Remove Unnecessary Cast
 			return new Color (BlendWith ((int) color, (int) withColor, ratio));
 #pragma warning restore IDE0004 // Remove Unnecessary Cast
+		}
+
+
+		/// <summary>
+		/// Gets a <see cref="Color"/> instance from the given resource Id.
+		/// </summary>
+		/// <returns>The color from resource.</returns>
+		/// <param name="context">Context.</param>
+		/// <param name="resource">Resource.</param>
+		public static Color GetColorFromResource (this Context context, int resource)
+		{
+			return new Color (ContextCompat.GetColor (context, resource));
 		}
 	}
 }

@@ -175,6 +175,9 @@
     <Compile Include="Framework\Utilities\Extensions\StringExtensions.cs" />
     <Compile Include="Framework\Utilities\Extensions\TextViewExtensions.cs" />
     <Compile Include="Framework\Utilities\Extensions\ToolbarExtensions.cs" />
+    <Compile Include="Content\ContentRecyclerFragment.cs" />
+    <Compile Include="Content\ContentViewHolder.cs" />
+    <Compile Include="Content\ContentRecyclerAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -197,10 +200,14 @@
     <AndroidResource Include="Resources\color\tabbar_text.xml" />
     <AndroidResource Include="Resources\values\Colors.xml" />
     <AndroidResource Include="Resources\values\Dimens.xml" />
+    <AndroidResource Include="Resources\drawable\ic_tabbar_resources.xml" />
+    <AndroidResource Include="Resources\drawable\vd_resources_selected.xml" />
+    <AndroidResource Include="Resources\drawable\vd_resources.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
     <Folder Include="Resources\color\" />
+    <Folder Include="Content\" />
   </ItemGroup>
   <Import Project="..\Producer.Domain\Producer.Domain.projitems" Label="Shared" Condition="Exists('..\Producer.Domain\Producer.Domain.projitems')" />
   <Import Project="..\Producer.Shared\Producer.Shared.projitems" Label="Shared" Condition="Exists('..\Producer.Shared\Producer.Shared.projitems')" />
