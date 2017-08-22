@@ -190,6 +190,25 @@
             </objects>
             <point key="canvasLocation" x="1783" y="-2177"/>
         </scene>
+        <!--Login Vc-->
+        <scene sceneID="N0Y-dT-04g">
+            <objects>
+                <viewController storyboardIdentifier="LoginVc" useStoryboardIdentifierAsRestorationIdentifier="YES" id="7vG-KE-XqJ" customClass="LoginVc" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="QPu-yM-61u"/>
+                        <viewControllerLayoutGuide type="bottom" id="cxl-1b-r73"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="olK-tw-Pkm">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="5zk-dM-1fb"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="A6Z-cL-ExY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2582" y="-2887"/>
+        </scene>
         <!--User Tvc-->
         <scene sceneID="gOE-la-wi8">
             <objects>
@@ -204,13 +223,13 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rEz-Td-6mM">
-                                    <rect key="frame" x="57.5" y="115.5" width="260" height="143.5"/>
+                                    <rect key="frame" x="57.5" y="144" width="260" height="115"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="260" id="qXR-bA-pDx"/>
                                     </constraints>
                                     <string key="text">Howdy.
 
-Create an account and listen to new music before it drops.</string>
+Sign in to listen to new music before it drops.</string>
                                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                                     <color key="textColor" red="0.57248467206954956" green="0.57258617877960205" blue="0.57247823476791382" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
@@ -513,6 +532,24 @@ Create an account and listen to new music before it drops.</string>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jxh-46-sda" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2582" y="-662"/>
+        </scene>
+        <!--Login Nc-->
+        <scene sceneID="FF7-Pu-YLP">
+            <objects>
+                <navigationController storyboardIdentifier="LoginNc" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="0Vk-0M-Hsd" customClass="LoginNc" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="MvA-F3-afn">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="7vG-KE-XqJ" kind="relationship" relationship="rootViewController" id="i83-hg-X4h"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="A3a-KF-jP0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1782" y="-2887"/>
         </scene>
     </scenes>
     <resources>

@@ -194,11 +194,11 @@ namespace Producer.Auth
 
 #else
 
-		(string Account, string PrivateKey) getItemFromKeychain (string service) => Keychain.GetItemFromKeychain (string service);
+		(string Account, string PrivateKey) getItemFromKeychain (string service) => Keychain.GetItemFromKeychain (service);
 
-		bool saveItemToKeychain (string service, string account, string privateKey) => Keychain.SaveItemToKeychain(service, account, privateKey);
+		bool saveItemToKeychain (string service, string account, string privateKey) => Keychain.SaveItemToKeychain (service, account, privateKey);
 
-		bool removeItemFromKeychain (string service) => Keychain.RemoveItemFromKeychain(service);
+		bool removeItemFromKeychain (string service) => Keychain.RemoveItemFromKeychain (service);
 
 #endif
 	}

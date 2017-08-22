@@ -58,7 +58,7 @@ namespace Producer.Auth
 		{
 			base.ViewDidLoad ();
 
-			View.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
+			View.BackgroundColor = UIColor.FromRGBA (29f / 255f, 29f / 255f, 29f / 255f, 255f / 255f);// UIColor.GroupTableViewBackgroundColor;
 
 			initSignInButtons ();
 		}
@@ -122,14 +122,10 @@ namespace Producer.Auth
 
 #endif
 #if NC_AUTH_MICROSOFT
-
 			stackView.AddArrangedSubview (AuthButtonMicrosoft);
-
 #endif
 #if NC_AUTH_TWITTER
-
 			stackView.AddArrangedSubview (AuthButtonTwitter);
-
 #endif
 
 			stackView.ConstrainToParentCenter (240, stackView.ArrangedSubviews.Length * 52);

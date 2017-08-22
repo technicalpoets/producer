@@ -18,20 +18,20 @@
 
 		public override string ToString ()
 		{
-			var sb = new System.Text.StringBuilder ("\nAuthUserConfig\n");
-			sb.Append ("  Id".PadRight (10));
+			var sb = new System.Text.StringBuilder ("\n\nAuthUserConfig\n");
+			sb.Append ("  Id".PadRight (13));
 			sb.Append ($"{Id}\n");
-			sb.Append ("  Name".PadRight (10));
+			sb.Append ("  Name".PadRight (13));
 			sb.Append ($"{Name}\n");
-			sb.Append ("  GivenName".PadRight (10));
+			sb.Append ("  GivenName".PadRight (13));
 			sb.Append ($"{GivenName}\n");
-			sb.Append ("  SurName".PadRight (10));
+			sb.Append ("  SurName".PadRight (13));
 			sb.Append ($"{SurName}\n");
-			sb.Append ("  Email".PadRight (10));
+			sb.Append ("  Email".PadRight (13));
 			sb.Append ($"{Email}\n");
-			sb.Append ("  Picture".PadRight (10));
+			sb.Append ("  Picture".PadRight (13));
 			sb.Append ($"{Picture}\n");
-			sb.Append ("  Locale".PadRight (10));
+			sb.Append ("  Locale".PadRight (13));
 			sb.Append ($"{Locale}\n");
 			return sb.ToString ();
 		}
