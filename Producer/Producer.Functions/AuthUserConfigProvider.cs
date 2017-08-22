@@ -22,7 +22,8 @@ namespace Producer.Functions
 
 		[Authorize]
 		[FunctionName ("GetUserConfig")]
-		public static async Task<HttpResponseMessage> GetUserConfig ([HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "user/config")]HttpRequestMessage req, TraceWriter log)
+		public static async Task<HttpResponseMessage> GetUserConfig (
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "user/config")] HttpRequestMessage req, TraceWriter log)
 		{
 			if (Thread.CurrentPrincipal.Identity.IsAuthenticated && Thread.CurrentPrincipal is ClaimsPrincipal principal)
 			{

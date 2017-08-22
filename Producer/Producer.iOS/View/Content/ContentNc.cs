@@ -7,8 +7,6 @@ using UserNotifications;
 
 using SettingsStudio;
 
-using Google.SignIn;
-
 using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
@@ -31,19 +29,24 @@ namespace Producer.iOS
 
 			Task.Run (async () =>
 			{
+				if (ProducerClient.Shared.AuthUser == null && ClientAuthManager.Shared.ClientAuthDetails != null)
+				{
+					var user = await ProducerClient.Shared.GetAuthUserConfig () ??
+							   await ProducerClient.Shared.GetAuthUserConfig (ClientAuthManager.Shared.ClientAuthDetails.Token, ClientAuthManager.Shared.ClientAuthDetails.AuthCode);
+
+					Log.Debug (user.ToString ());
+				}
+
+				var token = await ProducerClient.Shared.GetContentToken<AvContent> ();
+
+				ContentClient.Shared.Init (token);
+
 				await ContentClient.Shared.GetAllAvContent ();
 
 				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
 
 				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 			});
-		}
-
-		public override void ViewDidAppear (bool animated)
-		{
-			base.ViewDidAppear (animated);
-
-			//authenticate ();
 		}
 
 
@@ -95,90 +98,10 @@ namespace Producer.iOS
 		}
 
 
-		#region Auth
-
 		void handleClientAuthChanged (object s, ClientAuthDetails e)
 		{
 			Log.Debug ($"Authenticated: {e}");
 		}
-
-
-		void authenticate ()
-		{
-			Task.Run (async () =>
-			{
-				try
-				{
-					//ProducerClient.Shared.ResetCurrentUser ();
-					//ClientAuthManager.Shared.LogoutAuthProviders ();
-					//throw new Exception ("stop and re-comment out lines");
-
-					var details = ClientAuthManager.Shared.ClientAuthDetails;
-
-					// try authenticating with an existing token
-					if (ProducerClient.Shared.AuthUser == null && details != null)
-					{
-						var user = await ProducerClient.Shared.GetAuthUserConfig () ?? await ProducerClient.Shared.GetAuthUserConfig (details?.Token, details?.AuthCode);
-
-						if (user != null)
-						{
-							//Log.Debug (user.ToString ());
-							//await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversationAsync (conversationId));
-						}
-						else
-						{
-							logout ();
-						}
-					}
-					else // otherwise prompt the user to login
-					{
-						if (ProducerClient.Shared.AuthUser == null)
-						{
-							BeginInvokeOnMainThread (() => presentAuthController ());
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Error (ex.Message);
-					throw;
-				}
-			});
-		}
-
-
-		void presentAuthController ()
-		{
-			var authViewController = new AuthViewController ();
-
-			if (authViewController != null)
-			{
-				var authNavController = new UINavigationController (authViewController);
-
-				if (authNavController != null)
-				{
-					PresentViewController (authNavController, true, null);
-				}
-			}
-		}
-
-
-		void logout ()
-		{
-			try
-			{
-				SignIn.SharedInstance.SignOutUser ();
-
-				authenticate ();
-			}
-			catch (Exception ex)
-			{
-				Log.Error (ex.Message);
-				throw;
-			}
-		}
-
-		#endregion
 
 
 		public override UIStatusBarStyle PreferredStatusBarStyle () => UIStatusBarStyle.LightContent;

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using SettingsStudio;
 
 using Producer.Domain;
+using Producer.Auth;
 
 namespace Producer.Shared
 {
@@ -24,7 +25,7 @@ namespace Producer.Shared
 
 		readonly string databaseId;
 
-		readonly DocumentClient client;
+		DocumentClient client;
 
 
 		public UserRoles UserRole { get; set; } = Settings.TestProducer ? UserRoles.Producer : UserRoles.General;
@@ -40,21 +41,32 @@ namespace Producer.Shared
 
 		ContentClient (string dbId)
 		{
-			if (Settings.DocumentDbUrl == null)
-			{
-				throw new Exception ();
-			}
-
 			databaseId = dbId;
+		}
 
-			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {Settings.DocumentDbKey}");
 
-			client = new DocumentClient (Settings.DocumentDbUrl, Settings.DocumentDbKey);
+		public void Init (string resourceToken)
+		{
+			if (Settings.DocumentDbUrl == null) throw new Exception ();
+
+			if (string.IsNullOrEmpty (resourceToken)) throw new ArgumentNullException (nameof (resourceToken));
+
+			//var permissions = await new DocumentClient(Settings.DocumentDbUrl, )
+
+			//Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {Settings.DocumentDbKey}");
+			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
+
+			client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
 		}
 
 
 		public async Task GetAllAvContent ()
 		{
+			if (client == null)
+			{
+				throw new Exception ("Must call Init() first");
+			}
+
 			await refreshAvContentAsync ();
 		}
 

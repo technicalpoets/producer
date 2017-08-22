@@ -64,10 +64,12 @@ namespace Producer.Shared
 		{
 			if (content?.HasId ?? false)
 			{
-				var url = $"api/tokens/{typeof (T).Name}/{content.Id}";
+				var url = $"api/tokens/storage/{typeof (T).Name}/{content.Id}";
 
 				try
 				{
+					//TODO: cache token
+
 					var response = await httpClient.GetAsync (url);
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
@@ -85,6 +87,27 @@ namespace Producer.Shared
 		}
 
 
+		public async Task<string> GetContentToken<T> ()
+			where T : Content
+		{
+			var url = $"api/tokens/read/{typeof (T).Name}";
+
+			try
+			{
+				var response = await httpClient.GetAsync (url);
+
+				var stringContent = await response.Content.ReadAsStringAsync ();
+
+				return stringContent;
+			}
+			catch (Exception ex)
+			{
+				Log.Debug (ex.Message);
+				throw;
+			}
+		}
+
+
 		public async Task<AuthUserConfig> GetAuthUserConfig ()
 		{
 			try
@@ -95,7 +118,6 @@ namespace Producer.Shared
 					httpClient.BaseAddress = new Uri (Settings.RemoteFunctionsUrl);
 				}
 #endif
-
 				var keychain = new Keychain ();
 
 				var storedKeys = keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
@@ -112,7 +134,7 @@ namespace Producer.Shared
 
 					AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-					Log.Debug (AuthUser.ToString ());
+					//Log.Debug (AuthUser.ToString ());
 
 					return AuthUser;
 				}
@@ -187,7 +209,7 @@ namespace Producer.Shared
 
 						AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-						Log.Debug (AuthUser.ToString ());
+						//Log.Debug (AuthUser.ToString ());
 
 						return AuthUser;
 					}

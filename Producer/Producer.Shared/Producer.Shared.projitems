@@ -32,7 +32,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Google.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Microsoft.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Twitter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\AuthViewController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\SignInButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UI Android\AuthActivity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetailsExtensions.cs" />

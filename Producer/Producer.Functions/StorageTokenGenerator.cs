@@ -27,7 +27,7 @@ namespace Producer.Functions
 #endif
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/{collectionId}/{documentId}")] HttpRequestMessage req,
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/storage/{collectionId}/{documentId}")] HttpRequestMessage req,
 			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content,
 			string collectionId, string documentId, TraceWriter log)
 		{
