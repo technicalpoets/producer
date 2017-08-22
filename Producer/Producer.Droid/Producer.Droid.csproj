@@ -152,7 +152,7 @@
     <Compile Include="ProducerApp.cs" />
     <Compile Include="Framework\Adapters\BaseFragmentPagerAdapter.cs" />
     <Compile Include="Framework\Adapters\RecyclerViewAdapter.cs" />
-    <Compile Include="Framework\Adapters\StaticFragmentPagerAdapter.cs" />
+    <Compile Include="Framework\Adapters\TabFragmentPagerAdapter.cs" />
     <Compile Include="Framework\ViewHolders\IViewHolder.cs" />
     <Compile Include="Framework\ViewHolders\ViewHolder.cs" />
     <Compile Include="Framework\Fragments\ITabFragment.cs" />

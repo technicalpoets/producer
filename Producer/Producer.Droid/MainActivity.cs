@@ -11,7 +11,7 @@ namespace Producer.Droid
 	[Activity (Label = "Producer", MainLauncher = true, Icon = "@mipmap/icon")]
 	public class MainActivity : BaseActivity
 	{
-		StaticFragmentPagerAdapter PagerAdapter;
+		TabFragmentPagerAdapter PagerAdapter;
 
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
@@ -32,7 +32,7 @@ namespace Producer.Droid
 
 		void setupViewPager ()
 		{
-			PagerAdapter = new StaticFragmentPagerAdapter (this, SupportFragmentManager);
+			PagerAdapter = new TabFragmentPagerAdapter (this, SupportFragmentManager);
 			//PagerAdapter.AddFragment (new PartnerRecyclerFragment ());
 			//PagerAdapter.AddFragment (new TeamRecyclerFragment ());
 			//PagerAdapter.AddFragment (new ResourcesFragment ());
@@ -45,12 +45,9 @@ namespace Producer.Droid
 			tabLayout.TabGravity = TabLayout.GravityFill;
 			tabLayout.SetupWithViewPager (viewPager);
 
-			for (var i = 0; i < PagerAdapter.Count; i++)
-			{
-				var tab = tabLayout.GetTabAt (i);
+			PagerAdapter.FillTabLayout (tabLayout);
 
-				tab.SetCustomView (PagerAdapter.GetTabView (i));
-			}
+
 
 			viewPager.PageSelected += (sender, e) =>
 			{

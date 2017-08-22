@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Android.Content;
+using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Views;
 using Android.Widget;
@@ -9,14 +10,14 @@ namespace Producer.Droid
 	/// <summary>
 	/// Adapter where Fragments can be created/configured externally and added/managed here in the adapter.
 	/// </summary>
-	public class StaticFragmentPagerAdapter : BaseFragmentPagerAdapter
+	public class TabFragmentPagerAdapter : BaseFragmentPagerAdapter
 	{
 		Context context;
 		List<Fragment> fragments = new List<Fragment> ();
 		readonly List<string> titles = new List<string> ();
 		readonly List<int> icons = new List<int> ();
 
-		public StaticFragmentPagerAdapter (Context context, FragmentManager manager) : base (manager)
+		public TabFragmentPagerAdapter (Context context, FragmentManager manager) : base (manager)
 		{
 			this.context = context;
 		}
@@ -58,7 +59,12 @@ namespace Producer.Droid
 		}
 
 
-		public virtual View GetTabView (int position)
+		/// <summary>
+		/// Inflates the tab view at the specified position.
+		/// </summary>
+		/// <returns>The tab view.</returns>
+		/// <param name="position">Position.</param>
+		public virtual View InflateTabView (int position)
 		{
 			//get the item view and set the text + icon/image
 			var tabItemView = LayoutInflater.From (context).Inflate (Resource.Layout.StackedTabLayout, null);
@@ -80,6 +86,21 @@ namespace Producer.Droid
 			}
 
 			return tabItemView;
+		}
+
+
+		/// <summary>
+		/// Fills the tab layout with the tab fragments that have been added to this adapter.
+		/// </summary>
+		/// <param name="tabLayout">Tab layout.</param>
+		public virtual void FillTabLayout (TabLayout tabLayout)
+		{
+			for (var i = 0; i < Count; i++)
+			{
+				var tab = tabLayout.GetTabAt (i);
+
+				tab.SetCustomView (InflateTabView (i));
+			}
 		}
 	}
 }
