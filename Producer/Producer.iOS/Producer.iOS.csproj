@@ -469,6 +469,14 @@
     <Compile Include="View\Produce\ProduceTvCell.designer.cs">
       <DependentUpon>ProduceTvCell.cs</DependentUpon>
     </Compile>
+    <Compile Include="LoginVc.cs" />
+    <Compile Include="LoginVc.designer.cs">
+      <DependentUpon>LoginVc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginNc.cs" />
+    <Compile Include="LoginNc.designer.cs">
+      <DependentUpon>LoginNc.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

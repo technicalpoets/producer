@@ -13,7 +13,7 @@ using Android.Support.V4.App;
 using Android.Content;
 
 #if NC_AUTH_GOOGLE
-using Android.Gms.Auth.Api;
+using GoogleAuth = Android.Gms.Auth.Api.Auth;
 using Android.Gms.Auth.Api.SignIn;
 using Android.Gms.Common.Apis;
 #endif
@@ -66,7 +66,7 @@ namespace Producer.Auth
 
 		GoogleApiClient googleApiClient;
 
-		public Intent GetSignInIntent () => Auth.GoogleSignInApi.GetSignInIntent (googleApiClient);
+		public Intent GetSignInIntent () => GoogleAuth.GoogleSignInApi.GetSignInIntent (googleApiClient);
 
 		public int GoogleButtonResId { get; set; }
 
@@ -85,7 +85,7 @@ namespace Producer.Auth
 
 			googleApiClient = new GoogleApiClient.Builder (context)
 												 .EnableAutoManage (context, context)
-												 .AddApi (Auth.GOOGLE_SIGN_IN_API, gso)
+												 .AddApi (GoogleAuth.GOOGLE_SIGN_IN_API, gso)
 												 .Build ();
 		}
 

@@ -4,7 +4,7 @@ namespace Producer.Auth
 {
 	public static class ClientAuthDetailsExtensions
 	{
-#if NC_AUTH_GOOGLE && __IOS__
+#if __IOS__ && NC_AUTH_GOOGLE
 
 		public static ClientAuthDetails GetAuthDetails (this Google.SignIn.GoogleUser user, int avatarSize = 24)
 		{

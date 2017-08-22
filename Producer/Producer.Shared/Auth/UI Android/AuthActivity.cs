@@ -14,7 +14,7 @@ using Android.Views;
 using Android.Support.V4.App;
 
 #if NC_AUTH_GOOGLE
-using Android.Gms.Auth.Api;
+using GoogleAuth = Android.Gms.Auth.Api.Auth;
 using Android.Gms.Auth.Api.SignIn;
 using Android.Gms.Common;
 using Android.Gms.Common.Apis;
@@ -76,7 +76,7 @@ namespace Producer.Auth
 			if (requestCode == RC_SIGN_IN)
 			{
 #if NC_AUTH_GOOGLE
-				var result = Auth.GoogleSignInApi.GetSignInResultFromIntent (data);
+				var result = GoogleAuth.GoogleSignInApi.GetSignInResultFromIntent (data);
 
 				handleSignInResult (result);
 #endif
@@ -95,16 +95,16 @@ namespace Producer.Auth
 
 				if (user != null)
 				{
-					Producer.Log.Debug ($"user.Account.Name: {user.Account.Name}");
-					Producer.Log.Debug ($"acct.DisplayName: {user.DisplayName}");
-					Producer.Log.Debug ($"acct.Email: {user.Email}");
-					Producer.Log.Debug ($"acct.FamilyName: {user.FamilyName}");
-					Producer.Log.Debug ($"acct.GivenName: {user.GivenName}");
-					Producer.Log.Debug ($"acct.GrantedScopes: {string.Join (",", user.GrantedScopes)}");
-					Producer.Log.Debug ($"acct.Id: {user.Id}");
-					Producer.Log.Debug ($"acct.IdToken: {user.IdToken}");
-					Producer.Log.Debug ($"acct.PhotoUrl: {user.PhotoUrl}");
-					Producer.Log.Debug ($"acct.ServerAuthCode: {user.ServerAuthCode}");
+					Log.Debug ($"user.Account.Name: {user.Account.Name}");
+					Log.Debug ($"acct.DisplayName: {user.DisplayName}");
+					Log.Debug ($"acct.Email: {user.Email}");
+					Log.Debug ($"acct.FamilyName: {user.FamilyName}");
+					Log.Debug ($"acct.GivenName: {user.GivenName}");
+					Log.Debug ($"acct.GrantedScopes: {string.Join (",", user.GrantedScopes)}");
+					Log.Debug ($"acct.Id: {user.Id}");
+					Log.Debug ($"acct.IdToken: {user.IdToken}");
+					Log.Debug ($"acct.PhotoUrl: {user.PhotoUrl}");
+					Log.Debug ($"acct.ServerAuthCode: {user.ServerAuthCode}");
 
 					var details = new ClientAuthDetails
 					{
@@ -124,14 +124,14 @@ namespace Producer.Auth
 			else
 			{
 				// Signed out, show unauthenticated UI.
-				Producer.Log.Debug ($"Google SingIn failed with code:{result.Status}");
+				Log.Debug ($"Google SingIn failed with code:{result.Status}");
 			}
 		}
 
 
 		public void OnConnectionFailed (ConnectionResult result)
 		{
-			Producer.Log.Debug ($"{result.ErrorMessage} code: {result.ErrorCode}");
+			Log.Debug ($"{result.ErrorMessage} code: {result.ErrorCode}");
 		}
 #endif
 	}
