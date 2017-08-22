@@ -105,7 +105,6 @@
     <Reference Include="Microsoft.Azure.Mobile.Distribute">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.14.2\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.dll</HintPath>
     </Reference>
-<<<<<<< HEAD
     <Reference Include="Xamarin.Android.Support.Annotations">
       <HintPath>..\packages\Xamarin.Android.Support.Annotations.25.4.0.1\lib\MonoAndroid70\Xamarin.Android.Support.Annotations.dll</HintPath>
     </Reference>
@@ -144,6 +143,7 @@
     </Reference>
     <Reference Include="Xamarin.Android.Support.Design">
       <HintPath>..\packages\Xamarin.Android.Support.Design.25.4.0.1\lib\MonoAndroid70\Xamarin.Android.Support.Design.dll</HintPath>
+    </Reference>
     <Reference Include="Xamarin.GooglePlayServices.Basement">
       <HintPath>..\packages\Xamarin.GooglePlayServices.Basement.42.1021.1\lib\MonoAndroid70\Xamarin.GooglePlayServices.Basement.dll</HintPath>
     </Reference>
