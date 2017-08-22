@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+<!--<partners.droid.FastScrollRecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:fastScrollHideDelay="600"
+        app:fastScrollAlwaysEnabled="false"
+        app:fastScrollPopupBackgroundColor="?attr/colorAccent"
+        app:fastScrollPopupTextColor="@android:color/white"
+        app:fastScrollThumbActiveColor="?attr/colorAccent"
+        app:fastScrollThumbInactiveColor="?attr/colorAccent" />-->
+    <android.support.v7.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
+</FrameLayout>
