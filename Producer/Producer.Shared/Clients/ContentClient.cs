@@ -14,19 +14,20 @@ using SettingsStudio;
 
 using Producer.Domain;
 
-
 namespace Producer.Shared
 {
 	public class ContentClient
 	{
 		static ContentClient _shared;
-		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ());
+		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ("Content"));
 
-		const string databaseId = "Content";
+
+		readonly string databaseId;
+
+		readonly DocumentClient client;
+
 
 		public UserRoles UserRole { get; set; } = Settings.TestProducer ? UserRoles.Producer : UserRoles.General;
-
-		DocumentClient client;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
 			{ UserRoles.General, new List<AvContent>() },
@@ -37,12 +38,14 @@ namespace Producer.Shared
 		public event EventHandler<UserRoles> AvContentChanged;
 
 
-		ContentClient ()
+		ContentClient (string dbId)
 		{
 			if (Settings.DocumentDbUrl == null)
 			{
 				throw new Exception ();
 			}
+
+			databaseId = dbId;
 
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {Settings.DocumentDbKey}");
 
@@ -147,6 +150,8 @@ namespace Producer.Shared
 			}
 		}
 
+
+		#region CRUD
 
 		#region Get
 
@@ -338,6 +343,8 @@ namespace Producer.Shared
 				throw;
 			}
 		}
+
+		#endregion
 
 
 		#region Initialization (database & collections)

@@ -7,8 +7,6 @@ using Foundation;
 
 using SettingsStudio;
 
-using NomadCode.UIExtensions;
-
 using Producer.Domain;
 using Producer.Shared;
 

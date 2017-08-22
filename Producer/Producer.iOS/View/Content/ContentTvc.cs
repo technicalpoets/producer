@@ -10,8 +10,6 @@ using UIKit;
 
 using SettingsStudio;
 
-using NomadCode.UIExtensions;
-
 using Producer.Domain;
 using Producer.Shared;
 
@@ -209,7 +207,7 @@ namespace Producer.iOS
 
 			if (button?.Tag >= 0 && allAssets.Count > button.Tag)
 			{
-				var asset = saved ? savedAssets [(int)button.Tag] : allAssets [(int)button.Tag];
+				var asset = saved ? savedAssets [(int) button.Tag] : allAssets [(int) button.Tag];
 
 				if (asset != null)
 				{
@@ -411,7 +409,7 @@ namespace Producer.iOS
 			{
 				var cell = TableView.VisibleCells.FirstOrDefault (c => c.TextLabel.Text == e.Music.DisplayName) as ContentMusicTvCell;
 
-				cell?.UpdateDownloadProgress ((nfloat)e.Progress);
+				cell?.UpdateDownloadProgress ((nfloat) e.Progress);
 			});
 		}
 

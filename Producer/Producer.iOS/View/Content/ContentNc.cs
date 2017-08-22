@@ -7,11 +7,11 @@ using UserNotifications;
 
 using SettingsStudio;
 
-using NomadCode.UIExtensions;
+using Google.SignIn;
 
+using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
-
 
 namespace Producer.iOS
 {
@@ -27,6 +27,8 @@ namespace Producer.iOS
 
 			this.AddStatusBarView (Colors.ThemeDark);
 
+			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
+
 			Task.Run (async () =>
 			{
 				await ContentClient.Shared.GetAllAvContent ();
@@ -35,6 +37,13 @@ namespace Producer.iOS
 
 				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 			});
+		}
+
+		public override void ViewDidAppear (bool animated)
+		{
+			base.ViewDidAppear (animated);
+
+			//authenticate ();
 		}
 
 
@@ -89,6 +98,96 @@ namespace Producer.iOS
 
 			return canCompose;
 		}
+
+
+		#region Auth
+
+		void handleClientAuthChanged (object s, ClientAuthDetails e)
+		{
+			Log.Debug ($"Authenticated: {e}");
+		}
+
+
+		void authenticate ()
+		{
+			Task.Run (async () =>
+			{
+				//ProducerClient.Shared.ResetCurrentUser ();
+				//ClientAuthManager.Shared.LogoutAuthProviders ();
+				//throw new Exception ("stop and re-comment out lines");
+
+				try
+				{
+					var details = ClientAuthManager.Shared.ClientAuthDetails;
+
+					// try authenticating with an existing token
+					if (ProducerClient.Shared.AuthUser == null && details != null)
+					{
+						var user = await ProducerClient.Shared.GetAuthUserConfig () ?? await ProducerClient.Shared.GetAuthUserConfig (details?.Token, details?.AuthCode);
+
+						if (user != null)
+						{
+							Log.Debug ($"user.Id = {user.Id}");
+							Log.Debug ($"details.Username = {details.Username}");
+							Log.Debug ($"details.Email = {details.Email}");
+							Log.Debug ($"details.Email = {details.Email}");
+
+							//await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversationAsync (conversationId));
+						}
+						else
+						{
+							logout ();
+						}
+					}
+					else // otherwise prompt the user to login
+					{
+						if (ProducerClient.Shared.AuthUser == null)
+						{
+							BeginInvokeOnMainThread (() => presentAuthController ());
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Log.Error (ex.Message);
+					throw;
+				}
+			});
+		}
+
+
+		void presentAuthController ()
+		{
+			var authViewController = new AuthViewController ();
+
+			if (authViewController != null)
+			{
+				var authNavController = new UINavigationController (authViewController);
+
+				if (authNavController != null)
+				{
+					PresentViewController (authNavController, true, null);
+				}
+			}
+		}
+
+
+		void logout ()
+		{
+			try
+			{
+				SignIn.SharedInstance.SignOutUser ();
+
+				authenticate ();
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex.Message);
+				throw;
+			}
+		}
+
+		#endregion
 
 
 		public override UIStatusBarStyle PreferredStatusBarStyle () => UIStatusBarStyle.LightContent;

@@ -8,7 +8,10 @@ using WindowsAzure.Messaging;
 
 using SettingsStudio;
 
+using Producer.Domain;
 using Producer.Shared;
+using System.Text;
+using Producer.Auth;
 
 namespace Producer.iOS
 {
@@ -27,16 +30,14 @@ namespace Producer.iOS
 
 		public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
 		{
-#if ENABLE_TEST_CLOUD
-			Xamarin.Calabash.Start ();
-#endif
-			Log.Debug ("Init AssetPersistanceManager");
+			//Log.Debug (ApsPayload.Create ("title", "message", "AvContent").Serialize ());
 
 			AssetPersistenceManager.Shared.Setup ();
 
 			// must assign delegate before app finishes launching.
 			UNUserNotificationCenter.Current.Delegate = this;
-			//UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, HandleAction1);
+
+			ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
 
 			return true;
 		}
@@ -44,11 +45,16 @@ namespace Producer.iOS
 
 		public override bool OpenUrl (UIApplication app, NSUrl url, NSDictionary options)
 		{
-			var contentNc = app.KeyWindow.RootViewController as ContentNc;
+			if (!ClientAuthManager.Shared.OpenUrl (app, url, options))
+			{
+				var contentNc = app.KeyWindow.RootViewController as ContentNc;
 
-			var openUrl = contentNc?.SetupComposeVc (url) ?? false;
+				var openUrl = contentNc?.SetupComposeVc (url) ?? false;
 
-			return openUrl;
+				return openUrl;
+			}
+
+			return true;
 		}
 
 
@@ -62,17 +68,24 @@ namespace Producer.iOS
 			// Register our info with Azure
 			var hub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
 
-			hub.RegisterNativeAsync (deviceToken, null, err =>
-			   {
-				   if (err != null)
-				   {
-					   Log.Debug ($"Error: {err.Description}");
-				   }
-				   else
-				   {
-					   Log.Debug ("Successfully Registered for Notifications");
-				   }
-			   });
+			//var tags = new NSSet ("username:colby");
+			// TODO: add tag for username and permissions level
+			var tags = new NSSet ("username:colby");
+
+			hub.RegisterNativeAsync (deviceToken, tags, err =>
+			{
+				if (err != null)
+				{
+					Log.Debug ($"Error: {err.Description}");
+				}
+				else
+				{
+					var token = deviceToken.ToString ().Replace (" ", string.Empty).Trim ('<', '>');
+
+					Log.Debug ($"Successfully Registered for Notifications. (deviceToken: {deviceToken.ToString ()})");
+					Log.Debug ($"Successfully Registered for Notifications. (token: {token})");
+				}
+			});
 		}
 
 
@@ -94,15 +107,23 @@ namespace Producer.iOS
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 		{
 			// Process a notification received while the app was already open
+#if DEBUG
+			Log.Debug ($"\npayload:\n{userInfo.ToString ()}");
 
-
-			Log.Debug ($"DidReceiveRemoteNotification:");
+			var sb = new StringBuilder ("\nuserInfo:\n");
 
 			for (int i = 0; i < userInfo.Keys.Length; i++)
 			{
-				Log.Debug ($"                             {userInfo.Keys [i]} : {userInfo.Values [i]}");
+				sb.AppendLine ($"{userInfo.Keys [i]} : {userInfo.Values [i]}");
 			}
 
+			Log.Debug (sb.ToString ());
+#endif
+
+			if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr)
+			{
+				Log.Debug ($"collectionId = {nsStr}");
+			}
 
 			if (processingNotification)
 			{

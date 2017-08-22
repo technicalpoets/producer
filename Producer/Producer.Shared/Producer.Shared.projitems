@@ -21,10 +21,25 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\ClientStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\Keychain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetailTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthProviderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthProviders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Facebook.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Google.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Microsoft.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Twitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\AuthViewController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\SignInButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\UI Android\AuthActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Clients\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Auth\" />
   </ItemGroup>
 </Project>

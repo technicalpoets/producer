@@ -1,7 +1,7 @@
 ﻿using Foundation;
 using UIKit;
 
-namespace NomadCode.UIExtensions
+namespace Producer.iOS
 {
 	public static class StoryboardExtensions
 	{

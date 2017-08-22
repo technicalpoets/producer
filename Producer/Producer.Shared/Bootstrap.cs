@@ -95,7 +95,7 @@ namespace Producer
 					//#endif
 					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (json);
 
-					Log.Debug (producerSettings.ToString ());
+					Log.Debug ($"\n{producerSettings}");
 
 					Settings.ConfigureSettings (producerSettings);
 				}
