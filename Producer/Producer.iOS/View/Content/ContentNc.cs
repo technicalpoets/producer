@@ -76,16 +76,11 @@ namespace Producer.iOS
 				{
 					var produceTvc = TopViewController as ProduceTvc;
 
-					if (produceTvc == null)
+					if (produceTvc == null && TopViewController is ContentTvc contentTvc)
 					{
-						var contentTvc = TopViewController as ContentTvc;
+						produceTvc = Storyboard.Instantiate<ProduceTvc> ();
 
-						if (contentTvc != null)
-						{
-							produceTvc = Storyboard.Instantiate<ProduceTvc> ();
-
-							contentTvc.ShowViewController (produceTvc, contentTvc);
-						}
+						contentTvc.ShowViewController (produceTvc, contentTvc);
 					}
 
 					composeVc = Storyboard.Instantiate<ComposeVc> ();
@@ -112,12 +107,12 @@ namespace Producer.iOS
 		{
 			Task.Run (async () =>
 			{
-				//ProducerClient.Shared.ResetCurrentUser ();
-				//ClientAuthManager.Shared.LogoutAuthProviders ();
-				//throw new Exception ("stop and re-comment out lines");
-
 				try
 				{
+					//ProducerClient.Shared.ResetCurrentUser ();
+					//ClientAuthManager.Shared.LogoutAuthProviders ();
+					//throw new Exception ("stop and re-comment out lines");
+
 					var details = ClientAuthManager.Shared.ClientAuthDetails;
 
 					// try authenticating with an existing token
@@ -127,11 +122,7 @@ namespace Producer.iOS
 
 						if (user != null)
 						{
-							Log.Debug ($"user.Id = {user.Id}");
-							Log.Debug ($"details.Username = {details.Username}");
-							Log.Debug ($"details.Email = {details.Email}");
-							Log.Debug ($"details.Email = {details.Email}");
-
+							//Log.Debug (user.ToString ());
 							//await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversationAsync (conversationId));
 						}
 						else

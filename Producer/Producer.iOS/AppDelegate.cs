@@ -82,7 +82,7 @@ namespace Producer.iOS
 				{
 					var token = deviceToken.ToString ().Replace (" ", string.Empty).Trim ('<', '>');
 
-					Log.Debug ($"Successfully Registered for Notifications. (deviceToken: {deviceToken.ToString ()})");
+					//Log.Debug ($"Successfully Registered for Notifications. (deviceToken: {deviceToken.ToString ()})");
 					Log.Debug ($"Successfully Registered for Notifications. (token: {token})");
 				}
 			});

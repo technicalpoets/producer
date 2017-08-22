@@ -50,37 +50,37 @@ namespace Producer.Auth
 
 		public nuint AvatarSize { get; set; } = 24;
 
-		public AuthViewController() { }
+		public AuthViewController () { }
 
-		public AuthViewController(IntPtr handle) : base(handle) { }
+		public AuthViewController (IntPtr handle) : base (handle) { }
 
-		public override void ViewDidLoad()
+		public override void ViewDidLoad ()
 		{
-			base.ViewDidLoad();
+			base.ViewDidLoad ();
 
 			View.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
 
-			initSignInButtons();
+			initSignInButtons ();
 		}
 
 
-		public override void ViewDidAppear(bool animated)
+		public override void ViewDidAppear (bool animated)
 		{
-			base.ViewDidAppear(animated);
+			base.ViewDidAppear (animated);
 
-			connectSignInButtonHandlers();
+			connectSignInButtonHandlers ();
 		}
 
 
-		public override void ViewDidDisappear(bool animated)
+		public override void ViewDidDisappear (bool animated)
 		{
-			disconnectSignInButtonHandlers();
+			disconnectSignInButtonHandlers ();
 
-			base.ViewDidDisappear(animated);
+			base.ViewDidDisappear (animated);
 		}
 
 
-		void initSignInButtons()
+		void initSignInButtons ()
 		{
 			var stackView = new UIStackView
 			{
@@ -91,17 +91,17 @@ namespace Producer.Auth
 				Distribution = UIStackViewDistribution.FillEqually
 			};
 
-			View.AddSubview(stackView);
+			View.AddSubview (stackView);
 
 #if NC_AUTH_GOOGLE
 
-			stackView.AddArrangedSubview(AuthButtonGoogle);
+			stackView.AddArrangedSubview (AuthButtonGoogle);
 
 			SignIn.SharedInstance.UIDelegate = this;
 			SignIn.SharedInstance.Delegate = this;
 
 			// Uncomment to automatically sign in the user.
-			SignIn.SharedInstance.SignInUserSilently();
+			SignIn.SharedInstance.SignInUserSilently ();
 
 			// Uncomment to automatically sign out the user.
 			// SignIn.SharedInstance.SignOutUser ();
@@ -132,7 +132,7 @@ namespace Producer.Auth
 
 #endif
 
-			stackView.ConstrainToParentCenter(240, stackView.ArrangedSubviews.Length * 52);
+			stackView.ConstrainToParentCenter (240, stackView.ArrangedSubviews.Length * 52);
 		}
 
 
@@ -141,9 +141,9 @@ namespace Producer.Auth
 
 #if NC_AUTH_GOOGLE
 
-		void handleAuthButtonGoogleClicked(object s, EventArgs e)
+		void handleAuthButtonGoogleClicked (object s, EventArgs e)
 		{
-			SignIn.SharedInstance.SignInUser();
+			SignIn.SharedInstance.SignInUser ();
 		}
 
 #endif
@@ -195,22 +195,22 @@ namespace Producer.Auth
 
 #endif
 
-		void showNotImplementedAlert(string providerName)
+		void showNotImplementedAlert (string providerName)
 		{
-			var alert = UIAlertController.Create("Bummer", $"Looks like this lazy developer hasn't implemented {providerName} auth yet.", UIAlertControllerStyle.Alert);
+			var alert = UIAlertController.Create ("Bummer", $"Looks like this lazy developer hasn't implemented {providerName} auth yet.", UIAlertControllerStyle.Alert);
 
-			alert.AddAction(UIAlertAction.Create("Complain", UIAlertActionStyle.Destructive, handleComplainAction));
-			alert.AddAction(UIAlertAction.Create("Whatever", UIAlertActionStyle.Default, handleComplainAction));
+			alert.AddAction (UIAlertAction.Create ("Complain", UIAlertActionStyle.Destructive, handleComplainAction));
+			alert.AddAction (UIAlertAction.Create ("Whatever", UIAlertActionStyle.Default, handleComplainAction));
 
-			PresentViewController(alert, true, null);
+			PresentViewController (alert, true, null);
 
-			void handleComplainAction(UIAlertAction action)
+			void handleComplainAction (UIAlertAction action)
 			{
 				if (action.Title == "Complain")
 				{
 					var issueUrl = @"https://github.com/colbylwilliams/Producer.Auth/issues/new";
 
-					UIApplication.SharedApplication.OpenUrl(new NSUrl(issueUrl));
+					UIApplication.SharedApplication.OpenUrl (new NSUrl (issueUrl));
 
 					// DismissViewController (true, null;
 				}
@@ -222,7 +222,7 @@ namespace Producer.Auth
 		}
 
 
-		void connectSignInButtonHandlers()
+		void connectSignInButtonHandlers ()
 		{
 #if NC_AUTH_GOOGLE
 			AuthButtonGoogle.TouchUpInside += handleAuthButtonGoogleClicked;
@@ -239,7 +239,7 @@ namespace Producer.Auth
 		}
 
 
-		void disconnectSignInButtonHandlers()
+		void disconnectSignInButtonHandlers ()
 		{
 #if NC_AUTH_GOOGLE
 			AuthButtonGoogle.TouchUpInside -= handleAuthButtonGoogleClicked;
@@ -262,48 +262,25 @@ namespace Producer.Auth
 
 		#region ISignInDelegate
 
-		public void DidSignIn(SignIn signIn, GoogleUser user, NSError error)
+		public void DidSignIn (SignIn signIn, GoogleUser user, NSError error)
 		{
 			if (error == null && user != null)
 			{
-				// Perform any operations on signed in user here.
-				var userId = user.UserID;                  // For client-side use only!
-				var idToken = user.Authentication.IdToken; // Safe to send to the server
-				var accessToken = user.Authentication.AccessToken;
-				var serverAuth = user.ServerAuthCode;
-				var fullName = user.Profile.Name;
-				var givenName = user.Profile.GivenName;
-				var familyName = user.Profile.FamilyName;
-				var email = user.Profile.Email;
-				var imageUrl = user.Profile.GetImageUrl(64);
-				// ...;
-				Log.Debug($"\n\tuserId: {userId},\n\tidToken: {idToken},\n\taccessToken: {accessToken},\n\tserverAuth: {serverAuth},\n\tfullName: {fullName},\n\tgivenName: {givenName},\n\tfamilyName: {familyName},\n\temail: {email},\n\timageUrl: {imageUrl},\n\t");
+				ClientAuthManager.Shared.SetClientAuthDetails (user.GetAuthDetails ());
 
-				var details = new ClientAuthDetails
-				{
-					ClientAuthProvider = ClientAuthProviders.Google,
-					Username = user.Profile?.Name,
-					Email = user.Profile?.Email,
-					Token = user.Authentication?.IdToken,
-					AuthCode = user.ServerAuthCode,
-					AvatarUrl = user.Profile.GetImageUrl(AvatarSize * (nuint)UIScreen.MainScreen.Scale)?.ToString()
-				};
-
-				ClientAuthManager.Shared.SetClientAuthDetails(details);
-
-				DismissViewController(true, null);
+				DismissViewController (true, null);
 			}
 			else
 			{
-				Log.Error(error?.LocalizedDescription);
+				Log.Error (error?.LocalizedDescription);
 			}
 		}
 
 
-		[Export("signIn:didDisconnectWithUser:withError:")]
-		public void DidDisconnect(SignIn signIn, GoogleUser user, NSError error)
+		[Export ("signIn:didDisconnectWithUser:withError:")]
+		public void DidDisconnect (SignIn signIn, GoogleUser user, NSError error)
 		{
-			Log.Debug("Google User DidDisconnect");
+			Log.Debug ("Google User DidDisconnect");
 
 			// Perform any operations when the user disconnects from app here.
 		}

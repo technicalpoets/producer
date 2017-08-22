@@ -7,7 +7,7 @@ namespace Producer.iOS
 	{
 		const int statusBarViewTag = 987;
 
-		public static void ConstrainToParentCenter (this UIView view, nfloat height = default (nfloat), nfloat width = default (nfloat))
+		public static void ConstrainToParentCenter (this UIView view, nfloat width = default (nfloat), nfloat height = default (nfloat))
 		{
 			if (view?.Superview == null) throw new InvalidOperationException ("Must add view to a superview before calling this method");
 

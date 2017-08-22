@@ -26,6 +26,7 @@ namespace Producer.Shared
 
 		ProducerClient () { }
 
+
 		public async Task Publish<T> (T content, string notificationTitle = null, string notificationMessage = null)
 			where T : Content
 		{
@@ -107,9 +108,11 @@ namespace Producer.Shared
 
 					var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
 
-					Log.Debug ($"userConfigJson {userConfigJson}");
+					//Log.Debug ($"userConfigJson {userConfigJson}");
 
 					AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
+
+					Log.Debug (AuthUser.ToString ());
 
 					return AuthUser;
 				}
@@ -180,11 +183,18 @@ namespace Producer.Shared
 
 						var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
 
-						Log.Debug ($"userConfigJson {userConfigJson}");
+						//Log.Debug ($"userConfigJson {userConfigJson}");
 
 						AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
+						Log.Debug (AuthUser.ToString ());
+
 						return AuthUser;
+					}
+					else
+					{
+						Log.Error (auth);
+						Log.Error (authResponse.ToString ());
 					}
 				}
 

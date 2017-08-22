@@ -16,7 +16,8 @@ namespace Producer.Auth
 {
 	public partial class ClientAuthManager
 	{
-		Keychain keychain => new Keychain ();
+		Keychain _keychain;
+		Keychain Keychain => _keychain ?? (_keychain = new Keychain ());
 
 		static string KeychainServiceName (ClientAuthProviders provider, ClientAuthDetailTypes type)
 		{
@@ -60,6 +61,8 @@ namespace Producer.Auth
 
 		public void SetClientAuthDetails (ClientAuthDetails details)
 		{
+			Log.Debug (details.ToString ());
+
 			ClientAuthDetails = details;
 
 			AthorizationChanged?.Invoke (this, ClientAuthDetails);
@@ -86,6 +89,8 @@ namespace Producer.Auth
 		{
 			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.Token));
 			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.Name));
+			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.GivenName));
+			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.FamilyName));
 			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.Username));
 			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.Email));
 			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.AuthCode));
@@ -96,6 +101,8 @@ namespace Producer.Auth
 		{
 			if (!string.IsNullOrEmpty (details?.Token)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.Token), ClientAuthDetailTypes.Token.ToString (), details.Token);
 			if (!string.IsNullOrEmpty (details?.Name)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.Name), ClientAuthDetailTypes.Name.ToString (), details.Name);
+			if (!string.IsNullOrEmpty (details?.GivenName)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.GivenName), ClientAuthDetailTypes.GivenName.ToString (), details.GivenName);
+			if (!string.IsNullOrEmpty (details?.FamilyName)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.FamilyName), ClientAuthDetailTypes.FamilyName.ToString (), details.FamilyName);
 			if (!string.IsNullOrEmpty (details?.Username)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.Username), ClientAuthDetailTypes.Username.ToString (), details.Username);
 			if (!string.IsNullOrEmpty (details?.Email)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.Email), ClientAuthDetailTypes.Email.ToString (), details.Email);
 			if (!string.IsNullOrEmpty (details?.AuthCode)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.AuthCode), ClientAuthDetailTypes.AuthCode.ToString (), details.AuthCode);
@@ -164,6 +171,8 @@ namespace Producer.Auth
 				clientAuthDetails.ClientAuthProvider = provider.Value;
 				clientAuthDetails.Token = token;
 				clientAuthDetails.Name = getItemFromKeychain (KeychainServiceName (provider.Value, ClientAuthDetailTypes.Name)).PrivateKey;
+				clientAuthDetails.GivenName = getItemFromKeychain (KeychainServiceName (provider.Value, ClientAuthDetailTypes.GivenName)).PrivateKey;
+				clientAuthDetails.FamilyName = getItemFromKeychain (KeychainServiceName (provider.Value, ClientAuthDetailTypes.FamilyName)).PrivateKey;
 				clientAuthDetails.Username = getItemFromKeychain (KeychainServiceName (provider.Value, ClientAuthDetailTypes.Username)).PrivateKey;
 				clientAuthDetails.Email = getItemFromKeychain (KeychainServiceName (provider.Value, ClientAuthDetailTypes.Email)).PrivateKey;
 				clientAuthDetails.AuthCode = getItemFromKeychain (KeychainServiceName (provider.Value, ClientAuthDetailTypes.AuthCode)).PrivateKey;
@@ -177,19 +186,19 @@ namespace Producer.Auth
 
 #if __IOS__
 
-		(string Account, string PrivateKey) getItemFromKeychain (string service) => keychain.GetItemFromKeychain (service);
+		(string Account, string PrivateKey) getItemFromKeychain (string service) => Keychain.GetItemFromKeychain (service);
 
-		bool saveItemToKeychain (string service, string account, string privateKey) => keychain.SaveItemToKeychain (service, account, privateKey);
+		bool saveItemToKeychain (string service, string account, string privateKey) => Keychain.SaveItemToKeychain (service, account, privateKey);
 
-		bool removeItemFromKeychain (string service) => keychain.RemoveItemFromKeychain (service);
+		bool removeItemFromKeychain (string service) => Keychain.RemoveItemFromKeychain (service);
 
 #else
 
-		(string Account, string PrivateKey) getItemFromKeychain (string service) => keychain.GetItemFromKeychain (string service);
+		(string Account, string PrivateKey) getItemFromKeychain (string service) => Keychain.GetItemFromKeychain (string service);
 
-		bool saveItemToKeychain (string service, string account, string privateKey) => keychain.SaveItemToKeychain(service, account, privateKey);
+		bool saveItemToKeychain (string service, string account, string privateKey) => Keychain.SaveItemToKeychain(service, account, privateKey);
 
-		bool removeItemFromKeychain (string service) => keychain.RemoveItemFromKeychain(service);
+		bool removeItemFromKeychain (string service) => Keychain.RemoveItemFromKeychain(service);
 
 #endif
 	}

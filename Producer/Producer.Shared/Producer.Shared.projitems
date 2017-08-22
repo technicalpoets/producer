@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\AuthViewController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\SignInButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UI Android\AuthActivity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetailsExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />

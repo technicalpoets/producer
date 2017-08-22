@@ -1,23 +1,30 @@
-﻿using System.Text;
-
-namespace Producer.Domain
+﻿namespace Producer.Domain
 {
 	public class ProducerSettings
 	{
 		public string RemoteFunctionsUrl { get; set; }
+
 		public string RemoteDocumentDbUrl { get; set; }
+
 		public string RemoteDocumentDbKey { get; set; }
+
 		public string EmbeddedSocialKey { get; set; }
+
 		public string NotificationsName { get; set; }
+
 		public string NotificationsUrl { get; set; }
+
 		public string NotificationsKey { get; set; }
+
 		public string NotificationsConnectionString { get; set; }
+
 		public string MobileCenterKeyAndroid { get; set; }
+
 		public string MobileCenterKeyiOS { get; set; }
 
 		public override string ToString ()
 		{
-			var sb = new StringBuilder ("\nProducerSettings\n");
+			var sb = new System.Text.StringBuilder ("\nProducerSettings\n");
 			sb.Append ("  RemoteFunctionsUrl".PadRight (34));
 			sb.Append ($"{RemoteFunctionsUrl}\n");
 			sb.Append ("  RemoteDocumentDbUrl".PadRight (34));

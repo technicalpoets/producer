@@ -328,6 +328,54 @@
     <ImageAsset Include="Assets.xcassets\i_segment_andrew.imageset\i_segment_andrew.pdf">
       <InProject>false</InProject>
     </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\ic_facebook.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\ic_facebook@2x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\ic_facebook@3x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\Contents.json">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\ic_google.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\ic_google@2x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\ic_google@3x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_google.imageset\Contents.json">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\ic_twitter.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\ic_twitter@2x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\ic_twitter@3x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\Contents.json">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\ic_microsoft.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\ic_microsoft@2x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\ic_microsoft@3x.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\Contents.json">
+      <InProject>false</InProject>
+    </ImageAsset>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
@@ -354,6 +402,10 @@
     <Folder Include="Assets.xcassets\i_content_audio.imageset\" />
     <Folder Include="Assets.xcassets\i_segment_saved.imageset\" />
     <Folder Include="Assets.xcassets\i_segment_andrew.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_facebook.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_google.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\" />
+    <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
