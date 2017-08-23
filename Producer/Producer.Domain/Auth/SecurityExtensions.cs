@@ -60,19 +60,19 @@ namespace Producer.Auth
 		}
 
 
-		public static string UriFromIssuerClaim(this ClaimsIdentity identity)
+		public static Uri UriFromIssuerClaim (this ClaimsIdentity identity)
 		{
-			return identity?.FindFirst(JwtRegisteredClaimNamesIss)?.Value;
+			return new Uri (identity?.FindFirst (JwtRegisteredClaimNamesIss)?.Value);
 		}
 
 
-		public static void ConfigureClientForUserDetails (this HttpClient client, ClaimsIdentity identity, HttpRequestMessage req)
+		public static void ConfigureClientForUserDetails (this HttpClient client, HttpRequestMessage req)
 		{
-			var zumoAuthHeader = req.Headers.GetValues(zumoAuthHeaderKey).FirstOrDefault();
+			var zumoAuthHeader = req.Headers.GetValues (zumoAuthHeaderKey).FirstOrDefault ();
 
-			client.DefaultRequestHeaders.Add(zumoAuthHeaderKey, zumoAuthHeader);
+			client.DefaultRequestHeaders.Remove (zumoAuthHeaderKey);
 
-			client.BaseAddress = new Uri(identity.UriFromIssuerClaim());
+			client.DefaultRequestHeaders.Add (zumoAuthHeaderKey, zumoAuthHeader);
 		}
 	}
 }
