@@ -42,7 +42,7 @@
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
   </PropertyGroup>
   <Target Name="VersionBump" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
-    <Exec Command="/bin/bash '$(SolutionDir)/scripts/manifest_utility.sh' -p '$(ProjectDir)'" />
+    <Exec Command="/bin/bash '$(ProjectDir)../scripts/manifest_utility.sh' -p '$(ProjectDir)'" />
   </Target>
   <ItemGroup>
     <Reference Include="System" />
