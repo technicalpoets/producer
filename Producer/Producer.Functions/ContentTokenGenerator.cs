@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
@@ -136,34 +134,36 @@ namespace Producer.Functions
 
 				var user = userTup.user;
 
+				Permission permission;
+
 				// if the user was newly created, go ahead and create the permission
 				if (userTup.created && !string.IsNullOrEmpty (user?.SelfLink))
 				{
-					var permission = await createNewPermission (collection, user, permissionId, permissionMode, log);
-
-					return permission;
+					permission = await createNewPermission (collection, user, permissionId, permissionMode, log);
 				}
-
-
-				if (!string.IsNullOrEmpty (user?.PermissionsLink))
+				else // else look for an existing permission with the id
 				{
-					log?.Info ($"Reading permission feed [Database ID: {dbId}  Collection ID: {collectionId}  User ID: {userId}  Permission ID: {permissionId}]");
-
-					var readPermissions = await DocClient.ReadPermissionFeedAsync (user.PermissionsLink);
-
-					var permissions = new List<Permission> ();
-
-					foreach (var perm in readPermissions)
+					try
 					{
-						permissions.Add (perm);
+						log?.Info ($"Attempting to read permission with Id {permissionId} for user {userId}");
+
+						var permissionResponse = await DocClient.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId));
+
+						permission = permissionResponse?.Resource;
 					}
+					catch (DocumentClientException dcx)
+					{
+						if (dcx.StatusCode == HttpStatusCode.NotFound)
+						{
+							log?.Info ($"Did not find permission with Id {permissionId} for user: {userId} - creating...");
 
-					var permission = permissions.FirstOrDefault (p => p.Id == permissionId) ?? await createNewPermission (collection, user, permissionId, permissionMode, log);
-
-					return permission;
+							permission = await createNewPermission (collection, user, permissionId, permissionMode, log);
+						}
+						else throw;
+					}
 				}
 
-				return null;
+				return permission;
 			}
 			catch (Exception ex)
 			{
