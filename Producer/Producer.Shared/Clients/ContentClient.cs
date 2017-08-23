@@ -51,12 +51,21 @@ namespace Producer.Shared
 
 			if (string.IsNullOrEmpty (resourceToken)) throw new ArgumentNullException (nameof (resourceToken));
 
+			Settings.RemoteDocumentDbKey = resourceToken.Trim ('"');
 			//var permissions = await new DocumentClient(Settings.DocumentDbUrl, )
 
 			//Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {Settings.DocumentDbKey}");
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
 
-			client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
+			try
+			{
+				client = new DocumentClient (Settings.DocumentDbUrl, Settings.RemoteDocumentDbKey);
+				Log.Debug (Settings.RemoteDocumentDbKey);
+			}
+			catch (Exception ex)
+			{
+				Log.Debug (ex.Message);
+			}
 		}
 
 
