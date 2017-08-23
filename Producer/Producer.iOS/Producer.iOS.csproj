@@ -129,7 +129,7 @@
     <MtouchFloat32>true</MtouchFloat32>
   </PropertyGroup>
   <Target Name="RootPlist" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
-    <Exec Command="/bin/bash '$(SolutionDir)/scripts/plist_utility.sh' -p '$(ProjectDir)' -c 'Made with ♥ by Technical Poets' -r '$(Configuration)'" />
+    <Exec Command="/bin/bash '$(ProjectDir)../scripts/plist_utility.sh' -p '$(ProjectDir)' -c 'Made with ♥ by Technical Poets' -r '$(Configuration)'" />
   </Target>
   <ItemGroup>
     <Reference Include="System" />

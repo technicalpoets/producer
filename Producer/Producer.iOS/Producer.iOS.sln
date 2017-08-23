@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Producer.iOS", "Producer.iO
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Producer.Shared", "..\Producer.Shared\Producer.Shared.shproj", "{F94D1CC0-49D5-4A5C-A279-1FEBBDE97F5F}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Producer.Domain", "..\Producer.Domain\Producer.Domain.shproj", "{2C6335E4-7B3E-4E28-BEFD-0EA82470CFAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
