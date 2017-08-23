@@ -21,29 +21,13 @@ namespace SettingsStudio
 
 		public const string TestProducer = "TestProducer";
 
-		public const string UseLocalFunctions = "UseLocalFunctions";
-
-		public const string LocalFunctionsUrl = "LocalFunctionsUrl";
-
-		public const string LocalDocumentDbKey = "LocalDocumentDbKey";
-
 		public const string RemoteFunctionsUrl = "RemoteFunctionsUrl";
 
-		public const string UseLocalDocumentDb = "UseLocalDocumentDb";
-
-		public const string LocalDocumentDbUrl = "LocalDocumentDbUrl";
-
 		public const string RemoteDocumentDbUrl = "RemoteDocumentDbUrl";
-
-		public const string RemoteDocumentDbKey = "RemoteDocumentDbKey";
 
 		public const string EmbeddedSocialKey = "EmbeddedSocialKey";
 
 		public const string NotificationsName = "NotificationsName";
-
-		public const string NotificationsUrl = "NotificationsUrl";
-
-		public const string NotificationsKey = "NotificationsKey";
 
 		public const string NotificationsConnectionString = "NotificationsConnectionString";
 

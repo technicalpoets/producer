@@ -174,12 +174,6 @@ namespace Producer.Shared
 		{
 			try
 			{
-#if DEBUG
-				if (Settings.UseLocalFunctions)
-				{
-					httpClient.BaseAddress = new Uri (Settings.RemoteFunctionsUrl);
-				}
-#endif
 				ResetUser ();
 
 				if (!string.IsNullOrEmpty (providerToken) && !string.IsNullOrEmpty (providerAuthCode))
@@ -218,12 +212,6 @@ namespace Producer.Shared
 				Log.Error (ex.Message);
 				throw;
 			}
-#if DEBUG
-			finally
-			{
-				httpClient.BaseAddress = Settings.FunctionsUrl;
-			}
-#endif
 		}
 	}
 }

@@ -45,20 +45,6 @@ namespace SettingsStudio
 		}
 
 
-		public static bool UseLocalFunctions
-		{
-			get => BoolForKey (SettingsKeys.UseLocalFunctions);
-			set => SetSetting (SettingsKeys.UseLocalFunctions, value);
-		}
-
-
-		public static string LocalFunctionsUrl
-		{
-			get => StringForKey (SettingsKeys.LocalFunctionsUrl);
-			set => SetSetting (SettingsKeys.LocalFunctionsUrl, value ?? string.Empty);
-		}
-
-
 		public static string RemoteFunctionsUrl
 		{
 			get => StringForKey (SettingsKeys.RemoteFunctionsUrl);
@@ -74,7 +60,7 @@ namespace SettingsStudio
 			{
 				if (_functionsUrl == null)
 				{
-					var urlString = UseLocalFunctions ? LocalFunctionsUrl : RemoteFunctionsUrl ?? throw new Exception ("No Functions Url");
+					var urlString = !string.IsNullOrEmpty (RemoteFunctionsUrl) ? RemoteFunctionsUrl : throw new Exception ("No Functions Url");
 
 					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && urlString.EndsWith (".azurewebsites.net", StringComparison.Ordinal))
 					{
@@ -85,20 +71,6 @@ namespace SettingsStudio
 				}
 				return _functionsUrl;
 			}
-		}
-
-
-		public static bool UseLocalDocumentDb
-		{
-			get => BoolForKey (SettingsKeys.UseLocalDocumentDb);
-			set => SetSetting (SettingsKeys.UseLocalDocumentDb, value);
-		}
-
-
-		public static string LocalDocumentDbUrl
-		{
-			get => StringForKey (SettingsKeys.LocalDocumentDbUrl);
-			set => SetSetting (SettingsKeys.LocalDocumentDbUrl, value ?? string.Empty);
 		}
 
 
@@ -117,11 +89,11 @@ namespace SettingsStudio
 			{
 				if (_documentDbUrl == null)
 				{
-					var urlString = (UseLocalDocumentDb ? LocalDocumentDbUrl : RemoteDocumentDbUrl) ?? throw new Exception ("No DocumentDB Url");
+					var urlString = !string.IsNullOrEmpty (RemoteDocumentDbUrl) ? RemoteDocumentDbUrl : throw new Exception ("No DocumentDB Url");
 
-					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && (UseLocalDocumentDb || urlString.EndsWith (".documents.azure.com", StringComparison.Ordinal)))
+					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && urlString.EndsWith (".documents.azure.com", StringComparison.Ordinal))
 					{
-						var uriBuilder = new UriBuilder (UseLocalDocumentDb ? "http" : "https", urlString, UseLocalDocumentDb ? 8081 : 443);
+						var uriBuilder = new UriBuilder ("https", urlString, 443);
 
 						_documentDbUrl = uriBuilder.Uri;
 					}
@@ -131,44 +103,10 @@ namespace SettingsStudio
 		}
 
 
-		public static string LocalDocumentDbKey
-		{
-			get => StringForKey (SettingsKeys.LocalDocumentDbKey);
-			set => SetSetting (SettingsKeys.LocalDocumentDbKey, value ?? string.Empty);
-		}
-
-
-		public static string RemoteDocumentDbKey
-		{
-			get => StringForKey (SettingsKeys.RemoteDocumentDbKey);
-			set => SetSetting (SettingsKeys.RemoteDocumentDbKey, value ?? string.Empty);
-		}
-
-
-		static string _documentDbKey;
-
-		public static string DocumentDbKey => _documentDbKey ?? (_documentDbKey = (UseLocalDocumentDb ? LocalDocumentDbKey : RemoteDocumentDbKey) ?? throw new Exception ("No DocumentDB Key"));
-
-
-
 		public static string NotificationsName
 		{
 			get => StringForKey (SettingsKeys.NotificationsName);
 			set => SetSetting (SettingsKeys.NotificationsName, value ?? string.Empty);
-		}
-
-
-		public static string NotificationsUrl
-		{
-			get => StringForKey (SettingsKeys.NotificationsUrl);
-			set => SetSetting (SettingsKeys.NotificationsUrl, value ?? string.Empty);
-		}
-
-
-		public static string NotificationsKey
-		{
-			get => StringForKey (SettingsKeys.NotificationsKey);
-			set => SetSetting (SettingsKeys.NotificationsKey, value ?? string.Empty);
 		}
 
 
@@ -204,11 +142,8 @@ namespace SettingsStudio
 		{
 			RemoteFunctionsUrl = producerSettings.RemoteFunctionsUrl;
 			RemoteDocumentDbUrl = producerSettings.RemoteDocumentDbUrl;
-			RemoteDocumentDbKey = producerSettings.RemoteDocumentDbKey;
 			EmbeddedSocialKey = producerSettings.EmbeddedSocialKey;
 			NotificationsName = producerSettings.NotificationsName;
-			NotificationsUrl = producerSettings.NotificationsUrl;
-			NotificationsKey = producerSettings.NotificationsKey;
 			NotificationsConnectionString = producerSettings.NotificationsConnectionString;
 #if __IOS__
 			MobileCenterKey = producerSettings.MobileCenterKeyiOS;

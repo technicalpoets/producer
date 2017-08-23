@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
-			<string>0.3.1 (76)</string>
+			<string>0.3.1 (77)</string>
 			<key>Key</key>
 			<string>VersionNumber</string>
 			<key>Title</key>
@@ -52,31 +52,9 @@
 			<key>FooterText</key>
 			<string>Example Url: producer.azurewebsites.net (do not include https:// or a trailing /)</string>
 			<key>Title</key>
-			<string>Azure Functions</string>
+			<string>Azure Functions Url</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>UseLocalFunctions</string>
-			<key>Title</key>
-			<string>Use Local Functions</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>LocalFunctionsUrl</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Local Url:</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -86,7 +64,7 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Remote Url:</string>
+			<string></string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
@@ -94,43 +72,9 @@
 			<key>FooterText</key>
 			<string>Example Url: producer.documents.azure.com (do not include https:// or a trailing /)</string>
 			<key>Title</key>
-			<string>Azure DocumentDB</string>
+			<string>Azure DocumentDB Url</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>UseLocalDocumentDb</string>
-			<key>Title</key>
-			<string>Use Local DocumentDB</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>LocalDocumentDbUrl</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Local Url:</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>LocalDocumentDbKey</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Local Key:</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
@@ -140,19 +84,7 @@
 			<key>KeyboardType</key>
 			<string>URL</string>
 			<key>Title</key>
-			<string>Remote Url:</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
 			<string></string>
-			<key>Key</key>
-			<string>RemoteDocumentDbKey</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Remote Key:</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>

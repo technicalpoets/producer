@@ -10,7 +10,7 @@ using Plugin.VersionTracking;
 
 using SettingsStudio;
 
-using Producer.Domain;
+//using Producer.Domain;
 
 namespace Producer
 {
@@ -24,7 +24,7 @@ namespace Producer
 
 			Settings.RegisterDefaultSettings ();
 
-			configureProducerSettings ();
+			//configureProducerSettings ();
 
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>
@@ -63,34 +63,34 @@ namespace Producer
 		}
 
 
-		static void configureProducerSettings ()
-		{
-			var name = typeof (ProducerSettings).Name;
-#if __IOS__
-			var path = Foundation.NSBundle.MainBundle.PathForResource (name, "json");
+		//		static void configureProducerSettings ()
+		//		{
+		//			var name = typeof (ProducerSettings).Name;
+		//#if __IOS__
+		//			var path = Foundation.NSBundle.MainBundle.PathForResource (name, "json");
 
-			if (!string.IsNullOrEmpty (path))
-			{
-				using (var data = Foundation.NSData.FromFile (path))
-				{
-					var json = Foundation.NSString.FromData (data, Foundation.NSStringEncoding.ASCIIStringEncoding).ToString ();
-					//#elif __ANDROID__
-					//var path = $"{name}.json";
+		//			if (!string.IsNullOrEmpty (path))
+		//			{
+		//				using (var data = Foundation.NSData.FromFile (path))
+		//				{
+		//					var json = Foundation.NSString.FromData (data, Foundation.NSStringEncoding.ASCIIStringEncoding).ToString ();
+		//					//#elif __ANDROID__
+		//					//var path = $"{name}.json";
 
-					//if (assetList.Contains(path))
-					//{
-					//using (var sr = new System.IO.StreamReader (context.Assets.Open (path)))
-					//{
-					//var json = sr.ReadToEnd ();
-					//#endif
-					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (json);
+		//					//if (assetList.Contains(path))
+		//					//{
+		//					//using (var sr = new System.IO.StreamReader (context.Assets.Open (path)))
+		//					//{
+		//					//var json = sr.ReadToEnd ();
+		//					//#endif
+		//					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ProducerSettings> (json);
 
-					Log.Debug ($"\n{producerSettings}");
+		//					Log.Debug ($"\n{producerSettings}");
 
-					Settings.ConfigureSettings (producerSettings);
-				}
-			}
-#endif
-		}
+		//					Settings.ConfigureSettings (producerSettings);
+		//				}
+		//			}
+		//#endif
+		//}
 	}
 }

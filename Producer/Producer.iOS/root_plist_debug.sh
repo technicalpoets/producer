@@ -20,21 +20,15 @@ PreparePreferenceFile
 
 
 	# Azure Functions
-	AddNewPreferenceGroup	-t "Azure Functions"
+	AddNewPreferenceGroup	-t "Azure Functions Url"
 		AddNewStringNode 	-e "FooterText" 	-v "Example Url: producer.azurewebsites.net (do not include https:// or a trailing /)"
-		AddNewToggleSwitchPreference 	-k "UseLocalFunctions" 		-d false 	-t "Use Local Functions"
-		AddNewTextFieldPreference		-k "LocalFunctionsUrl"		-d "" 		-t "Local Url:"
-		AddNewTextFieldPreference		-k "RemoteFunctionsUrl"		-d "" 		-t "Remote Url:"
+		AddNewTextFieldPreference		-k "RemoteFunctionsUrl"		-d "" 		-t ""
 
 
 	# Azure Document DB
-	AddNewPreferenceGroup	-t "Azure DocumentDB"
+	AddNewPreferenceGroup	-t "Azure DocumentDB Url"
 		AddNewStringNode 	-e "FooterText" 	-v "Example Url: producer.documents.azure.com (do not include https:// or a trailing /)"
-		AddNewToggleSwitchPreference 	-k "UseLocalDocumentDb" 	-d false 	-t "Use Local DocumentDB"
-		AddNewTextFieldPreference		-k "LocalDocumentDbUrl"		-d "" 		-t "Local Url:"
-		AddNewTextFieldPreference		-k "LocalDocumentDbKey"		-d "" 		-t "Local Key:"
-		AddNewTextFieldPreference		-k "RemoteDocumentDbUrl"	-d "" 		-t "Remote Url:"
-		AddNewTextFieldPreference		-k "RemoteDocumentDbKey"	-d "" 		-t "Remote Key:"
+		AddNewTextFieldPreference		-k "RemoteDocumentDbUrl"	-d "" 		-t ""
 
 
 	# Azure Notification Hubs
@@ -42,8 +36,6 @@ PreparePreferenceFile
 		AddNewStringNode 	-e "FooterText" 	-v "Your Notification Hub Connection String"
 		AddNewTextFieldPreference 		-k "NotificationsName"				-d ""	-t "Hub Name:"
 		AddNewTextFieldPreference 		-k "NotificationsConnectionString"	-d ""	-t ""
-		#NotificationsKey
-		#NotificationsUrl
 
 
 	# Embedded Social
