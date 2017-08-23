@@ -47,20 +47,10 @@ namespace Producer.Shared
 		}
 
 
-		public void Init (string resourceToken)
-		{
-			if (Settings.DocumentDbUrl == null) throw new Exception ();
-
-			if (string.IsNullOrEmpty (resourceToken)) throw new ArgumentNullException (nameof (resourceToken));
-
-			resetClient (resourceToken);
-		}
-
-
-		async Task refreshResourceToken<T> ()
+		async Task refreshResourceToken<T> (bool forceTokenRefresh = true)
 			where T : Entity
 		{
-			var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
+			var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
 			resetClient (resourceToken);
 		}
@@ -84,11 +74,6 @@ namespace Producer.Shared
 
 		public async Task GetAllAvContent ()
 		{
-			if (client == null)
-			{
-				throw new Exception ("Must call Init() first");
-			}
-
 			await refreshAvContentAsync ();
 		}
 
@@ -196,6 +181,7 @@ namespace Producer.Shared
 
 			try
 			{
+				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
@@ -240,6 +226,7 @@ namespace Producer.Shared
 
 			try
 			{
+				if (client == null) await refreshResourceToken<T> (false);
 				// if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
@@ -294,6 +281,7 @@ namespace Producer.Shared
 
 			try
 			{
+				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
@@ -335,6 +323,7 @@ namespace Producer.Shared
 
 			try
 			{
+				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
@@ -376,6 +365,7 @@ namespace Producer.Shared
 
 			try
 			{
+				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.DeleteDocumentAsync (item.SelfLink);

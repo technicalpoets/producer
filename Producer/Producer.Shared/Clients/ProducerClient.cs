@@ -94,12 +94,12 @@ namespace Producer.Shared
 
 			try
 			{
-				Log.Info ($"Getting new content token");
-
 				var resourceToken = Settings.GetContentToken<T> ();
 
 				if (refresh || string.IsNullOrEmpty (resourceToken))
 				{
+					Log.Info ($"Getting new content token from server for {typeof (T).Name}");
+
 					var response = await httpClient.GetAsync (url);
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
@@ -107,6 +107,10 @@ namespace Producer.Shared
 					resourceToken = stringContent.Trim ('"');
 
 					Settings.SetContentToken<T> (resourceToken);
+				}
+				else
+				{
+					Log.Info ($"Found existing content token {typeof (T).Name}");
 				}
 
 				return resourceToken;

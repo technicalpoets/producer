@@ -37,7 +37,7 @@ namespace Producer.iOS
 					Log.Debug (user.ToString ());
 				}
 
-				ContentClient.Shared.Init (await ProducerClient.Shared.GetContentToken<AvContent> ());
+				Log.Debug ($"AuthUser = {ProducerClient.Shared.AuthUser}");
 
 				await ContentClient.Shared.GetAllAvContent ();
 
