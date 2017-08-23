@@ -26,11 +26,16 @@ namespace Producer.Functions
 		const string userReadId = "user_read";
 
 
+		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
+		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
+
+		static DocumentClient _docClient;
+		public static DocumentClient DocClient => _docClient ?? (_docClient = new DocumentClient(new Uri($"https://{_documentDbUri}/"), _documentDbKey));
+
 		[Authorize]
 		[FunctionName ("GetContentReadToken")]
 		public static async Task<HttpResponseMessage> GetRead (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/read/{collectionId}")] HttpRequestMessage req,
-			[DocumentDB] DocumentClient client, string collectionId, TraceWriter log)
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/read/{collectionId}")] HttpRequestMessage req, string collectionId, TraceWriter log)
 		{
 			try
 			{
@@ -44,7 +49,7 @@ namespace Producer.Functions
 
 						log.Info ($"userId = {userId}");
 
-						var token = await getToken (client, userId, collectionId, userReadId, PermissionMode.Read, log);
+						var token = await getToken (userId, collectionId, userReadId, PermissionMode.Read, log);
 
 						if (!string.IsNullOrEmpty (token))
 						{
@@ -57,7 +62,7 @@ namespace Producer.Functions
 
 				log.Info ("User is not authenticated, retrieving anonymous read token");
 
-				var anonymousToken = await getToken (client, anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read, log);
+				var anonymousToken = await getToken (anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read, log);
 
 				if (!string.IsNullOrEmpty (anonymousToken))
 				{
@@ -78,8 +83,7 @@ namespace Producer.Functions
 		[Authorize]
 		[FunctionName ("GetContentWriteToken")]
 		public static async Task<HttpResponseMessage> GetWrite (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/write/{collectionId}")] HttpRequestMessage req,
-			[DocumentDB] DocumentClient client, string collectionId, TraceWriter log)
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/write/{collectionId}")] HttpRequestMessage req, string collectionId, TraceWriter log)
 		{
 			if (Thread.CurrentPrincipal.Identity.IsAuthenticated && Thread.CurrentPrincipal is ClaimsPrincipal principal)
 			{
@@ -93,7 +97,7 @@ namespace Producer.Functions
 
 					try
 					{
-						var token = await getToken (client, userId, collectionId, userWriteId, PermissionMode.All, log);
+						var token = await getToken (userId, collectionId, userWriteId, PermissionMode.All, log);
 
 						if (!string.IsNullOrEmpty (token))
 						{
@@ -117,17 +121,17 @@ namespace Producer.Functions
 		}
 
 
-		static async Task<string> getToken (DocumentClient client, string userId, string collectionId, string permissionId, PermissionMode permissionMode, TraceWriter log)
+		static async Task<string> getToken (string userId, string collectionId, string permissionId, PermissionMode permissionMode, TraceWriter log)
 		{
 			try
 			{
-				var collection = await client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId));
+				var collection = await DocClient.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId));
 
 				User user = null;
 
 				try
 				{
-					var response = await client.ReadUserAsync (UriFactory.CreateUserUri (databaseId, userId));
+					var response = await DocClient.ReadUserAsync (UriFactory.CreateUserUri (databaseId, userId));
 
 					user = response?.Resource;
 				}
@@ -137,7 +141,7 @@ namespace Producer.Functions
 					{
 						log.Info ($"Did not find user with Id {userId} - creating...");
 
-						var response = await client.CreateUserAsync (UriFactory.CreateDatabaseUri (databaseId), new User { Id = userId });
+						var response = await DocClient.CreateUserAsync (UriFactory.CreateDatabaseUri (databaseId), new User { Id = userId });
 
 						user = response?.Resource;
 
@@ -145,7 +149,7 @@ namespace Producer.Functions
 						{
 							var newPermission = new Permission { Id = permissionId, ResourceLink = collection.Resource.SelfLink, PermissionMode = permissionMode };
 
-							var permResponse = await client.CreatePermissionAsync (user.SelfLink, newPermission);
+							var permResponse = await DocClient.CreatePermissionAsync (user.SelfLink, newPermission);
 						}
 					}
 				}
@@ -154,7 +158,7 @@ namespace Producer.Functions
 
 				if (!string.IsNullOrEmpty (user?.PermissionsLink))
 				{
-					var readPermissions = await client.ReadPermissionFeedAsync (user.PermissionsLink);
+					var readPermissions = await DocClient.ReadPermissionFeedAsync (user.PermissionsLink);
 
 					foreach (var perm in readPermissions)
 					{
