@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 
+using HttpStatusCode = System.Net.HttpStatusCode;
+
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;
@@ -30,7 +32,7 @@ namespace Producer.Functions
 		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
 
 		static DocumentClient _docClient;
-		public static DocumentClient DocClient => _docClient ?? (_docClient = new DocumentClient(new Uri($"https://{_documentDbUri}/"), _documentDbKey));
+		public static DocumentClient DocClient => _docClient ?? (_docClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
 
 		[Authorize]
 		[FunctionName ("GetContentReadToken")]
@@ -49,33 +51,33 @@ namespace Producer.Functions
 
 						log.Info ($"userId = {userId}");
 
-						var token = await getToken (userId, collectionId, userReadId, PermissionMode.Read, log);
+						var userPermission = await getOrCreatePermission (databaseId, userId, collectionId, userReadId, PermissionMode.Read, log);
 
-						if (!string.IsNullOrEmpty (token))
+						if (!string.IsNullOrEmpty (userPermission?.Token))
 						{
-							return req.CreateResponse (System.Net.HttpStatusCode.OK, token);
+							return req.CreateResponse (HttpStatusCode.OK, userPermission.Token);
 						}
 
-						return req.CreateResponse (System.Net.HttpStatusCode.InternalServerError);
+						return req.CreateResponse (HttpStatusCode.InternalServerError);
 					}
 				}
 
 				log.Info ("User is not authenticated, retrieving anonymous read token");
 
-				var anonymousToken = await getToken (anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read, log);
+				var anonymousUserPermission = await getOrCreatePermission (databaseId, anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read, log);
 
-				if (!string.IsNullOrEmpty (anonymousToken))
+				if (!string.IsNullOrEmpty (anonymousUserPermission?.Token))
 				{
-					return req.CreateResponse (System.Net.HttpStatusCode.OK, anonymousToken);
+					return req.CreateResponse (HttpStatusCode.OK, anonymousUserPermission.Token);
 				}
 
-				return req.CreateResponse (System.Net.HttpStatusCode.InternalServerError);
+				return req.CreateResponse (HttpStatusCode.InternalServerError);
 			}
 			catch (Exception ex)
 			{
 				log.Error (ex.Message);
 
-				return req.CreateErrorResponse (System.Net.HttpStatusCode.InternalServerError, ex);
+				return req.CreateErrorResponse (HttpStatusCode.InternalServerError, ex);
 			}
 		}
 
@@ -97,83 +99,133 @@ namespace Producer.Functions
 
 					try
 					{
-						var token = await getToken (userId, collectionId, userWriteId, PermissionMode.All, log);
+						var userPermission = await getOrCreatePermission (databaseId, userId, collectionId, userWriteId, PermissionMode.All, log);
 
-						if (!string.IsNullOrEmpty (token))
+						if (!string.IsNullOrEmpty (userPermission?.Token))
 						{
-							return req.CreateResponse (System.Net.HttpStatusCode.OK, token);
+							return req.CreateResponse (HttpStatusCode.OK, userPermission?.Token);
 						}
 
-						return req.CreateResponse (System.Net.HttpStatusCode.InternalServerError);
+						return req.CreateResponse (HttpStatusCode.InternalServerError);
 					}
 					catch (Exception ex)
 					{
 						log.Error (ex.Message);
 
-						return req.CreateErrorResponse (System.Net.HttpStatusCode.InternalServerError, ex);
+						return req.CreateErrorResponse (HttpStatusCode.InternalServerError, ex);
 					}
 				}
 			}
 
 			log.Info ("User is not authenticated");
 
-			return req.CreateResponse (System.Net.HttpStatusCode.Unauthorized);
+			return req.CreateResponse (HttpStatusCode.Unauthorized);
 		}
 
 
-		static async Task<string> getToken (string userId, string collectionId, string permissionId, PermissionMode permissionMode, TraceWriter log)
+		static async Task<Permission> getOrCreatePermission (string dbId, string userId, string collectionId, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
 			try
 			{
-				var collection = await DocClient.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId));
+				var collectionResponse = await DocClient.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (dbId, collectionId));
 
-				User user = null;
+				var collection = collectionResponse?.Resource ?? throw new Exception ($"Could not find collection Database ID: {dbId}  Collection ID: {collectionId}");
 
-				try
+
+				var userTup = await getOrCreateUser (dbId, userId, log);
+
+				var user = userTup.user;
+
+				// if the user was newly created, go ahead and create the permission
+				if (userTup.created && !string.IsNullOrEmpty (user?.SelfLink))
 				{
-					var response = await DocClient.ReadUserAsync (UriFactory.CreateUserUri (databaseId, userId));
+					var permission = await createNewPermission (collection, user, permissionId, permissionMode, log);
 
-					user = response?.Resource;
-				}
-				catch (DocumentClientException dcx)
-				{
-					if (dcx.StatusCode == System.Net.HttpStatusCode.NotFound)
-					{
-						log.Info ($"Did not find user with Id {userId} - creating...");
-
-						var response = await DocClient.CreateUserAsync (UriFactory.CreateDatabaseUri (databaseId), new User { Id = userId });
-
-						user = response?.Resource;
-
-						if (!string.IsNullOrEmpty (user?.SelfLink))
-						{
-							var newPermission = new Permission { Id = permissionId, ResourceLink = collection.Resource.SelfLink, PermissionMode = permissionMode };
-
-							var permResponse = await DocClient.CreatePermissionAsync (user.SelfLink, newPermission);
-						}
-					}
+					return permission;
 				}
 
-				var permissions = new List<Permission> ();
 
 				if (!string.IsNullOrEmpty (user?.PermissionsLink))
 				{
+					log?.Info ($"Reading permission feed [Database ID: {dbId}  Collection ID: {collectionId}  User ID: {userId}  Permission ID: {permissionId}]");
+
 					var readPermissions = await DocClient.ReadPermissionFeedAsync (user.PermissionsLink);
+
+					var permissions = new List<Permission> ();
 
 					foreach (var perm in readPermissions)
 					{
 						permissions.Add (perm);
 					}
+
+					var permission = permissions.FirstOrDefault (p => p.Id == permissionId) ?? await createNewPermission (collection, user, permissionId, permissionMode, log);
+
+					return permission;
 				}
 
-				var permission = permissions.FirstOrDefault ();
-
-				return permission?.Token;
-
+				return null;
 			}
 			catch (Exception ex)
 			{
-				log.Error (ex.Message);
+				log?.Error ($"Error creating PermissionToken for Database: {dbId}  Collection: {collectionId}  User: {userId}", ex);
+				throw;
+			}
+		}
+
+
+		static async Task<Permission> createNewPermission (DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
+		{
+			try
+			{
+				log?.Info ($"Creating new {permissionMode} permission [Collection ID: {collection?.Id}  User ID: {user?.Id}  Permission ID: {permissionId}]");
+
+				var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
+
+				var permissionResponse = await DocClient.CreatePermissionAsync (user.SelfLink, newPermission);
+
+				return permissionResponse?.Resource;
+			}
+			catch (Exception ex)
+			{
+				log?.Error ($"Error creating new {permissionMode} permission [Collection ID: {collection?.Id}  User ID: {user?.Id}  Permission ID: {permissionId}]", ex);
+				throw;
+			}
+		}
+
+
+		static async Task<(User user, bool created)> getOrCreateUser (string dbId, string userId, TraceWriter log = null)
+		{
+			User user = null;
+
+			try
+			{
+				log?.Info ($"Attempting to read user with id: {userId}");
+
+				var response = await DocClient.ReadUserAsync (UriFactory.CreateUserUri (dbId, userId));
+
+				user = response?.Resource;
+
+				return (user, false);
+			}
+			catch (DocumentClientException dcx)
+			{
+				if (dcx.StatusCode == HttpStatusCode.NotFound)
+				{
+					log?.Info ($"Did not find user with Id {userId} - creating...");
+
+					var response = await DocClient.CreateUserAsync (UriFactory.CreateDatabaseUri (dbId), new User { Id = userId });
+
+					user = response?.Resource;
+
+					return (user, user != null);
+				}
+
+				log?.Error ($"Error getting user with id: {userId}\n", dcx);
+				throw;
+			}
+			catch (Exception ex)
+			{
+				log?.Error ($"Error getting user with id: {userId}\n", ex);
 				throw;
 			}
 		}
