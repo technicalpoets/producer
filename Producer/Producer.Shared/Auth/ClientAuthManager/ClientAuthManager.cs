@@ -82,6 +82,8 @@ namespace Producer.Auth
 			{
 				removeProviderKeychainData (provider);
 			}
+
+			SetClientAuthDetails (null);
 		}
 
 
@@ -184,22 +186,10 @@ namespace Producer.Auth
 			return null;
 		}
 
-#if __IOS__
-
 		(string Account, string PrivateKey) getItemFromKeychain (string service) => Keychain.GetItemFromKeychain (service);
 
 		bool saveItemToKeychain (string service, string account, string privateKey) => Keychain.SaveItemToKeychain (service, account, privateKey);
 
 		bool removeItemFromKeychain (string service) => Keychain.RemoveItemFromKeychain (service);
-
-#else
-
-		(string Account, string PrivateKey) getItemFromKeychain (string service) => Keychain.GetItemFromKeychain (service);
-
-		bool saveItemToKeychain (string service, string account, string privateKey) => Keychain.SaveItemToKeychain (service, account, privateKey);
-
-		bool removeItemFromKeychain (string service) => Keychain.RemoveItemFromKeychain (service);
-
-#endif
 	}
 }

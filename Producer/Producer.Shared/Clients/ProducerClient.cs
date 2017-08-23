@@ -4,12 +4,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using SettingsStudio;
 
 using Producer.Auth;
 using Producer.Domain;
-using Newtonsoft.Json.Linq;
 
 namespace Producer.Shared
 {
@@ -18,13 +18,48 @@ namespace Producer.Shared
 		static ProducerClient _shared;
 		public static ProducerClient Shared => _shared ?? (_shared = new ProducerClient ());
 
-		public AuthUserConfig AuthUser { get; set; }
+		AuthUserConfig authUser;
+
+		User _user;
+		public User User
+		{
+			get
+			{
+				if (_user == null && ClientAuthManager.Shared.ClientAuthDetails != null && authUser != null)
+				{
+					_user = new User (ClientAuthManager.Shared.ClientAuthDetails, authUser);
+				}
+				return _user;
+			}
+		}
 
 		HttpClient _httpClient;
-		HttpClient httpClient => _httpClient ?? (_httpClient = new HttpClient { BaseAddress = Settings.FunctionsUrl });
+		HttpClient httpClient
+		{
+			get
+			{
+				if (_httpClient == null)
+				{
+					_httpClient = new HttpClient { BaseAddress = Settings.FunctionsUrl };
+
+					var storedKeys = new Keychain ().GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+
+					if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
+					{
+						_httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, storedKeys.PrivateKey);
+					}
+				}
+				return _httpClient;
+			}
+		}
 
 
-		ProducerClient () { }
+		ProducerClient ()
+		{
+			authUser = AuthUserConfig.FromKeychain ();
+
+			Log.Info ($"User: {User?.ToString ()}");
+		}
 
 
 		public async Task Publish<T> (T content, string notificationTitle = null, string notificationMessage = null)
@@ -45,10 +80,6 @@ namespace Producer.Shared
 					var response = await httpClient.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, "application/json"));
 
 					Log.Debug (response.ToString ());
-
-					//var stringContent = await response.Content.ReadAsStringAsync ();
-
-					//return JsonConvert.DeserializeObject<StorageToken> (stringContent);
 				}
 				catch (Exception ex)
 				{
@@ -68,8 +99,6 @@ namespace Producer.Shared
 
 				try
 				{
-					//TODO: cache token and delete anonymous read-only token when user logs in
-
 					var response = await httpClient.GetAsync (url);
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
@@ -94,6 +123,8 @@ namespace Producer.Shared
 
 			try
 			{
+				//TODO: delete anonymous read-only token when user logs in
+
 				var resourceToken = Settings.GetContentToken<T> ();
 
 				if (refresh || string.IsNullOrEmpty (resourceToken))
@@ -123,66 +154,23 @@ namespace Producer.Shared
 		}
 
 
-		public async Task<AuthUserConfig> GetAuthUserConfig ()
+		public void ResetUser ()
 		{
-			try
-			{
-#if DEBUG
-				if (Settings.UseLocalFunctions)
-				{
-					httpClient.BaseAddress = new Uri (Settings.RemoteFunctionsUrl);
-				}
-#endif
-				var keychain = new Keychain ();
+			_user = null;
 
-				var storedKeys = keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+			new Keychain ().RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
-				if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
-				{
-					httpClient.DefaultRequestHeaders.Remove (AzureAppServiceUser.AuthenticationHeader);
+			AuthUserConfig.RemoveFromKeychain ();
 
-					httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, storedKeys.PrivateKey);
+			Settings.SetContentToken<AvContent> (string.Empty);
 
-					var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+			_httpClient = null;
 
-					//Log.Debug ($"userConfigJson {userConfigJson}");
-
-					AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
-
-					//Log.Debug (AuthUser.ToString ());
-
-					return AuthUser;
-				}
-
-				return null;
-			}
-			catch (HttpRequestException reEx)
-			{
-				if (reEx.Message.Contains ("401"))
-				{
-					new Keychain ().RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
-
-					return null;
-				}
-
-				Log.Error (reEx.Message);
-				throw;
-			}
-			catch (Exception ex)
-			{
-				Log.Error (ex.Message);
-				throw;
-			}
-#if DEBUG
-			finally
-			{
-				httpClient.BaseAddress = Settings.FunctionsUrl;
-			}
-#endif
+			ContentClient.Shared.ResetClient ();
 		}
 
 
-		public async Task<AuthUserConfig> GetAuthUserConfig (string providerToken, string providerAuthCode)
+		public async Task AuthenticateUser (string providerToken, string providerAuthCode)
 		{
 			try
 			{
@@ -192,6 +180,7 @@ namespace Producer.Shared
 					httpClient.BaseAddress = new Uri (Settings.RemoteFunctionsUrl);
 				}
 #endif
+				ResetUser ();
 
 				if (!string.IsNullOrEmpty (providerToken) && !string.IsNullOrEmpty (providerAuthCode))
 				{
@@ -207,26 +196,15 @@ namespace Producer.Shared
 
 						var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
 
+						new Keychain ().SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
 
-						Log.Debug ($"azureUser.AuthenticationToken {azureUser.AuthenticationToken}");
-
-						httpClient.DefaultRequestHeaders.Remove (AzureAppServiceUser.AuthenticationHeader);
-
-						httpClient.DefaultRequestHeaders.Add (AzureAppServiceUser.AuthenticationHeader, azureUser.AuthenticationToken);
-
-						var keychain = new Keychain ();
-
-						keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+						_httpClient = null;
 
 						var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
 
-						//Log.Debug ($"userConfigJson {userConfigJson}");
+						authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-						AuthUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
-
-						//Log.Debug (AuthUser.ToString ());
-
-						return AuthUser;
+						authUser.SaveToKeychain ();
 					}
 					else
 					{
@@ -234,8 +212,6 @@ namespace Producer.Shared
 						Log.Error (authResponse.ToString ());
 					}
 				}
-
-				return null;
 			}
 			catch (Exception ex)
 			{

@@ -57,7 +57,7 @@ namespace Producer.iOS
 			return true;
 		}
 
-
+		const string anonymousUserId = "anonymous_user";
 		public override void RegisteredForRemoteNotifications (UIApplication application, NSData deviceToken)
 		{
 			Log.Debug ($"RegisteredForRemoteNotifications");
@@ -70,7 +70,8 @@ namespace Producer.iOS
 
 			//var tags = new NSSet ("username:colby");
 			// TODO: add tag for username and permissions level
-			var tags = new NSSet ("username:colby");
+
+			var tags = new NSSet ($"userid:{ProducerClient.Shared.User?.Id ?? anonymousUserId}", $"userrole:{(int) ContentClient.Shared.UserRole}");
 
 			hub.RegisterNativeAsync (deviceToken, tags, err =>
 			{

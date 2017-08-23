@@ -103,7 +103,7 @@ namespace Producer.iOS
 
 		partial void profileButtonClicked (NSObject sender)
 		{
-			if (ProducerClient.Shared.AuthUser == null)
+			if (ProducerClient.Shared.User == null)
 			{
 				var loginNc = Storyboard.Instantiate<LoginNc> ();
 

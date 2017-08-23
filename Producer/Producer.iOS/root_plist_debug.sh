@@ -22,7 +22,7 @@ PreparePreferenceFile
 	# Azure Functions
 	AddNewPreferenceGroup	-t "Azure Functions"
 		AddNewStringNode 	-e "FooterText" 	-v "Example Url: producer.azurewebsites.net (do not include https:// or a trailing /)"
-		AddNewToggleSwitchPreference 	-k "UseLocalFunctions" 		-d true 	-t "Use Local Functions"
+		AddNewToggleSwitchPreference 	-k "UseLocalFunctions" 		-d false 	-t "Use Local Functions"
 		AddNewTextFieldPreference		-k "LocalFunctionsUrl"		-d "" 		-t "Local Url:"
 		AddNewTextFieldPreference		-k "RemoteFunctionsUrl"		-d "" 		-t "Remote Url:"
 
@@ -30,7 +30,7 @@ PreparePreferenceFile
 	# Azure Document DB
 	AddNewPreferenceGroup	-t "Azure DocumentDB"
 		AddNewStringNode 	-e "FooterText" 	-v "Example Url: producer.documents.azure.com (do not include https:// or a trailing /)"
-		AddNewToggleSwitchPreference 	-k "UseLocalDocumentDb" 	-d true 	-t "Use Local DocumentDB"
+		AddNewToggleSwitchPreference 	-k "UseLocalDocumentDb" 	-d false 	-t "Use Local DocumentDB"
 		AddNewTextFieldPreference		-k "LocalDocumentDbUrl"		-d "" 		-t "Local Url:"
 		AddNewTextFieldPreference		-k "LocalDocumentDbKey"		-d "" 		-t "Local Key:"
 		AddNewTextFieldPreference		-k "RemoteDocumentDbUrl"	-d "" 		-t "Remote Url:"

@@ -83,10 +83,10 @@ namespace Producer.Auth
 
 			var success = status == SecStatusCode.Success;
 
-			if (!success)
+			if (!success && status != SecStatusCode.ItemNotFound)
 			{
 				System.Diagnostics.Debug.WriteLine ($"Error in Keychain: {status}");
-				System.Diagnostics.Debug.WriteLine ($"If you are seeing error code '-34018' got to Project Options -> iOS Bundle Signing -> make sure Entitlements.plist is populated for Custom Entitlements for iPhoneSimulator configs");
+				//System.Diagnostics.Debug.WriteLine ($"If you are seeing error code '-34018' got to Project Options -> iOS Bundle Signing -> make sure Entitlements.plist is populated for Custom Entitlements for iPhoneSimulator configs");
 			}
 
 			return success;

@@ -29,16 +29,6 @@ namespace Producer.iOS
 
 			Task.Run (async () =>
 			{
-				if (ProducerClient.Shared.AuthUser == null && ClientAuthManager.Shared.ClientAuthDetails != null)
-				{
-					var user = await ProducerClient.Shared.GetAuthUserConfig () ??
-							   await ProducerClient.Shared.GetAuthUserConfig (ClientAuthManager.Shared.ClientAuthDetails.Token, ClientAuthManager.Shared.ClientAuthDetails.AuthCode);
-
-					Log.Debug (user.ToString ());
-				}
-
-				Log.Debug ($"AuthUser = {ProducerClient.Shared.AuthUser}");
-
 				await ContentClient.Shared.GetAllAvContent ();
 
 				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
@@ -99,6 +89,20 @@ namespace Producer.iOS
 		void handleClientAuthChanged (object s, ClientAuthDetails e)
 		{
 			Log.Debug ($"Authenticated: {e}");
+
+			Task.Run (async () =>
+			{
+				if (e == null)
+				{
+					ProducerClient.Shared.ResetUser ();
+				}
+				else
+				{
+					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
+				}
+
+				await ContentClient.Shared.GetAllAvContent ();
+			});
 		}
 
 

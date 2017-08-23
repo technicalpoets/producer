@@ -35,11 +35,11 @@ namespace Producer.Functions
 
 					log.Info ($"userId = {userId}");
 
-					httpClient.ConfigureClientForUserDetails (identity, req);
+					httpClient.ConfigureClientForUserDetails (req);
 
 					try
 					{
-						var me = await httpClient.GetStringAsync (".auth/me");
+						var me = await httpClient.GetStringAsync (new Uri (identity.UriFromIssuerClaim (), ".auth/me"));
 
 						// TODO: Check for provider
 						var googleUser = JsonConvert.DeserializeObject<GoogleAuthUser> (me.Trim (new Char [] { '[', ']' }));

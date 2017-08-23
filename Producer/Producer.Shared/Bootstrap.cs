@@ -24,7 +24,7 @@ namespace Producer
 
 			Settings.RegisterDefaultSettings ();
 
-			//configureProducerSettings ();
+			configureProducerSettings ();
 
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>

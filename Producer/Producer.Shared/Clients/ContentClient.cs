@@ -30,7 +30,7 @@ namespace Producer.Shared
 		DocumentClient client;
 
 
-		public UserRoles UserRole { get; set; } = Settings.TestProducer ? UserRoles.Producer : UserRoles.General;
+		public UserRoles UserRole => ProducerClient.Shared.User?.UserRole ?? UserRoles.General;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
 			{ UserRoles.General, new List<AvContent>() },
@@ -46,6 +46,10 @@ namespace Producer.Shared
 			databaseId = dbId;
 		}
 
+		public void ResetClient ()
+		{
+			client = null;
+		}
 
 		async Task refreshResourceToken<T> (bool forceTokenRefresh = true)
 			where T : Entity
