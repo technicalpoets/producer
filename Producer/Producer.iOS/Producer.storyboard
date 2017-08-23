@@ -255,65 +255,9 @@ Sign in to listen to new music before it drops.</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.14901960780000001" green="0.14901960780000001" blue="0.14901960780000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="separatorColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <view key="tableHeaderView" contentMode="scaleToFill" id="EeM-fS-RjJ">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rEz-Td-6mM">
-                                    <rect key="frame" x="57.5" y="144" width="260" height="115"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="260" id="qXR-bA-pDx"/>
-                                    </constraints>
-                                    <string key="text">Howdy.
-
-Sign in to listen to new music before it drops.</string>
-                                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
-                                    <color key="textColor" red="0.57248467206954956" green="0.57258617877960205" blue="0.57247823476791382" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ta6-yp-B8T">
-                                    <rect key="frame" x="57.5" y="299" width="260" height="40"/>
-                                    <color key="backgroundColor" red="0.90196078430000004" green="0.30588235289999999" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="40" id="Jjm-O3-NKm"/>
-                                        <constraint firstAttribute="width" constant="260" id="iEZ-YE-hD1"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
-                                    <state key="normal" title="Create an new Account">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="createAccountButtonClicked:" destination="0KJ-Qz-b7p" eventType="touchUpInside" id="Q5K-mZ-9ax"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T0T-OY-4Ey">
-                                    <rect key="frame" x="57.5" y="355" width="260" height="32"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="260" id="b25-ZL-MaD"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                    <state key="normal" title="Sign in to an existing account">
-                                        <color key="titleColor" red="0.90196078430000004" green="0.30588235289999999" blue="0.29803921570000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="loginButtonClicked:" destination="0KJ-Qz-b7p" eventType="touchUpInside" id="MBv-ue-XgM"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                            <color key="backgroundColor" red="0.14899864792823792" green="0.14903163909912109" blue="0.14899659156799316" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <constraints>
-                                <constraint firstItem="rEz-Td-6mM" firstAttribute="centerX" secondItem="EeM-fS-RjJ" secondAttribute="centerX" id="2CH-Ag-JSP"/>
-                                <constraint firstItem="T0T-OY-4Ey" firstAttribute="leading" secondItem="Ta6-yp-B8T" secondAttribute="leading" id="DJG-3X-mFO"/>
-                                <constraint firstItem="T0T-OY-4Ey" firstAttribute="trailing" secondItem="Ta6-yp-B8T" secondAttribute="trailing" id="F8M-0R-ftb"/>
-                                <constraint firstItem="Ta6-yp-B8T" firstAttribute="top" secondItem="rEz-Td-6mM" secondAttribute="bottom" constant="40" id="QlW-uk-FtT"/>
-                                <constraint firstItem="T0T-OY-4Ey" firstAttribute="top" secondItem="Ta6-yp-B8T" secondAttribute="bottom" constant="16" id="XIK-dk-j97"/>
-                                <constraint firstItem="Ta6-yp-B8T" firstAttribute="centerX" secondItem="EeM-fS-RjJ" secondAttribute="centerX" id="ino-mG-Ubp"/>
-                                <constraint firstItem="rEz-Td-6mM" firstAttribute="bottom" secondItem="EeM-fS-RjJ" secondAttribute="centerY" constant="-50" id="uWz-xQ-C8d"/>
-                            </constraints>
-                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="wKq-JN-oUf">
-                                <rect key="frame" x="0.0" y="662" width="375" height="64"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="64"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wKq-JN-oUf" id="7oJ-b4-1sb">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
@@ -333,11 +277,12 @@ Sign in to listen to new music before it drops.</string>
                                 <action selector="cancelClicked:" destination="0KJ-Qz-b7p" id="WCu-NS-b6O"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Logout" id="n9n-9f-6cS">
+                            <connections>
+                                <action selector="logoutButtonClicked:" destination="0KJ-Qz-b7p" id="SK2-47-VMj"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
-                    <connections>
-                        <outlet property="createAccountButton" destination="Ta6-yp-B8T" id="DKz-y2-G67"/>
-                        <outlet property="emptyView" destination="EeM-fS-RjJ" id="y6F-41-FU4"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jaW-0p-Pa4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -575,7 +520,7 @@ Sign in to listen to new music before it drops.</string>
             <objects>
                 <navigationController storyboardIdentifier="LoginNc" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="0Vk-0M-Hsd" customClass="LoginNc" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="MvA-F3-afn">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="MvA-F3-afn">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.1097869948" green="0.1098136529" blue="0.1097853258" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

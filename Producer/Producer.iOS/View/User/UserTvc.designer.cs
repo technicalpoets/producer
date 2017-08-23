@@ -12,32 +12,14 @@ namespace Producer.iOS
 	[Register ("UserTvc")]
 	partial class UserTvc
 	{
-		[Outlet]
-		UIKit.UIButton createAccountButton { get; set; }
-
-		[Outlet]
-		UIKit.UIView emptyView { get; set; }
-
 		[Action ("cancelClicked:")]
 		partial void cancelClicked (Foundation.NSObject sender);
 
-		[Action ("createAccountButtonClicked:")]
-		partial void createAccountButtonClicked (Foundation.NSObject sender);
+		[Action ("logoutButtonClicked:")]
+		partial void logoutButtonClicked (Foundation.NSObject sender);
 
-		[Action ("loginButtonClicked:")]
-		partial void loginButtonClicked (Foundation.NSObject sender);
-		
 		void ReleaseDesignerOutlets ()
 		{
-			if (createAccountButton != null) {
-				createAccountButton.Dispose ();
-				createAccountButton = null;
-			}
-
-			if (emptyView != null) {
-				emptyView.Dispose ();
-				emptyView = null;
-			}
 		}
 	}
 }

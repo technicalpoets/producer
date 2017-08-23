@@ -61,7 +61,7 @@ namespace Producer.Auth
 
 		public void SetClientAuthDetails (ClientAuthDetails details)
 		{
-			Log.Debug (details.ToString ());
+			Log.Debug (details?.ToString ());
 
 			ClientAuthDetails = details;
 
