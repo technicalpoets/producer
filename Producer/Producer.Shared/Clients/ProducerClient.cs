@@ -87,20 +87,29 @@ namespace Producer.Shared
 		}
 
 
-
-
-		public async Task<string> GetContentToken<T> ()
-			where T : Content
+		public async Task<string> GetContentToken<T> (bool refresh = false)
+			where T : Entity
 		{
 			var url = $"api/tokens/read/{typeof (T).Name}";
 
 			try
 			{
-				var response = await httpClient.GetAsync (url);
+				Log.Info ($"Getting new content token");
 
-				var stringContent = await response.Content.ReadAsStringAsync ();
+				var resourceToken = Settings.GetContentToken<T> ();
 
-				return stringContent;
+				if (refresh || string.IsNullOrEmpty (resourceToken))
+				{
+					var response = await httpClient.GetAsync (url);
+
+					var stringContent = await response.Content.ReadAsStringAsync ();
+
+					resourceToken = stringContent.Trim ('"');
+
+					Settings.SetContentToken<T> (resourceToken);
+				}
+
+				return resourceToken;
 			}
 			catch (Exception ex)
 			{

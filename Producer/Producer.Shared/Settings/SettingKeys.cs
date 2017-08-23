@@ -64,6 +64,7 @@ namespace SettingsStudio
 
 		public const string LastAvContentDescription = "LastAvContentDescription";
 
+		public const string ContentTokenBase = "ContentToken";
 
 		#endregion
 	}

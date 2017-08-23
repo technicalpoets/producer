@@ -4,6 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+using HttpStatusCode = System.Net.HttpStatusCode;
+
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
@@ -51,20 +53,31 @@ namespace Producer.Shared
 
 			if (string.IsNullOrEmpty (resourceToken)) throw new ArgumentNullException (nameof (resourceToken));
 
-			Settings.RemoteDocumentDbKey = resourceToken.Trim ('"');
-			//var permissions = await new DocumentClient(Settings.DocumentDbUrl, )
+			resetClient (resourceToken);
+		}
 
-			//Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {Settings.DocumentDbKey}");
+
+		async Task refreshResourceToken<T> ()
+			where T : Entity
+		{
+			var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
+
+			resetClient (resourceToken);
+		}
+
+
+		void resetClient (string resourceToken)
+		{
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
 
 			try
 			{
-				client = new DocumentClient (Settings.DocumentDbUrl, Settings.RemoteDocumentDbKey);
-				Log.Debug (Settings.RemoteDocumentDbKey);
+				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
 			}
 			catch (Exception ex)
 			{
 				Log.Debug (ex.Message);
+				throw;
 			}
 		}
 
@@ -131,9 +144,6 @@ namespace Producer.Shared
 		}
 
 
-		// public async Task PublishAvContent (AvContent item) {  }
-
-
 		async Task refreshAvContentAsync ()
 		{
 			try
@@ -186,10 +196,7 @@ namespace Producer.Shared
 
 			try
 			{
-				if (!IsInitialized (collectionId))
-				{
-					await InitializeCollection (collectionId);
-				}
+				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
 
@@ -199,13 +206,18 @@ namespace Producer.Shared
 			{
 				dex.Print ();
 
-				if (dex.StatusCode == System.Net.HttpStatusCode.NotFound)
+				switch (dex.StatusCode)
 				{
-					return null;
-				}
-				else
-				{
-					throw;
+					case HttpStatusCode.NotFound: return null;
+					case HttpStatusCode.Forbidden:
+
+						await refreshResourceToken<T> ();
+
+						var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
+
+						return result.Resource as T;
+
+					default: throw;
 				}
 			}
 			catch (Exception ex)
@@ -224,16 +236,13 @@ namespace Producer.Shared
 				collectionId = typeof (T).Name;
 			}
 
+			var results = new List<T> ();
+
 			try
 			{
-				if (!IsInitialized (collectionId))
-				{
-					await InitializeCollection (collectionId);
-				}
+				// if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
-
-				var results = new List<T> ();
 
 				while (query.HasMoreResults)
 				{
@@ -246,13 +255,23 @@ namespace Producer.Shared
 			{
 				dex.Print ();
 
-				if (dex.StatusCode == System.Net.HttpStatusCode.NotFound)
+				switch (dex.StatusCode)
 				{
-					return null;
-				}
-				else
-				{
-					throw;
+					case HttpStatusCode.NotFound: return null;
+					case HttpStatusCode.Forbidden:
+
+						await refreshResourceToken<T> ();
+
+						var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
+
+						while (query.HasMoreResults)
+						{
+							results.AddRange (await query.ExecuteNextAsync<T> ());
+						}
+
+						return results;
+
+					default: throw;
 				}
 			}
 			catch (Exception ex)
@@ -275,10 +294,7 @@ namespace Producer.Shared
 
 			try
 			{
-				if (!IsInitialized (collectionId))
-				{
-					await InitializeCollection (collectionId);
-				}
+				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
 
@@ -287,7 +303,19 @@ namespace Producer.Shared
 			catch (DocumentClientException dex)
 			{
 				dex.Print ();
-				throw;
+
+				switch (dex.StatusCode)
+				{
+					case HttpStatusCode.Forbidden:
+
+						await refreshResourceToken<T> ();
+
+						var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
+
+						return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+
+					default: throw;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -307,10 +335,7 @@ namespace Producer.Shared
 
 			try
 			{
-				if (!IsInitialized (collectionId))
-				{
-					await InitializeCollection (collectionId);
-				}
+				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
 
@@ -319,7 +344,19 @@ namespace Producer.Shared
 			catch (DocumentClientException dex)
 			{
 				dex.Print ();
-				throw;
+
+				switch (dex.StatusCode)
+				{
+					case HttpStatusCode.Forbidden:
+
+						await refreshResourceToken<T> ();
+
+						var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
+
+						return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+
+					default: throw;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -339,10 +376,7 @@ namespace Producer.Shared
 
 			try
 			{
-				if (!IsInitialized (collectionId))
-				{
-					await InitializeCollection (collectionId);
-				}
+				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
 				var result = await client.DeleteDocumentAsync (item.SelfLink);
 
@@ -356,7 +390,24 @@ namespace Producer.Shared
 			catch (DocumentClientException dex)
 			{
 				dex.Print ();
-				throw;
+
+				switch (dex.StatusCode)
+				{
+					case HttpStatusCode.Forbidden:
+
+						await refreshResourceToken<T> ();
+
+						var result = await client.DeleteDocumentAsync (item.SelfLink);
+
+						if (!string.IsNullOrEmpty (result?.Resource?.ToString ()))
+						{
+							return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+						}
+
+						return null;
+
+					default: throw;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -423,24 +474,47 @@ namespace Producer.Shared
 				}
 				catch (DocumentClientException dex)
 				{
-					if (dex.StatusCode == System.Net.HttpStatusCode.NotFound)
+					switch (dex.StatusCode)
 					{
-						_databaseTask = client.CreateDatabaseAsync (new Database { Id = databaseId });
+						case HttpStatusCode.NotFound:
 
-						var database = await _databaseTask;
+							_databaseTask = client.CreateDatabaseAsync (new Database { Id = databaseId });
 
-						if (database?.Resource != null)
-						{
-							_databaseStatus = ClientStatus.Initialized;
+							var database = await _databaseTask;
 
-							Log.Debug ($"Created new Database");
-						}
-					}
-					else
-					{
-						Log.Debug (dex.Message);
-						_databaseStatus = ClientStatus.NotInitialized;
-						throw;
+							if (database?.Resource != null)
+							{
+								_databaseStatus = ClientStatus.Initialized;
+
+								Log.Debug ($"Created new Database");
+							}
+
+							break;
+
+						case HttpStatusCode.Forbidden:
+
+							if (_databaseStatus == ClientStatus.NotInitialized)
+							{
+								_databaseStatus = ClientStatus.Initializing;
+
+								//await refreshResourceToken<> ();
+
+								_databaseTask = null;
+
+								await createDatabaseIfNotExistsAsync ();
+							}
+							else
+							{
+								_databaseStatus = ClientStatus.NotInitialized;
+								throw;
+							}
+
+							break;
+
+						default:
+							Log.Debug (dex.Message);
+							_databaseStatus = ClientStatus.NotInitialized;
+							throw;
 					}
 				}
 				catch (Exception ex)
@@ -486,23 +560,46 @@ namespace Producer.Shared
 				}
 				catch (DocumentClientException dex)
 				{
-					if (dex.StatusCode == System.Net.HttpStatusCode.NotFound)
+					switch (dex.StatusCode)
 					{
-						_collectionCreationTasks [collectionId] = client.CreateDocumentCollectionAsync (UriFactory.CreateDatabaseUri (databaseId), new DocumentCollection { Id = collectionId }, new RequestOptions { OfferThroughput = 1000 });
+						case HttpStatusCode.NotFound:
 
-						var collection = await _collectionCreationTasks [collectionId];
+							_collectionCreationTasks [collectionId] = client.CreateDocumentCollectionAsync (UriFactory.CreateDatabaseUri (databaseId), new DocumentCollection { Id = collectionId }, new RequestOptions { OfferThroughput = 1000 });
 
-						if (collection?.Resource != null)
-						{
-							_collectionStatuses [collectionId] = ClientStatus.Initialized;
-							Log.Debug ($"Created new Collection: {collectionId}");
-						}
-					}
-					else
-					{
-						Log.Debug (dex.Message);
-						_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
-						throw;
+							var collection = await _collectionCreationTasks [collectionId];
+
+							if (collection?.Resource != null)
+							{
+								_collectionStatuses [collectionId] = ClientStatus.Initialized;
+								Log.Debug ($"Created new Collection: {collectionId}");
+							}
+
+							break;
+						case HttpStatusCode.Forbidden:
+
+							if (_collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.NotInitialized)
+							{
+								// set to initializing so we don't recurse more than once
+								_collectionStatuses [collectionId] = ClientStatus.Initializing;
+
+								//await refreshResourceToken ();
+
+								_collectionCreationTasks [collectionId] = null;
+
+								await createCollectionIfNotExistsAsync (collectionId);
+							}
+							else
+							{
+								_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
+								throw;
+							}
+
+							break;
+
+						default:
+							Log.Debug (dex.Message);
+							_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
+							throw;
 					}
 				}
 				catch (Exception ex)

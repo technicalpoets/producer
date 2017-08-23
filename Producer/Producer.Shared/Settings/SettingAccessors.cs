@@ -244,6 +244,10 @@ namespace SettingsStudio
 		}
 
 
+		public static string GetContentToken<T> () => StringForKey ($"SettingsKeys.ContentTokenBase{typeof (T).Name}");
+
+		public static void SetContentToken<T> (string token) => SetSetting ($"SettingsKeys.ContentTokenBase{typeof (T).Name}", token);
+
 		#endregion
 	}
 }

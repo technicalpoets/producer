@@ -37,9 +37,7 @@ namespace Producer.iOS
 					Log.Debug (user.ToString ());
 				}
 
-				var token = string.IsNullOrEmpty (Settings.RemoteDocumentDbKey) ? await ProducerClient.Shared.GetContentToken<AvContent> () : Settings.RemoteDocumentDbKey;
-
-				ContentClient.Shared.Init (token);
+				ContentClient.Shared.Init (await ProducerClient.Shared.GetContentToken<AvContent> ());
 
 				await ContentClient.Shared.GetAllAvContent ();
 
