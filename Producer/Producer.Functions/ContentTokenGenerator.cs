@@ -15,6 +15,7 @@ using Microsoft.Azure.WebJobs.Host;
 using Producer.Auth;
 
 using User = Microsoft.Azure.Documents.User;
+using Producer.Domain;
 
 namespace Producer.Functions
 {
@@ -45,7 +46,7 @@ namespace Producer.Functions
 
 				if (!string.IsNullOrEmpty (user.Id))
 				{
-					log.Info ($"User is authenticated and has userId: {user.Id}");
+					log.Info ($"User is authenticated and has userId: {user.Id} and role: {user.Role.Claim ()}");
 
 					var permissionMode = user.CanWrite () ? PermissionMode.All : PermissionMode.Read;
 
@@ -105,7 +106,7 @@ namespace Producer.Functions
 				{
 					try
 					{
-						log?.Info ($"Attempting to read permission with Id {permissionId} for user {userId}");
+						log?.Info ($"Attempting to read {permissionMode.ToString ()} permission with Id {permissionId} for user {userId}");
 
 						var permissionResponse = await DocClient.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId));
 
