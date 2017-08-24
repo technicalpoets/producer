@@ -16,6 +16,8 @@ namespace Producer.Auth
 {
 	public partial class ClientAuthManager
 	{
+		static readonly object _object = new object ();
+
 		Keychain _keychain;
 		Keychain Keychain => _keychain ?? (_keychain = new Keychain ());
 
@@ -37,7 +39,18 @@ namespace Producer.Auth
 		ClientAuthDetails _clientAuthDetails;
 		public ClientAuthDetails ClientAuthDetails
 		{
-			get => _clientAuthDetails ?? (_clientAuthDetails = initClientAuthDetails () ?? null);
+			get
+			{
+				lock (_object)
+				{
+					if (_clientAuthDetails == null)
+					{
+						_clientAuthDetails = initClientAuthDetails () ?? null;
+					}
+
+					return _clientAuthDetails;
+				}
+			}
 			private set
 			{
 				ClientAuthProviders? provider = _clientAuthDetails?.ClientAuthProvider;

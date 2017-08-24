@@ -54,9 +54,18 @@ namespace Producer.Shared
 		async Task refreshResourceToken<T> (bool forceTokenRefresh = true)
 			where T : Entity
 		{
-			var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
+			try
+			{
+				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
-			resetClient (resourceToken);
+				resetClient (resourceToken);
+			}
+			catch (FormatException)
+			{
+				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
+
+				resetClient (resourceToken);
+			}
 		}
 
 

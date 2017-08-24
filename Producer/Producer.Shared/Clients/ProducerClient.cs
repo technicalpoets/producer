@@ -15,21 +15,37 @@ namespace Producer.Shared
 {
 	public class ProducerClient
 	{
+		static readonly object _object = new object ();
+
 		static ProducerClient _shared;
 		public static ProducerClient Shared => _shared ?? (_shared = new ProducerClient ());
 
-		AuthUserConfig authUser;
+		static AuthUserConfig authUser;
 
-		User _user;
+		static User _user;
 		public User User
 		{
 			get
 			{
-				if (_user == null && ClientAuthManager.Shared.ClientAuthDetails != null && authUser != null)
+				lock (_object)
 				{
-					_user = new User (ClientAuthManager.Shared.ClientAuthDetails, authUser);
+					if (_user == null)
+					{
+						var clientAuth = ClientAuthManager.Shared.ClientAuthDetails;
+
+						if (clientAuth != null)
+						{
+							authUser = AuthUserConfig.FromKeychain ();
+
+							if (authUser != null)
+							{
+								_user = new User (ClientAuthManager.Shared.ClientAuthDetails, authUser);
+							}
+						}
+					}
+
+					return _user;
 				}
-				return _user;
 			}
 		}
 
@@ -58,12 +74,7 @@ namespace Producer.Shared
 		}
 
 
-		ProducerClient ()
-		{
-			authUser = AuthUserConfig.FromKeychain ();
-
-			Log.Info ($"User: {User?.ToString ()}");
-		}
+		ProducerClient () { }
 
 
 		public async Task Publish<T> (T content, string notificationTitle = null, string notificationMessage = null)
@@ -188,7 +199,7 @@ namespace Producer.Shared
 
 			ContentClient.Shared.ResetClient ();
 
-			CurrentUserChanged?.Invoke (this, User);
+			CurrentUserChanged?.Invoke (this, null);
 		}
 
 
@@ -223,6 +234,8 @@ namespace Producer.Shared
 						authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
 						authUser.SaveToKeychain ();
+
+						Log.Debug (authUser.ToString ());
 
 						CurrentUserChanged?.Invoke (this, User);
 					}

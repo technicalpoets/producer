@@ -76,7 +76,8 @@ namespace Producer.iOS
 
 		void handleCurrentUserChanged (object sender, User e)
 		{
-			NavigationItem.RightBarButtonItem = ProducerClient.Shared.UserRole.CanWrite () ? composeButton : null;
+			Log.Debug ($"User: {e?.ToString ()}");
+			BeginInvokeOnMainThread (() => NavigationItem.RightBarButtonItem = (e?.UserRole ?? UserRoles.General).CanWrite () ? composeButton : null);
 		}
 
 

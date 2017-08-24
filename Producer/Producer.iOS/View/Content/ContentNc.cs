@@ -29,6 +29,8 @@ namespace Producer.iOS
 
 			Task.Run (async () =>
 			{
+				Log.Debug (ProducerClient.Shared.User?.ToString ());
+
 				await ContentClient.Shared.GetAllAvContent ();
 
 				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
