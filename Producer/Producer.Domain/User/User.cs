@@ -31,29 +31,29 @@ namespace Producer.Domain
 		public override string ToString ()
 		{
 			var sb = new System.Text.StringBuilder ("\nUser\n");
-			sb.Append ("  Id".PadRight(13));
+			sb.Append ("  Id".PadRight (13));
 			sb.Append ($"{Id}\n");
-			sb.Append ("  Alias".PadRight(13));
+			sb.Append ("  Alias".PadRight (13));
 			sb.Append ($"{Alias}\n");
-			sb.Append ("  Email".PadRight(13));
+			sb.Append ("  Email".PadRight (13));
 			sb.Append ($"{Email}\n");
-			sb.Append ("  Username".PadRight(13));
+			sb.Append ("  Username".PadRight (13));
 			sb.Append ($"{Username}\n");
-			sb.Append ("  Name".PadRight(13));
+			sb.Append ("  Name".PadRight (13));
 			sb.Append ($"{Name}\n");
-			sb.Append ("  GivenName".PadRight(13));
+			sb.Append ("  GivenName".PadRight (13));
 			sb.Append ($"{GivenName}\n");
-			sb.Append ("  FamilyName".PadRight(13));
+			sb.Append ("  FamilyName".PadRight (13));
 			sb.Append ($"{FamilyName}\n");
-			sb.Append ("  AvatarUrl".PadRight(13));
+			sb.Append ("  AvatarUrl".PadRight (13));
 			sb.Append ($"{AvatarUrl}\n");
-			sb.Append ("  UserRole".PadRight(13));
+			sb.Append ("  UserRole".PadRight (13));
 			sb.Append ($"{UserRole}\n");
-			sb.Append ("  Locale".PadRight(13));
+			sb.Append ("  Locale".PadRight (13));
 			sb.Append ($"{Locale}\n");
-			sb.Append ("  Token".PadRight(13));
+			sb.Append ("  Token".PadRight (13));
 			sb.Append ($"{Token}\n");
-			sb.Append ("  AuthCode".PadRight(13));
+			sb.Append ("  AuthCode".PadRight (13));
 			sb.Append ($"{AuthCode}\n");
 			return sb.ToString ();
 		}
@@ -70,6 +70,7 @@ namespace Producer.Domain
 			GivenName = providerDetails.GivenName ?? serverDetails.GivenName;
 			FamilyName = providerDetails.FamilyName ?? serverDetails.SurName;
 			AvatarUrl = providerDetails.AvatarUrl ?? serverDetails.Picture;
+			UserRole = serverDetails.UserRole;
 			Locale = serverDetails.Locale;
 			Token = providerDetails.Token;
 			AuthCode = providerDetails.AuthCode;

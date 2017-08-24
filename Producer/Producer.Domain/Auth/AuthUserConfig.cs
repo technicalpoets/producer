@@ -1,4 +1,5 @@
 ﻿using Producer.Domain;
+
 namespace Producer.Auth
 {
 	public class AuthUserConfig
@@ -17,6 +18,8 @@ namespace Producer.Auth
 
 		public string Locale { get; set; }
 
+		public UserRoles UserRole { get; set; }
+
 		public override string ToString ()
 		{
 			var sb = new System.Text.StringBuilder ("\n\nAuthUserConfig\n");
@@ -34,6 +37,8 @@ namespace Producer.Auth
 			sb.Append ($"{Picture}\n");
 			sb.Append ("  Locale".PadRight (13));
 			sb.Append ($"{Locale}\n");
+			sb.Append ("  UserRole".PadRight (13));
+			sb.Append ($"{UserRole}\n");
 			return sb.ToString ();
 		}
 
@@ -45,15 +50,17 @@ namespace Producer.Auth
 		{
 			var keychain = new Keychain ();
 
-			var config = new AuthUserConfig ();
-
-			config.Id = keychain.GetItemFromKeychain (serviceName (nameof (Id))).PrivateKey;
-			config.Name = keychain.GetItemFromKeychain (serviceName (nameof (Name))).PrivateKey;
-			config.GivenName = keychain.GetItemFromKeychain (serviceName (nameof (GivenName))).PrivateKey;
-			config.SurName = keychain.GetItemFromKeychain (serviceName (nameof (SurName))).PrivateKey;
-			config.Email = keychain.GetItemFromKeychain (serviceName (nameof (Email))).PrivateKey;
-			config.Picture = keychain.GetItemFromKeychain (serviceName (nameof (Picture))).PrivateKey;
-			config.Locale = keychain.GetItemFromKeychain (serviceName (nameof (Locale))).PrivateKey;
+			var config = new AuthUserConfig
+			{
+				Id = keychain.GetItemFromKeychain (serviceName (nameof (Id))).PrivateKey,
+				Name = keychain.GetItemFromKeychain (serviceName (nameof (Name))).PrivateKey,
+				GivenName = keychain.GetItemFromKeychain (serviceName (nameof (GivenName))).PrivateKey,
+				SurName = keychain.GetItemFromKeychain (serviceName (nameof (SurName))).PrivateKey,
+				Email = keychain.GetItemFromKeychain (serviceName (nameof (Email))).PrivateKey,
+				Picture = keychain.GetItemFromKeychain (serviceName (nameof (Picture))).PrivateKey,
+				Locale = keychain.GetItemFromKeychain (serviceName (nameof (Locale))).PrivateKey,
+				UserRole = UserRolesExtensions.FromClaim (keychain.GetItemFromKeychain (serviceName (nameof (UserRole))).PrivateKey)
+			};
 
 			return config;
 		}
@@ -69,6 +76,7 @@ namespace Producer.Auth
 			if (!string.IsNullOrEmpty (Email)) keychain.SaveItemToKeychain (serviceName (nameof (Email)), "authconfig", Email);
 			if (!string.IsNullOrEmpty (Picture)) keychain.SaveItemToKeychain (serviceName (nameof (Picture)), "authconfig", Picture);
 			if (!string.IsNullOrEmpty (Locale)) keychain.SaveItemToKeychain (serviceName (nameof (Locale)), "authconfig", Locale);
+			keychain.SaveItemToKeychain (serviceName (nameof (UserRole)), "authconfig", UserRole.Claim ());
 		}
 
 		public static void RemoveFromKeychain ()
@@ -82,6 +90,7 @@ namespace Producer.Auth
 			keychain.RemoveItemFromKeychain (serviceName (nameof (Email)));
 			keychain.RemoveItemFromKeychain (serviceName (nameof (Picture)));
 			keychain.RemoveItemFromKeychain (serviceName (nameof (Locale)));
+			keychain.RemoveItemFromKeychain (serviceName (nameof (UserRole)));
 		}
 #endif
 	}
@@ -89,7 +98,7 @@ namespace Producer.Auth
 
 	public static class AuthUserConfigExtensions
 	{
-		public static AuthUserConfig GetAuthUserConfig (this GoogleAuthUser user, string sid)
+		public static AuthUserConfig GetAuthUserConfig (this GoogleAuthUser user, string sid, UserRoles role)
 		{
 			return new AuthUserConfig
 			{
@@ -99,7 +108,8 @@ namespace Producer.Auth
 				SurName = user.SurName,
 				Email = user.EmailAddress,
 				Picture = user.Picture,
-				Locale = user.Locale
+				Locale = user.Locale,
+				UserRole = role
 			};
 		}
 	}

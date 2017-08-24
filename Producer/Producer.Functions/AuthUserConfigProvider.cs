@@ -48,9 +48,9 @@ namespace Producer.Functions
 					// TODO: Check for provider
 					var googleUser = JsonConvert.DeserializeObject<GoogleAuthUser> (me.Trim (new Char [] { '[', ']' }));
 
-					addRoleClaim (identity, googleUser);
+					var role = addRoleClaim (identity, googleUser);
 
-					return req.CreateResponse (System.Net.HttpStatusCode.OK, googleUser.GetAuthUserConfig (userId));
+					return req.CreateResponse (System.Net.HttpStatusCode.OK, googleUser.GetAuthUserConfig (userId, role));
 				}
 				catch (Exception ex)
 				{
@@ -65,22 +65,29 @@ namespace Producer.Functions
 		}
 
 
-		static void addRoleClaim (ClaimsIdentity identity, GoogleAuthUser googleUser)
+		static UserRoles addRoleClaim (ClaimsIdentity identity, GoogleAuthUser googleUser)
 		{
 			var existingRole = identity.GetUserRole ();
 
 			if (_admins.Contains (googleUser.EmailAddress.ToLower ()) && existingRole != UserRoles.Admin)
 			{
 				identity.AddClaim (new Claim (ClaimTypes.Role, UserRoles.Admin.Claim ()));
+				return UserRoles.Admin;
 			}
-			else if (_producers.Contains (googleUser.EmailAddress.ToLower ()) && existingRole != UserRoles.Admin && existingRole != UserRoles.Producer)
+
+			if (_producers.Contains (googleUser.EmailAddress.ToLower ()) && existingRole != UserRoles.Admin && existingRole != UserRoles.Producer)
 			{
 				identity.AddClaim (new Claim (ClaimTypes.Role, UserRoles.Producer.Claim ()));
+				return UserRoles.Producer;
 			}
-			else if (existingRole != UserRoles.Admin && existingRole != UserRoles.Producer && existingRole != UserRoles.Insider)
+
+			if (existingRole != UserRoles.Admin && existingRole != UserRoles.Producer && existingRole != UserRoles.Insider)
 			{
 				identity.AddClaim (new Claim (ClaimTypes.Role, UserRoles.Insider.Claim ()));
+				return UserRoles.Insider;
 			}
+
+			return existingRole;
 		}
 	}
 }
