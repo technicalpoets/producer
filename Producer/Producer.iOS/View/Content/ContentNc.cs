@@ -53,6 +53,26 @@ namespace Producer.iOS
 		}
 
 
+		void handleClientAuthChanged (object s, ClientAuthDetails e)
+		{
+			Log.Debug ($"Authenticated: {e}");
+
+			Task.Run (async () =>
+			{
+				if (e == null)
+				{
+					ProducerClient.Shared.ResetUser ();
+				}
+				else
+				{
+					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
+				}
+
+				await ContentClient.Shared.GetAllAvContent ();
+			});
+		}
+
+
 		public bool SetupComposeVc (NSUrl url)
 		{
 			// TODO: Display some type of message for non-producers or figure out how to kill the document type registration
@@ -83,26 +103,6 @@ namespace Producer.iOS
 			}
 
 			return canCompose;
-		}
-
-
-		void handleClientAuthChanged (object s, ClientAuthDetails e)
-		{
-			Log.Debug ($"Authenticated: {e}");
-
-			Task.Run (async () =>
-			{
-				if (e == null)
-				{
-					ProducerClient.Shared.ResetUser ();
-				}
-				else
-				{
-					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
-				}
-
-				await ContentClient.Shared.GetAllAvContent ();
-			});
 		}
 
 

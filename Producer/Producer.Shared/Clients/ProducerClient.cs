@@ -33,6 +33,10 @@ namespace Producer.Shared
 			}
 		}
 
+		public UserRoles UserRole => User?.UserRole ?? UserRoles.General;
+
+		public event EventHandler<User> CurrentUserChanged;
+
 		HttpClient _httpClient;
 		HttpClient httpClient
 		{
@@ -183,6 +187,8 @@ namespace Producer.Shared
 			_httpClient = null;
 
 			ContentClient.Shared.ResetClient ();
+
+			CurrentUserChanged?.Invoke (this, User);
 		}
 
 
@@ -217,6 +223,8 @@ namespace Producer.Shared
 						authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
 						authUser.SaveToKeychain ();
+
+						CurrentUserChanged?.Invoke (this, User);
 					}
 					else
 					{

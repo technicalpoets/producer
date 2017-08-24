@@ -32,5 +32,7 @@
 
 			return UserRoles.General;
 		}
+
+		public static bool CanWrite (this UserRoles role) => (role == UserRoles.Admin || role == UserRoles.Producer);
 	}
 }

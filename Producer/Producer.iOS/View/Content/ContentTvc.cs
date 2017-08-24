@@ -37,12 +37,12 @@ namespace Producer.iOS
 		{
 			base.ViewDidLoad ();
 
-			if (!Settings.TestProducer)
-			{
-				NavigationItem.RightBarButtonItem = null;
-			}
+			NavigationItem.RightBarButtonItem = ProducerClient.Shared.UserRole.CanWrite () ? composeButton : null;
 
 			NavigationController.SetToolbarHidden (true, false);
+
+			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
+
 			//AssetPlaybackManager.Shared.ReadyToPlay += handlePlaybackManagerReadyToPlay;
 
 			AssetPersistenceManager.Shared.DidRestore += handlePersistanceManagerDidRestore;
@@ -71,6 +71,12 @@ namespace Producer.iOS
 				playerViewController.Player = null;
 				playerViewController = null;
 			}
+		}
+
+
+		void handleCurrentUserChanged (object sender, User e)
+		{
+			NavigationItem.RightBarButtonItem = ProducerClient.Shared.UserRole.CanWrite () ? composeButton : null;
 		}
 
 

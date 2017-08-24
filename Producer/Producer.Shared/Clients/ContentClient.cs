@@ -30,7 +30,7 @@ namespace Producer.Shared
 		DocumentClient client;
 
 
-		public UserRoles UserRole => ProducerClient.Shared.User?.UserRole ?? UserRoles.General;
+		public UserRoles UserRole => ProducerClient.Shared.UserRole;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
 			{ UserRoles.General, new List<AvContent>() },

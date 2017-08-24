@@ -139,9 +139,6 @@ namespace Producer.Auth
 
 		public static bool HasId (this (string Id, UserRoles Role) user) => !string.IsNullOrEmpty (user.Id);
 
-		public static bool CanWrite (this (string Id, UserRoles Role) user)
-		{
-			return user.HasId () && (user.Role == UserRoles.Admin || user.Role == UserRoles.Producer);
-		}
+		public static bool CanWrite (this (string Id, UserRoles Role) user) => user.HasId () && user.Role.CanWrite ();
 	}
 }
