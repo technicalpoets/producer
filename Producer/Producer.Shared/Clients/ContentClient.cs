@@ -188,6 +188,8 @@ namespace Producer.Shared
 				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
+				updateNetworkActivityIndicator (true);
+
 				var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
 
 				return result.Resource as T;
@@ -215,6 +217,10 @@ namespace Producer.Shared
 				Log.Debug (ex.Message);
 				throw;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
 		}
 
 
@@ -232,6 +238,8 @@ namespace Producer.Shared
 			{
 				if (client == null) await refreshResourceToken<T> (false);
 				// if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
+
+				updateNetworkActivityIndicator (true);
 
 				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
 
@@ -270,6 +278,10 @@ namespace Producer.Shared
 				Log.Debug (ex.Message);
 				throw;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
 		}
 
 		#endregion
@@ -287,6 +299,8 @@ namespace Producer.Shared
 			{
 				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
+
+				updateNetworkActivityIndicator (true);
 
 				var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
 
@@ -314,6 +328,10 @@ namespace Producer.Shared
 				Log.Debug (ex.Message);
 				throw;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
 		}
 
 
@@ -329,6 +347,8 @@ namespace Producer.Shared
 			{
 				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
+
+				updateNetworkActivityIndicator (true);
 
 				var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
 
@@ -356,6 +376,10 @@ namespace Producer.Shared
 				Log.Debug (ex.Message);
 				throw;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
 		}
 
 
@@ -371,6 +395,8 @@ namespace Producer.Shared
 			{
 				if (client == null) await refreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
+
+				updateNetworkActivityIndicator (true);
 
 				var result = await client.DeleteDocumentAsync (item.SelfLink);
 
@@ -408,9 +434,21 @@ namespace Producer.Shared
 				Log.Debug (ex.Message);
 				throw;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
 		}
 
 		#endregion
+
+
+		void updateNetworkActivityIndicator (bool visible)
+		{
+#if __IOS__
+			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
+#endif
+		}
 
 
 		#region Initialization (database & collections)
@@ -453,6 +491,8 @@ namespace Producer.Shared
 			{
 				try
 				{
+					updateNetworkActivityIndicator (true);
+
 					Log.Debug ("Checking for Database...");
 
 					_databaseTask = client.ReadDatabaseAsync (UriFactory.CreateDatabaseUri (databaseId));
@@ -517,6 +557,10 @@ namespace Producer.Shared
 					_databaseStatus = ClientStatus.NotInitialized;
 					throw;
 				}
+				finally
+				{
+					updateNetworkActivityIndicator (false);
+				}
 			}
 		}
 
@@ -539,6 +583,8 @@ namespace Producer.Shared
 			{
 				try
 				{
+					updateNetworkActivityIndicator (true);
+
 					Log.Debug ($"Checking for Collection: {collectionId}...");
 
 					_collectionCreationTasks [collectionId] = client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId));
@@ -601,6 +647,10 @@ namespace Producer.Shared
 					Log.Debug (ex.Message);
 					_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
 					throw;
+				}
+				finally
+				{
+					updateNetworkActivityIndicator (false);
 				}
 			}
 		}

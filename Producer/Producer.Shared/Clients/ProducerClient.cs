@@ -77,6 +77,8 @@ namespace Producer.Shared
 						Message = notificationMessage
 					};
 
+					updateNetworkActivityIndicator (true);
+
 					var response = await httpClient.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, "application/json"));
 
 					Log.Debug (response.ToString ());
@@ -85,6 +87,10 @@ namespace Producer.Shared
 				{
 					Log.Debug (ex.Message);
 					throw;
+				}
+				finally
+				{
+					updateNetworkActivityIndicator (false);
 				}
 			}
 		}
@@ -99,6 +105,8 @@ namespace Producer.Shared
 
 				try
 				{
+					updateNetworkActivityIndicator (true);
+
 					var response = await httpClient.GetAsync (url);
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
@@ -109,6 +117,10 @@ namespace Producer.Shared
 				{
 					Log.Debug (ex.Message);
 					throw;
+				}
+				finally
+				{
+					updateNetworkActivityIndicator (false);
 				}
 			}
 
@@ -131,6 +143,8 @@ namespace Producer.Shared
 				{
 					Log.Info ($"Getting new content token from server for {typeof (T).Name}");
 
+					updateNetworkActivityIndicator (true);
+
 					var response = await httpClient.GetAsync (url);
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
@@ -150,6 +164,10 @@ namespace Producer.Shared
 			{
 				Log.Debug (ex.Message);
 				throw;
+			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
 			}
 		}
 
@@ -179,6 +197,8 @@ namespace Producer.Shared
 				if (!string.IsNullOrEmpty (providerToken) && !string.IsNullOrEmpty (providerAuthCode))
 				{
 					var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
+
+					updateNetworkActivityIndicator (true);
 
 					var authResponse = await httpClient.PostAsync (".auth/login/google", new StringContent (auth, Encoding.UTF8, "application/json"));
 
@@ -212,6 +232,18 @@ namespace Producer.Shared
 				Log.Error (ex.Message);
 				throw;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
+		}
+
+
+		public void updateNetworkActivityIndicator (bool visible)
+		{
+#if __IOS__
+			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
+#endif
 		}
 	}
 }

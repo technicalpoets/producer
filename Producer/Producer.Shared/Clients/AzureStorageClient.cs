@@ -6,7 +6,6 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 using Producer.Domain;
 
-
 namespace Producer.Shared
 {
 	public class AzureStorageClient
@@ -30,6 +29,8 @@ namespace Producer.Shared
 
 				blockBlob.Metadata [DocumentUpdatedMessage.CollectionIdKey] = typeof (AvContent).Name;
 
+				updateNetworkActivityIndicator (true);
+
 				await blockBlob.UploadFromFileAsync (avContent.LocalInboxPath);
 
 				Log.Debug ($"Finished uploading new file.");
@@ -42,6 +43,17 @@ namespace Producer.Shared
 
 				return false;
 			}
+			finally
+			{
+				updateNetworkActivityIndicator (false);
+			}
+		}
+
+		void updateNetworkActivityIndicator (bool visible)
+		{
+#if __IOS__
+			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
+#endif
 		}
 	}
 }
