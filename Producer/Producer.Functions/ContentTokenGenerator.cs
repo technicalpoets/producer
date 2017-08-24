@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -14,6 +13,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
 using Producer.Auth;
+
+using User = Microsoft.Azure.Documents.User;
 
 namespace Producer.Functions
 {
@@ -32,32 +33,32 @@ namespace Producer.Functions
 		static DocumentClient _docClient;
 		public static DocumentClient DocClient => _docClient ?? (_docClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
 
+
 		[Authorize]
-		[FunctionName ("GetContentReadToken")]
-		public static async Task<HttpResponseMessage> GetRead (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/read/{collectionId}")] HttpRequestMessage req, string collectionId, TraceWriter log)
+		[FunctionName ("GetContentToken")]
+		public static async Task<HttpResponseMessage> GetToken (
+			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/content/{collectionId}")] HttpRequestMessage req, string collectionId, TraceWriter log)
 		{
 			try
 			{
-				if (Thread.CurrentPrincipal.Identity.IsAuthenticated && Thread.CurrentPrincipal is ClaimsPrincipal principal)
+				var user = Thread.CurrentPrincipal.GetUserIdAndRole ();
+
+				if (!string.IsNullOrEmpty (user.Id))
 				{
-					log.Info ("User is authenticated");
+					log.Info ($"User is authenticated and has userId: {user.Id}");
 
-					if (principal.Identity is ClaimsIdentity identity)
+					var permissionMode = user.CanWrite () ? PermissionMode.All : PermissionMode.Read;
+
+					var permissionId = permissionMode == PermissionMode.All ? userWriteId : userReadId;
+
+					var userPermission = await getOrCreatePermission (databaseId, user.Id, collectionId, permissionId, permissionMode, log);
+
+					if (!string.IsNullOrEmpty (userPermission?.Token))
 					{
-						var userId = identity.UniqueIdentifier ();
-
-						log.Info ($"userId = {userId}");
-
-						var userPermission = await getOrCreatePermission (databaseId, userId, collectionId, userReadId, PermissionMode.Read, log);
-
-						if (!string.IsNullOrEmpty (userPermission?.Token))
-						{
-							return req.CreateResponse (HttpStatusCode.OK, userPermission.Token);
-						}
-
-						return req.CreateResponse (HttpStatusCode.InternalServerError);
+						return req.CreateResponse (HttpStatusCode.OK, userPermission.Token);
 					}
+
+					return req.CreateResponse (HttpStatusCode.InternalServerError);
 				}
 
 				log.Info ("User is not authenticated, retrieving anonymous read token");
@@ -77,47 +78,6 @@ namespace Producer.Functions
 
 				return req.CreateErrorResponse (HttpStatusCode.InternalServerError, ex);
 			}
-		}
-
-
-		[Authorize]
-		[FunctionName ("GetContentWriteToken")]
-		public static async Task<HttpResponseMessage> GetWrite (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/write/{collectionId}")] HttpRequestMessage req, string collectionId, TraceWriter log)
-		{
-			if (Thread.CurrentPrincipal.Identity.IsAuthenticated && Thread.CurrentPrincipal is ClaimsPrincipal principal)
-			{
-				log.Info ("User is authenticated");
-
-				if (principal.Identity is ClaimsIdentity identity)
-				{
-					var userId = identity.UniqueIdentifier ();
-
-					log.Info ($"userId = {userId}");
-
-					try
-					{
-						var userPermission = await getOrCreatePermission (databaseId, userId, collectionId, userWriteId, PermissionMode.All, log);
-
-						if (!string.IsNullOrEmpty (userPermission?.Token))
-						{
-							return req.CreateResponse (HttpStatusCode.OK, userPermission?.Token);
-						}
-
-						return req.CreateResponse (HttpStatusCode.InternalServerError);
-					}
-					catch (Exception ex)
-					{
-						log.Error (ex.Message);
-
-						return req.CreateErrorResponse (HttpStatusCode.InternalServerError, ex);
-					}
-				}
-			}
-
-			log.Info ("User is not authenticated");
-
-			return req.CreateResponse (HttpStatusCode.Unauthorized);
 		}
 
 

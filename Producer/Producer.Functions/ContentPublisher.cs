@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-
+using System.Threading;
+using System.Web.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
 using Producer.Domain;
+using Producer.Auth;
 
 namespace Producer.Functions
 {
 	public static class ContentPublisher
 	{
 
-#if !DEBUG
-		//[Authorize]
-#endif
+		[Authorize]
 		[FunctionName ("ContentPublisher")]
 		public static bool Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")]DocumentUpdatedMessage req,
@@ -26,14 +26,15 @@ namespace Producer.Functions
 			[Queue ("message-queue-document-update")] out DocumentUpdatedMessage updatedMessage,
 			TraceWriter log)
 		{
-#if !DEBUG
-			//if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
-			//{
-			//	log.Info ("Not authenticated");
+			var user = Thread.CurrentPrincipal.GetUserIdAndRole ();
 
-			//	return req.CreateResponse (HttpStatusCode.Unauthorized);
-			//}
-#endif
+			if (!user.CanWrite ())
+			{
+				log.Info ("Not authenticated");
+
+				throw new UnauthorizedAccessException ();
+				//return req.CreateResponse (HttpStatusCode.Unauthorized);
+			}
 
 			log.Info ("new DocumentUpdatedMessage");
 			log.Info (Newtonsoft.Json.JsonConvert.SerializeObject (req));

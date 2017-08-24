@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 
+using Producer.Domain;
+
 namespace Producer.Auth
 {
 	public static class SecurityExtensions
@@ -73,6 +75,73 @@ namespace Producer.Auth
 			client.DefaultRequestHeaders.Remove (zumoAuthHeaderKey);
 
 			client.DefaultRequestHeaders.Add (zumoAuthHeaderKey, zumoAuthHeader);
+		}
+
+
+		public static ClaimsIdentity GetClaimsIdentity (this IPrincipal currentPricipal)
+		{
+			if (currentPricipal.Identity.IsAuthenticated
+				&& currentPricipal is ClaimsPrincipal principal
+				&& principal.Identity is ClaimsIdentity identity)
+			{
+				return identity;
+			}
+
+			return null;
+
+		}
+
+		public static UserRoles GetUserRole (this IPrincipal currentPricipal)
+		{
+			var identity = currentPricipal.GetClaimsIdentity ();
+
+			if (identity != null)
+			{
+				return GetUserRole (identity);
+			}
+
+			return UserRoles.General;
+		}
+
+
+		public static UserRoles GetUserRole (this ClaimsIdentity identity)
+		{
+			if (identity.HasClaim (ClaimTypes.Role, UserRoles.Admin.Claim ()))
+			{
+				return UserRoles.Admin;
+			}
+
+			if (identity.HasClaim (ClaimTypes.Role, UserRoles.Producer.Claim ()))
+			{
+				return UserRoles.Producer;
+			}
+
+			if (identity.HasClaim (ClaimTypes.Role, UserRoles.Insider.Claim ()))
+			{
+				return UserRoles.Insider;
+			}
+
+			return UserRoles.General;
+		}
+
+
+		public static (string Id, UserRoles Role) GetUserIdAndRole (this IPrincipal currentPricipal)
+		{
+			var identity = currentPricipal.GetClaimsIdentity ();
+
+			if (identity != null)
+			{
+				return (identity.UniqueIdentifier (), identity.GetUserRole ());
+			}
+
+			return (null, UserRoles.General);
+		}
+
+		public static bool HasId (this (string Id, UserRoles Role) user) => !string.IsNullOrEmpty (user.Id);
+
+		public static bool CanWrite (this (string Id, UserRoles Role) user)
+		{
+			return user.HasId () && (user.Role == UserRoles.Admin || user.Role == UserRoles.Producer);
 		}
 	}
 }

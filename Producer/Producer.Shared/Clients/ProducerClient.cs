@@ -131,12 +131,10 @@ namespace Producer.Shared
 		public async Task<string> GetContentToken<T> (bool refresh = false)
 			where T : Entity
 		{
-			var url = $"api/tokens/read/{typeof (T).Name}";
+			var url = $"api/tokens/content/{typeof (T).Name}";
 
 			try
 			{
-				//TODO: delete anonymous read-only token when user logs in
-
 				var resourceToken = Settings.GetContentToken<T> ();
 
 				if (refresh || string.IsNullOrEmpty (resourceToken))

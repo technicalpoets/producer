@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -11,6 +13,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 using Producer.Domain;
+using Producer.Auth;
 
 namespace Producer.Functions
 {
@@ -22,23 +25,22 @@ namespace Producer.Functions
 
 		public static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (_storageAccountConnection).CreateCloudBlobClient ());
 
-#if !DEBUG
-		//[Authorize]
-#endif
+
+		[Authorize]
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/storage/{collectionId}/{documentId}")] HttpRequestMessage req,
 			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content,
 			string collectionId, string documentId, TraceWriter log)
 		{
-#if !DEBUG
-			//if (!Thread.CurrentPrincipal.Identity.IsAuthenticated)
-			//{
-			//	log.Info ("Not authenticated");
+			var user = Thread.CurrentPrincipal.GetUserIdAndRole ();
 
-			//	return req.CreateResponse (HttpStatusCode.Unauthorized);
-			//}
-#endif
+			if (!user.CanWrite ())
+			{
+				log.Info ("Not authenticated");
+
+				return req.CreateResponse (HttpStatusCode.Unauthorized);
+			}
 
 			if (content == null)
 			{
