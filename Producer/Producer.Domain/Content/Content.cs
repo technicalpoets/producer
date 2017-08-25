@@ -23,7 +23,13 @@ namespace Producer.Domain
 #if __MOBILE__
 
 		[JsonIgnore]
-		public bool Published => PublishedAt.HasValue && !string.IsNullOrEmpty (ProducerId);
+		public bool HasProducerId => !string.IsNullOrEmpty (ProducerId);
+
+		[JsonIgnore]
+		public bool Published => HasProducerId && PublishedAt.HasValue;
+
+		[JsonIgnore]
+		public bool Processing => HasProducerId && !HasRemoteAssetUri;
 
 		[JsonIgnore]
 		public bool HasRemoteAssetUri => !string.IsNullOrWhiteSpace (RemoteAssetUri);

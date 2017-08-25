@@ -16,6 +16,8 @@ namespace Producer.Domain
 
 		public string CollectionId { get; private set; }
 
+		public int PublishedTo { get; set; }
+
 		public DocumentUpdatedMessage (string documentId, string collectionId)
 		{
 			DocumentId = documentId ?? throw new ArgumentNullException (nameof (documentId));

@@ -90,7 +90,8 @@ namespace Producer.Shared
 					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name)
 					{
 						Title = notificationTitle,
-						Message = notificationMessage
+						Message = notificationMessage,
+						PublishedTo = (int) content.PublishedTo
 					};
 
 					updateNetworkActivityIndicator (true);
@@ -208,43 +209,43 @@ namespace Producer.Shared
 		{
 			try
 			{
+				if (string.IsNullOrEmpty (providerToken)) throw new ArgumentNullException (nameof (providerToken));
+				if (string.IsNullOrEmpty (providerAuthCode)) throw new ArgumentNullException (nameof (providerAuthCode));
+
 				ResetUser ();
 
-				if (!string.IsNullOrEmpty (providerToken) && !string.IsNullOrEmpty (providerAuthCode))
+				var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
+
+				updateNetworkActivityIndicator (true);
+
+				var authResponse = await httpClient.PostAsync (".auth/login/google", new StringContent (auth, Encoding.UTF8, "application/json"));
+
+				if (authResponse.IsSuccessStatusCode)
 				{
-					var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
+					var azureUserJson = await authResponse.Content.ReadAsStringAsync ();
 
-					updateNetworkActivityIndicator (true);
+					Log.Debug ($"azureUserJson: {azureUserJson}");
 
-					var authResponse = await httpClient.PostAsync (".auth/login/google", new StringContent (auth, Encoding.UTF8, "application/json"));
+					var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
 
-					if (authResponse.IsSuccessStatusCode)
-					{
-						var azureUserJson = await authResponse.Content.ReadAsStringAsync ();
+					new Keychain ().SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
 
-						Log.Debug ($"azureUserJson: {azureUserJson}");
+					_httpClient = null;
 
-						var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
+					var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
 
-						new Keychain ().SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+					authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-						_httpClient = null;
+					authUser.SaveToKeychain ();
 
-						var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+					Log.Debug (authUser.ToString ());
 
-						authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
-
-						authUser.SaveToKeychain ();
-
-						Log.Debug (authUser.ToString ());
-
-						CurrentUserChanged?.Invoke (this, User);
-					}
-					else
-					{
-						Log.Error (auth);
-						Log.Error (authResponse.ToString ());
-					}
+					CurrentUserChanged?.Invoke (this, User);
+				}
+				else
+				{
+					Log.Error (auth);
+					Log.Error (authResponse.ToString ());
 				}
 			}
 			catch (Exception ex)

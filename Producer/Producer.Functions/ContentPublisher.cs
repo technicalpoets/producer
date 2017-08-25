@@ -30,7 +30,7 @@ namespace Producer.Functions
 		[FunctionName ("ContentPublisher")]
 		public static async Task<HttpResponseMessage> Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")]HttpRequestMessage req,
-			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "")] IAsyncCollector<Notification> notification,
+			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "(userrole:0 || userrole:{publishedTo})")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
 			log.Info ("new DocumentUpdatedMessage");

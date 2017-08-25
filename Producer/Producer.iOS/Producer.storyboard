@@ -319,6 +319,13 @@ Sign in to listen to new music before it drops.</string>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Processing" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpe-pQ-HYi">
+                                            <rect key="frame" x="291" y="26" width="70" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                         <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="i_content_audio" id="Srv-RO-xHQ">
                                             <rect key="frame" x="15" y="19" width="25" height="25"/>
                                             <autoresizingMask key="autoresizingMask"/>
@@ -326,6 +333,10 @@ Sign in to listen to new music before it drops.</string>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="0.1489986479" green="0.1490316391" blue="0.14899659160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <outlet property="accessoryLabel" destination="hpe-pQ-HYi" id="qNS-Fp-GYQ"/>
+                                    <outlet property="accessoryView" destination="hpe-pQ-HYi" id="EhK-so-3qI"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

@@ -32,12 +32,12 @@ namespace Producer.Functions
 
 					avContent.RemoteAssetUri = contentMessage.RemoteAssetUri;
 
-					contentMessage.Title = avContent.DisplayName;
-
-					contentMessage.Message = "New Content!";
-
-
-					updatedMessage = contentMessage;
+					updatedMessage = new DocumentUpdatedMessage (contentMessage.DocumentId, contentMessage.CollectionId)
+					{
+						Title = $"New {avContent.ContentType}!",
+						Message = avContent.DisplayName,
+						PublishedTo = (int) avContent.PublishedTo
+					};
 				}
 				catch (Exception ex)
 				{

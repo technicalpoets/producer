@@ -74,11 +74,14 @@ namespace Producer.iOS
 
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
-			indexPathCache = indexPath;
-
 			tableView.CellAt (indexPath).SetSelected (false, true);
 
-			handleTableAction ();
+			if (!content [indexPath.Row].Processing)
+			{
+				indexPathCache = indexPath;
+
+				handleTableAction ();
+			}
 		}
 
 

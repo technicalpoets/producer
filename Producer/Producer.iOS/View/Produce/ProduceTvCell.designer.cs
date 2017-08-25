@@ -12,9 +12,15 @@ namespace Producer.iOS
 	[Register ("ProduceTvCell")]
 	partial class ProduceTvCell
 	{
+		[Outlet]
+		UIKit.UILabel accessoryLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (accessoryLabel != null) {
+				accessoryLabel.Dispose ();
+				accessoryLabel = null;
+			}
 		}
 	}
 }

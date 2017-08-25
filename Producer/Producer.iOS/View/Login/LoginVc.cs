@@ -74,7 +74,9 @@ namespace Producer.iOS
 			base.ViewDidDisappear (animated);
 		}
 
+
 		partial void cancelClicked (NSObject sender) => DismissViewController (true, null);
+
 
 		void initSignInButtons ()
 		{

@@ -22,6 +22,8 @@ namespace Producer.iOS
 
 		MusicAsset activeAsset;
 
+		NSIndexPath indexPathCache;
+
 		List<MusicAsset> allAssets = new List<MusicAsset> ();
 
 		List<MusicAsset> savedAssets = new List<MusicAsset> ();
@@ -146,8 +148,6 @@ namespace Producer.iOS
 
 			return cell;
 		}
-
-		NSIndexPath indexPathCache;
 
 
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)

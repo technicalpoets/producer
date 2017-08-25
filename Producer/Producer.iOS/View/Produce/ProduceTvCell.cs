@@ -16,6 +16,8 @@ namespace Producer.iOS
 			TextLabel.Text = music.DisplayName;
 			DetailTextLabel.Text = music.Description;
 
+			accessoryLabel.Hidden = !music.Processing;
+
 			switch (music.ContentType)
 			{
 				case AvContentTypes.Audio:
