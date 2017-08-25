@@ -23,6 +23,7 @@ namespace Producer.Domain
 		public DocumentUpdatedMessage (string documentId, string collectionId, UserRoles publishedTo)
 			: this (documentId, collectionId, publishedTo.GetExpressionString ()) { }
 
+		[Newtonsoft.Json.JsonConstructor]
 		public DocumentUpdatedMessage (string documentId, string collectionId, string publishedToTagExpression)
 		{
 			DocumentId = documentId ?? throw new ArgumentNullException (nameof (documentId));
