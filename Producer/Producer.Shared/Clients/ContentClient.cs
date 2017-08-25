@@ -51,25 +51,25 @@ namespace Producer.Shared
 			client = null;
 		}
 
-		async Task refreshResourceToken<T> (bool forceTokenRefresh = true)
+		async Task RefreshResourceToken<T> (bool forceTokenRefresh = true)
 			where T : Entity
 		{
 			try
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
-				resetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 			catch (FormatException)
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
 
-				resetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 		}
 
 
-		void resetClient (string resourceToken)
+		void ResetClient (string resourceToken)
 		{
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
 
@@ -87,7 +87,7 @@ namespace Producer.Shared
 
 		public async Task GetAllAvContent ()
 		{
-			await refreshAvContentAsync ();
+			await RefreshAvContentAsync ();
 		}
 
 
@@ -142,7 +142,7 @@ namespace Producer.Shared
 		}
 
 
-		async Task refreshAvContentAsync ()
+		async Task RefreshAvContentAsync ()
 		{
 			try
 			{
@@ -162,8 +162,8 @@ namespace Producer.Shared
 						break;
 				}
 
-				var content = await Get<AvContent> (predicate);
-				//var content = new List<AvContent> ();
+				var content = await Get (predicate);
+
 				AvContent = content.GroupBy (c => c.PublishedTo).ToDictionary (g => g.Key, g => g.OrderByDescending (i => i.Timestamp).ToList ());
 
 				if (!AvContent.ContainsKey (UserRoles.General)) AvContent [UserRoles.General] = new List<AvContent> ();
@@ -194,10 +194,10 @@ namespace Producer.Shared
 
 			try
 			{
-				if (client == null) await refreshResourceToken<T> (false);
+				if (client == null) await RefreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
 				var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
 
@@ -212,7 +212,7 @@ namespace Producer.Shared
 					case HttpStatusCode.NotFound: return null;
 					case HttpStatusCode.Forbidden:
 
-						await refreshResourceToken<T> ();
+						await RefreshResourceToken<T> ();
 
 						var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
 
@@ -228,7 +228,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
@@ -245,10 +245,10 @@ namespace Producer.Shared
 
 			try
 			{
-				if (client == null) await refreshResourceToken<T> (false);
+				if (client == null) await RefreshResourceToken<T> (false);
 				// if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
 				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
 
@@ -268,7 +268,7 @@ namespace Producer.Shared
 					case HttpStatusCode.NotFound: return null;
 					case HttpStatusCode.Forbidden:
 
-						await refreshResourceToken<T> ();
+						await RefreshResourceToken<T> ();
 
 						var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
 
@@ -289,7 +289,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
@@ -306,10 +306,10 @@ namespace Producer.Shared
 
 			try
 			{
-				if (client == null) await refreshResourceToken<T> (false);
+				if (client == null) await RefreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
 				var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
 
@@ -323,7 +323,7 @@ namespace Producer.Shared
 				{
 					case HttpStatusCode.Forbidden:
 
-						await refreshResourceToken<T> ();
+						await RefreshResourceToken<T> ();
 
 						var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
 
@@ -339,7 +339,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
@@ -354,10 +354,10 @@ namespace Producer.Shared
 
 			try
 			{
-				if (client == null) await refreshResourceToken<T> (false);
+				if (client == null) await RefreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
 				var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
 
@@ -371,7 +371,7 @@ namespace Producer.Shared
 				{
 					case HttpStatusCode.Forbidden:
 
-						await refreshResourceToken<T> ();
+						await RefreshResourceToken<T> ();
 
 						var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
 
@@ -387,7 +387,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
@@ -402,10 +402,10 @@ namespace Producer.Shared
 
 			try
 			{
-				if (client == null) await refreshResourceToken<T> (false);
+				if (client == null) await RefreshResourceToken<T> (false);
 				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
 				var result = await client.DeleteDocumentAsync (item.SelfLink);
 
@@ -424,7 +424,7 @@ namespace Producer.Shared
 				{
 					case HttpStatusCode.Forbidden:
 
-						await refreshResourceToken<T> ();
+						await RefreshResourceToken<T> ();
 
 						var result = await client.DeleteDocumentAsync (item.SelfLink);
 
@@ -445,14 +445,14 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
 		#endregion
 
 
-		void updateNetworkActivityIndicator (bool visible)
+		void UpdateNetworkActivityIndicator (bool visible)
 		{
 #if __IOS__
 			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
@@ -466,9 +466,9 @@ namespace Producer.Shared
 
 		Task<ResourceResponse<Database>> _databaseTask;
 
-		Dictionary<string, ClientStatus> _collectionStatuses = new Dictionary<string, ClientStatus> ();
+		readonly Dictionary<string, ClientStatus> _collectionStatuses = new Dictionary<string, ClientStatus> ();
 
-		Dictionary<string, Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<string, Task<ResourceResponse<DocumentCollection>>> ();
+		readonly Dictionary<string, Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<string, Task<ResourceResponse<DocumentCollection>>> ();
 
 
 		public bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
@@ -478,17 +478,17 @@ namespace Producer.Shared
 		{
 			if (_databaseStatus != ClientStatus.Initialized)
 			{
-				await createDatabaseIfNotExistsAsync ();
+				await CreateDatabaseIfNotExistsAsync ();
 			}
 
 			if (!(_collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized))
 			{
-				await createCollectionIfNotExistsAsync (collectionId);
+				await CreateCollectionIfNotExistsAsync (collectionId);
 			}
 		}
 
 
-		async Task createDatabaseIfNotExistsAsync ()
+		async Task CreateDatabaseIfNotExistsAsync ()
 		{
 			if (!_databaseTask.IsNullFinishCanceledOrFaulted ())
 			{
@@ -500,7 +500,7 @@ namespace Producer.Shared
 			{
 				try
 				{
-					updateNetworkActivityIndicator (true);
+					UpdateNetworkActivityIndicator (true);
 
 					Log.Debug ("Checking for Database...");
 
@@ -540,11 +540,11 @@ namespace Producer.Shared
 							{
 								_databaseStatus = ClientStatus.Initializing;
 
-								//await refreshResourceToken<> ();
+								//await RefreshResourceToken<T><> ();
 
 								_databaseTask = null;
 
-								await createDatabaseIfNotExistsAsync ();
+								await CreateDatabaseIfNotExistsAsync ();
 							}
 							else
 							{
@@ -568,19 +568,19 @@ namespace Producer.Shared
 				}
 				finally
 				{
-					updateNetworkActivityIndicator (false);
+					UpdateNetworkActivityIndicator (false);
 				}
 			}
 		}
 
 
-		async Task createCollectionIfNotExistsAsync<T> ()
+		async Task CreateCollectionIfNotExistsAsync<T> ()
 		{
-			await createCollectionIfNotExistsAsync (typeof (T).Name);
+			await CreateCollectionIfNotExistsAsync (typeof (T).Name);
 		}
 
 
-		async Task createCollectionIfNotExistsAsync (string collectionId)
+		async Task CreateCollectionIfNotExistsAsync (string collectionId)
 		{
 			if (_collectionCreationTasks.TryGetValue (collectionId, out Task<ResourceResponse<DocumentCollection>> task) && !task.IsNullFinishCanceledOrFaulted ())
 			{
@@ -592,7 +592,7 @@ namespace Producer.Shared
 			{
 				try
 				{
-					updateNetworkActivityIndicator (true);
+					UpdateNetworkActivityIndicator (true);
 
 					Log.Debug ($"Checking for Collection: {collectionId}...");
 
@@ -631,11 +631,11 @@ namespace Producer.Shared
 								// set to initializing so we don't recurse more than once
 								_collectionStatuses [collectionId] = ClientStatus.Initializing;
 
-								//await refreshResourceToken ();
+								//await RefreshResourceToken<T> ();
 
 								_collectionCreationTasks [collectionId] = null;
 
-								await createCollectionIfNotExistsAsync (collectionId);
+								await CreateCollectionIfNotExistsAsync (collectionId);
 							}
 							else
 							{
@@ -659,7 +659,7 @@ namespace Producer.Shared
 				}
 				finally
 				{
-					updateNetworkActivityIndicator (false);
+					UpdateNetworkActivityIndicator (false);
 				}
 			}
 		}

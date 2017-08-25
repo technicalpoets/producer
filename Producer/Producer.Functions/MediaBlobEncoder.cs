@@ -17,6 +17,7 @@ namespace Producer.Functions
 	[StorageAccount ("AzureWebJobsStorage")]
 	public static class MediaBlobEncoder
 	{
+
 		const string encoderProcessorName = "Media Encoder Standard";
 		const string encoderTaskConfigName = "H264 Multiple Bitrate 16x9 for iOS";
 
@@ -33,10 +34,8 @@ namespace Producer.Functions
 
 		[FunctionName ("EncodeAvContent")]
 		public static void Run (
-			[BlobTrigger ("uploads-avcontent/{fileName}.{fileExtension}")] CloudBlockBlob inputBlob,
-			string fileName, string fileExtension,
-			[Queue ("message-queue-avcontent")] out ContentEncodedMessage contentMessage,
-			TraceWriter log)
+			[BlobTrigger ("uploads-avcontent/{fileName}.{fileExtension}")] CloudBlockBlob inputBlob, string fileName, string fileExtension,
+			[Queue ("message-queue-avcontent")] out ContentEncodedMessage contentMessage, TraceWriter log)
 		{
 			log.Info ("Starting Function: EncodeAvContent");
 
@@ -44,11 +43,15 @@ namespace Producer.Functions
 			{
 				// check documentID before we take the time to encode
 				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.DocumentIdKey, out string documentId) || string.IsNullOrWhiteSpace (documentId))
+				{
 					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.DocumentIdKey}");
+				}
 
 				// check collectionId before we take the time to encode
 				if (!inputBlob.Metadata.TryGetValue (DocumentUpdatedMessage.CollectionIdKey, out string collectionId) || string.IsNullOrWhiteSpace (collectionId))
+				{
 					throw new Exception ($"inputBlob does not contain metadata item for {DocumentUpdatedMessage.CollectionIdKey}");
+				}
 
 
 				_cachedCredentials = new MediaServicesCredentials (_mediaServicesAccountName, _mediaServicesAccountKey);
@@ -106,7 +109,7 @@ namespace Producer.Functions
 		}
 
 
-		public static async Task<IAsset> CreateAssetFromBlob (CloudBlockBlob blob, TraceWriter log)
+		static async Task<IAsset> CreateAssetFromBlob (CloudBlockBlob blob, TraceWriter log)
 		{
 			IAsset newAsset = null;
 
@@ -125,7 +128,7 @@ namespace Producer.Functions
 		}
 
 
-		public static async Task<IAsset> CreateAssetFromBlobAsync (CloudBlockBlob blob, TraceWriter log)
+		static async Task<IAsset> CreateAssetFromBlobAsync (CloudBlockBlob blob, TraceWriter log)
 		{
 			_storageAccount = CloudStorageAccount.Parse (_storageAccountConnection);
 
@@ -153,7 +156,7 @@ namespace Producer.Functions
 
 			var assetBlob = assetContainer.GetBlockBlobReference (blob.Name);
 
-			var sasBlobToken = blob.GetSharedAccessSignature (adHocSasPolicy);
+			var sasBlobToken = blob.GetSharedAccessSignature (AdHocSasPolicy);
 
 			try
 			{
@@ -184,7 +187,7 @@ namespace Producer.Functions
 		}
 
 
-		static SharedAccessBlobPolicy adHocSasPolicy => new SharedAccessBlobPolicy
+		static SharedAccessBlobPolicy AdHocSasPolicy => new SharedAccessBlobPolicy
 		{
 			SharedAccessExpiryTime = DateTime.UtcNow.AddHours (24),
 			Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create

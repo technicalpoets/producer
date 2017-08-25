@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 using Foundation;
 using UIKit;
@@ -10,7 +11,6 @@ using SettingsStudio;
 
 using Producer.Domain;
 using Producer.Shared;
-using System.Text;
 using Producer.Auth;
 
 namespace Producer.iOS
@@ -56,6 +56,7 @@ namespace Producer.iOS
 
 			return true;
 		}
+
 
 		const string anonymousUserId = "anonymous_user";
 		public override void RegisteredForRemoteNotifications (UIApplication application, NSData deviceToken)

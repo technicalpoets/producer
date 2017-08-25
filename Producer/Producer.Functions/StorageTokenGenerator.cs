@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 
+using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -19,28 +20,44 @@ namespace Producer.Functions
 {
 	public static class StorageTokenGenerator
 	{
+
+		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
+		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
+
 		static readonly string _storageAccountConnection = Environment.GetEnvironmentVariable ("AzureWebJobsStorage");
 
 		static CloudBlobClient _blobClient;
+		static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (_storageAccountConnection).CreateCloudBlobClient ());
 
-		public static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (_storageAccountConnection).CreateCloudBlobClient ());
+		static DocumentClient _documentClient;
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
 
 
 		[Authorize]
 		[FunctionName ("GetStorageToken")]
 		public static async Task<HttpResponseMessage> Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/storage/{collectionId}/{documentId}")] HttpRequestMessage req,
-			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content,
-			string collectionId, string documentId, TraceWriter log)
+			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content, string collectionId, string documentId, TraceWriter log)
 		{
-			var user = Thread.CurrentPrincipal.GetUserIdAndRole ();
+			UserStore userStore = null;
 
-			if (!user.CanWrite ())
+			var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier ();
+
+			if (!string.IsNullOrEmpty (userId))
+			{
+				log.Info ($"User is authenticated and has userId: {userId}");
+
+				userStore = await DocumentClient.GetUserStore (userId, log);
+			}
+
+
+			if (!userStore?.UserRole.CanWrite () ?? false)
 			{
 				log.Info ("Not authenticated");
 
 				return req.CreateResponse (HttpStatusCode.Unauthorized);
 			}
+
 
 			if (content == null)
 			{
@@ -52,11 +69,8 @@ namespace Producer.Functions
 			log.Info ($"Successfully found document in database matching the documentId paramater {documentId}");
 
 
-			var containerName = $"uploads-{collectionId.ToLower ()}"; // Example: uploads-avcontent
-
-
 			// Errors creating the storage container result in a 500 Internal Server Error
-			var container = BlobClient.GetContainerReference (containerName);
+			var container = BlobClient.GetContainerReference (GetUploadContainerName (collectionId));
 
 			await container.CreateIfNotExistsAsync ();
 
@@ -64,7 +78,7 @@ namespace Producer.Functions
 			// TODO: Check if there's already a blob with a name matching the Id
 
 
-			var sasUri = getBlobSasUri (container, content.Name);
+			var sasUri = GetBlobSasUri (container, content.Name);
 
 			var token = new StorageToken (content.Name, sasUri);
 
@@ -72,7 +86,7 @@ namespace Producer.Functions
 		}
 
 
-		static string getBlobSasUri (CloudBlobContainer container, string blobName, string policyName = null)
+		static string GetBlobSasUri (CloudBlobContainer container, string blobName, string policyName = null)
 		{
 			string sasBlobToken;
 
@@ -106,5 +120,8 @@ namespace Producer.Functions
 			// Return the URI string for the container, including the SAS token.
 			return blob.Uri + sasBlobToken;
 		}
+
+
+		static string GetUploadContainerName (string collectionId) => $"uploads-{collectionId.ToLower ()}"; // Example: uploads-avcontent
 	}
 }

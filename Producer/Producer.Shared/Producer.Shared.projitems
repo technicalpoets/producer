@@ -19,7 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Track.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\ContentClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\ClientStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\Keychain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetails.cs" />

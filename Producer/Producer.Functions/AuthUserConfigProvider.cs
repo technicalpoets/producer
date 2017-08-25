@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 
+using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -19,11 +19,18 @@ namespace Producer.Functions
 {
 	public static class AuthUserConfigProvider
 	{
-		static HttpClient _httpClient;
-		static HttpClient httpClient => _httpClient ?? (_httpClient = new HttpClient ());
+
+		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
+		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
 
 		static readonly string [] _admins = Environment.GetEnvironmentVariable ("AppAdminEmails").ToLower ().Trim (';').Split (';');
 		static readonly string [] _producers = Environment.GetEnvironmentVariable ("AppProducerEmails").ToLower ().Trim (';').Split (';');
+
+		static HttpClient _httpClient;
+		static HttpClient HttpClient => _httpClient ?? (_httpClient = new HttpClient ());
+
+		static DocumentClient _documentClient;
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
 
 
 		[Authorize]
@@ -39,16 +46,21 @@ namespace Producer.Functions
 
 				log.Info ($"User is authenticated with userId: {userId}");
 
-				httpClient.ConfigureClientForUserDetails (req);
+				HttpClient.ConfigureClientForUserDetails (req);
 
 				try
 				{
-					var me = await httpClient.GetStringAsync (new Uri (identity.UriFromIssuerClaim (), ".auth/me"));
+					var me = await HttpClient.GetStringAsync (new Uri (identity.UriFromIssuerClaim (), ".auth/me"));
 
 					// TODO: Check for provider
 					var googleUser = JsonConvert.DeserializeObject<GoogleAuthUser> (me.Trim (new Char [] { '[', ']' }));
 
-					var role = addRoleClaim (identity, googleUser);
+
+					var role = GetAuthorizedUserRole (googleUser);
+
+
+					await DocumentClient.SaveUserStore (userId, googleUser?.EmailAddress, role, log);
+
 
 					return req.CreateResponse (System.Net.HttpStatusCode.OK, googleUser.GetAuthUserConfig (userId, role));
 				}
@@ -65,29 +77,19 @@ namespace Producer.Functions
 		}
 
 
-		static UserRoles addRoleClaim (ClaimsIdentity identity, GoogleAuthUser googleUser)
+		static UserRoles GetAuthorizedUserRole (GoogleAuthUser googleUser)
 		{
-			var existingRole = identity.GetUserRole ();
-
-			if (_admins.Contains (googleUser.EmailAddress.ToLower ()) && existingRole != UserRoles.Admin)
+			if (_admins.Contains (googleUser.EmailAddress.ToLower ()))
 			{
-				identity.AddClaim (new Claim (ClaimTypes.Role, UserRoles.Admin.Claim ()));
 				return UserRoles.Admin;
 			}
 
-			if (_producers.Contains (googleUser.EmailAddress.ToLower ()) && existingRole != UserRoles.Admin && existingRole != UserRoles.Producer)
+			if (_producers.Contains (googleUser.EmailAddress.ToLower ()))
 			{
-				identity.AddClaim (new Claim (ClaimTypes.Role, UserRoles.Producer.Claim ()));
 				return UserRoles.Producer;
 			}
 
-			if (existingRole != UserRoles.Admin && existingRole != UserRoles.Producer && existingRole != UserRoles.Insider)
-			{
-				identity.AddClaim (new Claim (ClaimTypes.Role, UserRoles.Insider.Claim ()));
-				return UserRoles.Insider;
-			}
-
-			return existingRole;
+			return UserRoles.Insider;
 		}
 	}
 }

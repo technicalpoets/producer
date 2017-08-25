@@ -29,6 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Auth\GoogleAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\SecurityExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UserClaim.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\UserStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />

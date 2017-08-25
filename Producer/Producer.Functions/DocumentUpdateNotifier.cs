@@ -11,6 +11,7 @@ namespace Producer.Functions
 {
 	public static class DocumentUpdateNotifier
 	{
+
 		[FunctionName ("UpdateNotifier")]
 		public static async Task Run (
 			[QueueTrigger ("message-queue-document-update", Connection = "AzureWebJobsStorage")] DocumentUpdatedMessage updateMessage,
@@ -23,7 +24,9 @@ namespace Producer.Functions
 			try
 			{
 				if (string.IsNullOrEmpty (updateMessage.CollectionId))
+				{
 					throw new ArgumentException ("Must have value set for CollectionId", nameof (updateMessage));
+				}
 
 
 				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();

@@ -10,12 +10,12 @@ namespace Producer.Functions
 	[StorageAccount ("AzureWebJobsStorage")]
 	public static class AvContentUpdater
 	{
+
 		[FunctionName ("UpdateAvContent")]
 		public static void Run (
 			[QueueTrigger ("message-queue-avcontent")] ContentEncodedMessage contentMessage,
 			[DocumentDB ("Content", "AvContent", Id = "{documentId}")] AvContent avContent,
-			[Queue ("message-queue-document-update")] out DocumentUpdatedMessage updatedMessage,
-			TraceWriter log)
+			[Queue ("message-queue-document-update")] out DocumentUpdatedMessage updatedMessage, TraceWriter log)
 		{
 			log.Info ("new ContentEncodedMessage");
 			log.Info (Newtonsoft.Json.JsonConvert.SerializeObject (contentMessage));
@@ -25,7 +25,9 @@ namespace Producer.Functions
 				try
 				{
 					if (string.IsNullOrEmpty (contentMessage.RemoteAssetUri))
+					{
 						throw new ArgumentException ("Must have value set for RemoteAssetUri", nameof (contentMessage));
+					}
 
 
 					avContent.RemoteAssetUri = contentMessage.RemoteAssetUri;

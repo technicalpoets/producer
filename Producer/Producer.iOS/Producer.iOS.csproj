@@ -478,6 +478,7 @@
     <Compile Include="View\Login\LoginVc.designer.cs">
       <DependentUpon>LoginVc.cs</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

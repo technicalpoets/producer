@@ -49,6 +49,7 @@ namespace Producer.Shared
 			}
 		}
 
+
 		public UserRoles UserRole => User?.UserRole ?? UserRoles.General;
 
 		public event EventHandler<User> CurrentUserChanged;
