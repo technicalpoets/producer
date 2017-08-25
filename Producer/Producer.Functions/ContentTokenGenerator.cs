@@ -22,10 +22,6 @@ namespace Producer.Functions
 
 		const string contentDatabaseId = "Content";
 		const string anonymousUserId = "anonymous_user";
-		const string anonymousReadId = "anonymous_read";
-		const string userWriteId = "user_write";
-		const string userReadId = "user_read";
-
 
 		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
 		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
@@ -45,17 +41,15 @@ namespace Producer.Functions
 
 				if (!string.IsNullOrEmpty (userId))
 				{
-					log.Info ($"User is authenticated and has userId: {userId}");
+					log.Info ($"User is authenticated and has Id: {userId}");
 
 					var userStore = await DocumentClient.GetUserStore (userId, log);
 
 
 					var permissionMode = userStore?.UserRole.CanWrite () ?? false ? PermissionMode.All : PermissionMode.Read;
 
-					var permissionId = permissionMode == PermissionMode.All ? userWriteId : userReadId;
 
-
-					var userPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, userId, collectionId, permissionId, permissionMode, log);
+					var userPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, userId, collectionId, permissionMode, log);
 
 					if (!string.IsNullOrEmpty (userPermission?.Token))
 					{
@@ -67,7 +61,7 @@ namespace Producer.Functions
 
 				log.Info ("User is not authenticated, retrieving anonymous read token");
 
-				var anonymousUserPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, anonymousUserId, collectionId, anonymousReadId, PermissionMode.Read, log);
+				var anonymousUserPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, anonymousUserId, collectionId, PermissionMode.Read, log);
 
 				if (!string.IsNullOrEmpty (anonymousUserPermission?.Token))
 				{

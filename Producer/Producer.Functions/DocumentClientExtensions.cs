@@ -24,12 +24,17 @@ namespace Producer.Functions
 		static Uri UsersCollectionLink = UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId);
 
 
+		static string GetUserPermissionId (string dbId, string userId, PermissionMode permissionMode) => $"{dbId}-{userId}-{permissionMode.ToString ().ToUpper ()}";
+
+
 		public static async Task SaveUserStore (this DocumentClient client, string userId, string email, UserRoles role, TraceWriter log = null)
 		{
 			var userStore = new UserStore { Id = userId, Email = email?.ToLower (), UserRole = role };
 
 			try
 			{
+				log?.Info ($"Attempting to create new UserStore document with Id: {userId}");
+
 				await client.CreateDocumentAsync (UsersCollectionLink, userStore);
 			}
 			catch (DocumentClientException dex)
@@ -40,7 +45,7 @@ namespace Producer.Functions
 				{
 					case HttpStatusCode.Conflict:
 
-						log.Info ($"User document with id: {userId} already exists, replacing...");
+						log.Info ($"UserStore document with id: {userId} already exists, replacing...");
 
 						await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId), userStore);
 
@@ -65,7 +70,7 @@ namespace Producer.Functions
 					return null;
 				}
 
-				log?.Info ($"Reading User document with Id: {userId}");
+				log?.Info ($"Attempting to get UserStore document with Id: {userId}");
 
 				var response = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId));
 
@@ -96,15 +101,17 @@ namespace Producer.Functions
 		}
 
 
-		public static async Task<Permission> GetOrCreatePermission (this DocumentClient client, string dbId, string userId, string collectionId, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
+		public static async Task<Permission> GetOrCreatePermission (this DocumentClient client, string dbId, string userId, string collectionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
+			var permissionId = GetUserPermissionId (dbId, userId, permissionMode);
+
 			try
 			{
-				log?.Info ($"Attempting to read Document Collection with Id: {collectionId}");
+				log?.Info ($"Attempting to get Document Collection with Id: {collectionId}");
 
 				var collectionResponse = await client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (dbId, collectionId));
 
-				var collection = collectionResponse?.Resource ?? throw new Exception ($"Could not find collection Database ID: {dbId}  Collection ID: {collectionId}");
+				var collection = collectionResponse?.Resource ?? throw new Exception ($"Could not find Document Collection in Database {dbId} with CollectionId: {collectionId}");
 
 
 				var userTup = await client.GetOrCreateUser (dbId, userId, log);
@@ -122,7 +129,7 @@ namespace Producer.Functions
 				{
 					try
 					{
-						log?.Info ($"Attempting to read {permissionMode.ToString ()} permission with Id {permissionId} for user {userId}");
+						log?.Info ($"Attempting to get {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId: {permissionId}");
 
 						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId));
 
@@ -135,7 +142,8 @@ namespace Producer.Functions
 						switch (dcx.StatusCode)
 						{
 							case HttpStatusCode.NotFound:
-								log?.Info ($"Did not find permission with Id {permissionId} for user: {userId} - creating...");
+
+								log?.Info ($"Did not find {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId} - creating...");
 
 								permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
 
@@ -149,7 +157,7 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating PermissionToken for Database: {dbId}  Collection: {collectionId}  User: {userId}", ex);
+				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission \n\t[Database: {dbId} Collection: {collectionId}  User: {userId}  Permission: {permissionId}]", ex);
 				throw;
 			}
 		}
@@ -159,7 +167,7 @@ namespace Producer.Functions
 		{
 			try
 			{
-				log?.Info ($"Creating new {permissionMode} permission [Collection ID: {collection?.Id}  User ID: {user?.Id}  Permission ID: {permissionId}]");
+				log?.Info ($"Creating new {permissionMode.ToString ().ToUpper ()} Permission \n\t[Collection: {collection?.Id}  User: {user?.Id}  Permission: {permissionId}]");
 
 				var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
@@ -169,7 +177,7 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating new {permissionMode} permission [Collection ID: {collection?.Id}  User ID: {user?.Id}  Permission ID: {permissionId}]", ex);
+				log?.Error ($"Error creating new {permissionMode.ToString ().ToUpper ()} Permission \n\t[Collection: {collection?.Id}  User: {user?.Id}  Permission: {permissionId}]", ex);
 				throw;
 			}
 		}
@@ -181,7 +189,7 @@ namespace Producer.Functions
 
 			try
 			{
-				log?.Info ($"Attempting to read user with id: {userId}");
+				log?.Info ($"Attempting to get Database ({dbId}) User with Id: {userId}");
 
 				var response = await client.ReadUserAsync (UriFactory.CreateUserUri (dbId, userId));
 
@@ -210,10 +218,9 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error getting user with id: {userId}\n", ex);
+				log?.Error ($"Error getting User with Id: {userId}\n", ex);
 				throw;
 			}
 		}
-
 	}
 }
