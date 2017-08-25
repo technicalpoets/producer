@@ -86,6 +86,8 @@ namespace Producer
 					Log.Debug ($"\n{producerSettings}");
 
 					Settings.ConfigureSettings (producerSettings);
+					Settings.Synchronize ();
+					throw new System.Exception ();
 				}
 			}
 #endif

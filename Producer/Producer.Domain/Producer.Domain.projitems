@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)User\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User\UserRoles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User\UserFavorite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Content\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ContentEncodedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" />
@@ -31,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UserClaim.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UserStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
