@@ -83,6 +83,9 @@ namespace Producer.iOS
 		}
 
 
+		void handleAvContentChanged (object sender, UserRoles e) => BeginInvokeOnMainThread (() => { TableView.ReloadData (); });
+
+
 		nfloat yCache;
 
 		[Export ("scrollViewDidScroll:")]
@@ -125,9 +128,6 @@ namespace Producer.iOS
 				PresentViewController (userNc, true, null);
 			}
 		}
-
-
-		void handleAvContentChanged (object sender, UserRoles e) => updateMusicAssets ();
 
 
 		#region UITableViewDataSource & UITableViewDelegate

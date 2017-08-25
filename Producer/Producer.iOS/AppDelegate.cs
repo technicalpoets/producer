@@ -72,7 +72,11 @@ namespace Producer.iOS
 			//var tags = new NSSet ("username:colby");
 			// TODO: add tag for username and permissions level
 
-			var tags = new NSSet (ProducerClient.Shared.UserRole.GetTagArray ());
+			var tagArray = ProducerClient.Shared.UserRole.GetTagArray ();
+
+			Log.Debug (string.Join (",", tagArray));
+
+			var tags = new NSSet (tagArray);
 
 			hub.RegisterNativeAsync (deviceToken, tags, err =>
 			{

@@ -93,6 +93,8 @@ namespace Producer.Shared
 						Message = notificationMessage
 					};
 
+					Log.Debug (updateMessage.NotificationTags);
+
 					updateNetworkActivityIndicator (true);
 
 					var response = await httpClient.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, "application/json"));

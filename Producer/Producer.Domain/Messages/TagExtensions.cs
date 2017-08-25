@@ -7,19 +7,19 @@ namespace Producer.Domain
 
 		public static string GetExpressionString (this UserRoles role)
 		{
-			var sb = new System.Text.StringBuilder ($"({userrole}:0");
+			var sb = new System.Text.StringBuilder ($"({userrole}:3"); // admin gets everything
 
-			if (role != UserRoles.General) // if it's not General
+			if (role != UserRoles.Admin) // if it's not Admin
 			{
-				sb.Append ($" || {userrole}:1"); // it's at least Insider
+				sb.Append ($" || {userrole}:2"); // it's at least Producer
 
-				if (role != UserRoles.Insider) // if it's not Insider
+				if (role != UserRoles.Producer) // if it's not Producer
 				{
-					sb.Append ($" || {userrole}:2"); // it's at least Producer
+					sb.Append ($" || {userrole}:1"); // it's at least Insider
 
-					if (role != UserRoles.Producer) // if it's not Producer
+					if (role != UserRoles.Insider) // if it's not Insider
 					{
-						sb.Append ($" || {userrole}:3"); // must be Admin
+						sb.Append ($" || {userrole}:0"); // must be General
 					}
 				}
 			}

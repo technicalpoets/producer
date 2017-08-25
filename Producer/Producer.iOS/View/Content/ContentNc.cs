@@ -70,6 +70,8 @@ namespace Producer.iOS
 					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
 				}
 
+				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
+
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}

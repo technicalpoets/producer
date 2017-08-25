@@ -35,6 +35,8 @@ namespace Producer.Functions
 		{
 			log.Info ("new DocumentUpdatedMessage");
 
+			log.Info (updateMessage.NotificationTags);
+
 			UserStore userStore = null;
 
 			var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier ();
