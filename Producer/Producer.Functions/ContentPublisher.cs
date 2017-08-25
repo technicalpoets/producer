@@ -29,8 +29,8 @@ namespace Producer.Functions
 		[Authorize]
 		[FunctionName ("ContentPublisher")]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")]HttpRequestMessage req,
-			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "(userrole:0 || userrole:{publishedTo})")] IAsyncCollector<Notification> notification,
+			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")] DocumentUpdatedMessage updateMessage,
+			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
 			log.Info ("new DocumentUpdatedMessage");
@@ -51,17 +51,11 @@ namespace Producer.Functions
 			{
 				log.Info ("Not authenticated");
 
-				return req.CreateResponse (HttpStatusCode.Unauthorized);
+				throw new HttpResponseException (HttpStatusCode.Unauthorized);
 			}
-
 
 			try
 			{
-				var json = await req.Content.ReadAsStringAsync ();
-
-				var updateMessage = JsonConvert.DeserializeObject<DocumentUpdatedMessage> (json);
-
-
 				if (string.IsNullOrEmpty (updateMessage?.CollectionId))
 				{
 					throw new ArgumentException ("Must have value set for CollectionId", nameof (updateMessage));
@@ -70,12 +64,15 @@ namespace Producer.Functions
 
 				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();
 
-
 				log.Info ($"Sending Notification payload: {payload}");
 
 				await notification.AddAsync (new AppleNotification (payload));
 
-				return req.CreateResponse (HttpStatusCode.Accepted);
+				throw new HttpResponseException (HttpStatusCode.Accepted);
+			}
+			catch (HttpResponseException response)
+			{
+				return response.Response;
 			}
 			catch (Exception ex)
 			{
