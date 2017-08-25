@@ -9,73 +9,79 @@ using Microsoft.Azure.WebJobs.Host;
 
 using Producer.Domain;
 using Producer.Auth;
+using System.Threading.Tasks;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.NotificationHubs;
+using Newtonsoft.Json;
 
 namespace Producer.Functions
 {
 	public static class ContentPublisher
 	{
 
+		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
+		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
+
+		static DocumentClient _documentClient;
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
+
+
 		[Authorize]
 		[FunctionName ("ContentPublisher")]
-		public static bool Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")]DocumentUpdatedMessage req,
-			//[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content document,
-			//string collectionId,
-			//string documentId,
-			//int publishTo,
-			[Queue ("message-queue-document-update")] out DocumentUpdatedMessage updatedMessage,
+		public static async Task<HttpResponseMessage> Run (
+			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")]HttpRequestMessage req,
+			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
-			var user = Thread.CurrentPrincipal.GetUserIdAndRole ();
+			log.Info ("new DocumentUpdatedMessage");
 
-			if (!user.CanWrite ())
+			UserStore userStore = null;
+
+			var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier ();
+
+			if (!string.IsNullOrEmpty (userId))
+			{
+				log.Info ($"User is authenticated and has userId: {userId}");
+
+				userStore = await DocumentClient.GetUserStore (userId, log);
+			}
+
+
+			if (!userStore?.UserRole.CanWrite () ?? false)
 			{
 				log.Info ("Not authenticated");
 
-				throw new UnauthorizedAccessException ();
-				//return req.CreateResponse (HttpStatusCode.Unauthorized);
+				return req.CreateResponse (HttpStatusCode.Unauthorized);
 			}
 
-			log.Info ("new DocumentUpdatedMessage");
-			log.Info (Newtonsoft.Json.JsonConvert.SerializeObject (req));
 
-			updatedMessage = req;
+			try
+			{
+				var json = await req.Content.ReadAsStringAsync ();
 
-			return true;
-
-			//if (document != null)
-			//{
-			//	try
-			//	{
-			//		document.PublishedTo = (UserRoles) publishTo;
-			//		document.PublishedAt = DateTimeOffset.Now;
+				var updateMessage = JsonConvert.DeserializeObject<DocumentUpdatedMessage> (json);
 
 
-			//		log.Info ($"Successfully found document in database matching the documentId paramater {documentId}");
+				if (string.IsNullOrEmpty (updateMessage?.CollectionId))
+				{
+					throw new ArgumentException ("Must have value set for CollectionId", nameof (updateMessage));
+				}
 
-			//		updatedMessage = req
-			//			new DocumentUpdatedMessage (document.Id, collectionId);
 
-			//		updatedMessage.Title = document.DisplayName;
+				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();
 
-			//		updatedMessage.Message = "New Content!";
 
-			//		return req.CreateResponse (HttpStatusCode.OK);
+				log.Info ($"Sending Notification payload: {payload}");
 
-			//	}
-			//	catch (Exception ex)
-			//	{
-			//		log.Error (ex.Message);
-			//		throw;
-			//	}
-			//}
-			//else
-			//{
-			//	//return req.CreateResponse (HttpStatusCode.NotFound);
-			//	var ex = new Exception ($"Unable to find record with Id {documentId}");
-			//	log.Error (ex.Message);
-			//	throw ex;
-			//}
+				await notification.AddAsync (new AppleNotification (payload));
+
+				return req.CreateResponse (HttpStatusCode.Accepted);
+			}
+			catch (Exception ex)
+			{
+				log.Error (ex.Message);
+				throw;
+			}
 		}
 	}
 }
