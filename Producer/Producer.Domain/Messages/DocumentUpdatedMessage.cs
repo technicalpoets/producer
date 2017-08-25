@@ -8,6 +8,8 @@ namespace Producer.Domain
 
 		public const string CollectionIdKey = "collectionId";
 
+		public const string NotificationTagsKey = "notificationTags";
+
 		public string Title { get; set; }
 
 		public string Message { get; set; }
@@ -16,13 +18,18 @@ namespace Producer.Domain
 
 		public string CollectionId { get; private set; }
 
-		public int PublishedTo { get; set; }
+		public string NotificationTags { get; private set; }
 
-		public DocumentUpdatedMessage (string documentId, string collectionId)
+		public DocumentUpdatedMessage (string documentId, string collectionId, UserRoles publishedTo)
+			: this (documentId, collectionId, publishedTo.GetExpressionString ()) { }
+
+		public DocumentUpdatedMessage (string documentId, string collectionId, string publishedToTagExpression)
 		{
 			DocumentId = documentId ?? throw new ArgumentNullException (nameof (documentId));
 
 			CollectionId = collectionId ?? throw new ArgumentNullException (nameof (collectionId));
+
+			NotificationTags = publishedToTagExpression;
 		}
 	}
 }

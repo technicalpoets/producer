@@ -7,7 +7,7 @@ namespace Producer.Domain
 		public string RemoteAssetUri { get; private set; }
 
 		public ContentEncodedMessage (string documentId, string collectionId, Uri remoteAssetUri)
-			: base (documentId, collectionId)
+			: base (documentId, collectionId, UserRoles.Producer)
 		{
 			if (remoteAssetUri == null) throw new ArgumentNullException (nameof (remoteAssetUri));
 

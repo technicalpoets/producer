@@ -32,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\TagExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />

@@ -87,11 +87,10 @@ namespace Producer.Shared
 
 				try
 				{
-					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name)
+					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, content.PublishedTo)
 					{
 						Title = notificationTitle,
-						Message = notificationMessage,
-						PublishedTo = (int) content.PublishedTo
+						Message = notificationMessage
 					};
 
 					updateNetworkActivityIndicator (true);
