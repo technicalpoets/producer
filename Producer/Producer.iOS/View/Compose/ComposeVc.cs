@@ -166,7 +166,7 @@ namespace Producer.iOS
 					Name = fileNameTextField.Text,
 					DisplayName = fileDisplayNameTextField.Text,
 					Description = descriptionTextField.Text,
-					ProducerId = "admin", // TODO: fix this
+					ProducerId = ProducerClient.Shared.User.Id,
 					ContentType = utiData.UTType == UTType.Audio ? AvContentTypes.Audio : utiData.UTType == UTType.Movie ? AvContentTypes.Video : AvContentTypes.Unknown
 				};
 
