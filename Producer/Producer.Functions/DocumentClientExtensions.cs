@@ -103,7 +103,7 @@ namespace Producer.Functions
 
 		public static async Task<Permission> GetOrCreatePermission (this DocumentClient client, string dbId, string userId, string collectionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
-			var permissionId = GetUserPermissionId (dbId, userId, permissionMode);
+			var permissionId = string.Empty;
 
 			try
 			{
@@ -120,18 +120,20 @@ namespace Producer.Functions
 
 				Permission permission;
 
+				permissionId = GetUserPermissionId (dbId, user.Id, permissionMode);
+
 				// if the user was newly created, go ahead and create the permission
-				if (userTup.created && !string.IsNullOrEmpty (user?.SelfLink))
+				if (userTup.created && !string.IsNullOrEmpty (user?.Id))
 				{
-					permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
+					permission = await client.CreateNewPermission (dbId, collection, user.Id, permissionId, permissionMode, log);
 				}
 				else // else look for an existing permission with the id
 				{
 					try
 					{
-						log?.Info ($"Attempting to get {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId: {permissionId}");
+						log?.Info ($"Attempting to get {permissionMode.ToString ().ToUpper ()} Permission for User {user.Id} with PermissionId: {permissionId}");
 
-						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId));
+						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, user.Id, permissionId));
 
 						permission = permissionResponse?.Resource;
 					}
@@ -143,9 +145,9 @@ namespace Producer.Functions
 						{
 							case HttpStatusCode.NotFound:
 
-								log?.Info ($"Did not find {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId} - creating...");
+								log?.Info ($"Did not find {permissionMode.ToString ().ToUpper ()} Permission for User {user.Id} with PermissionId {permissionId} - creating...");
 
-								permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
+								permission = await client.CreateNewPermission (dbId, collection, user.Id, permissionId, permissionMode, log);
 
 								break;
 							default: throw;
@@ -157,27 +159,27 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission \n\t[Database: {dbId} Collection: {collectionId}  User: {userId}  Permission: {permissionId}]", ex);
+				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission [Database: {dbId} Collection: {collectionId}  User: {userId}  Permission: {permissionId}]", ex);
 				throw;
 			}
 		}
 
 
-		public static async Task<Permission> CreateNewPermission (this DocumentClient client, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
+		public static async Task<Permission> CreateNewPermission (this DocumentClient client, string dbId, DocumentCollection collection, string userId, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
 			try
 			{
-				log?.Info ($"Creating new {permissionMode.ToString ().ToUpper ()} Permission \n\t[Collection: {collection?.Id}  User: {user?.Id}  Permission: {permissionId}]");
+				log?.Info ($"Creating new {permissionMode.ToString ().ToUpper ()} Permission [Collection: {collection?.Id}  User: {userId}  Permission: {permissionId}]");
 
 				var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
-				var permissionResponse = await client.CreatePermissionAsync (user.SelfLink, newPermission);
+				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission);
 
 				return permissionResponse?.Resource;
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating new {permissionMode.ToString ().ToUpper ()} Permission \n\t[Collection: {collection?.Id}  User: {user?.Id}  Permission: {permissionId}]", ex);
+				log?.Error ($"Error creating new {permissionMode.ToString ().ToUpper ()} Permission [Collection: {collection?.Id}  User: {userId}  Permission: {permissionId}]", ex);
 				throw;
 			}
 		}
