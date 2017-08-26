@@ -83,7 +83,7 @@ namespace Producer.iOS
 		}
 
 
-		void handleAvContentChanged (object sender, UserRoles e) => BeginInvokeOnMainThread (() => { TableView.ReloadData (); });
+		void handleAvContentChanged (object sender, UserRoles e) => updateMusicAssets ();
 
 
 		nfloat yCache;

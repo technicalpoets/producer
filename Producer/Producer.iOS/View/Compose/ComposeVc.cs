@@ -155,7 +155,7 @@ namespace Producer.iOS
 					{
 						await ContentClient.Shared.UpdateAvContent (avContent);
 
-						BeginInvokeOnMainThread (() => NavigationController.PopViewController (true));
+						BeginInvokeOnMainThread (() => DismissViewController (true, null));
 					});
 				}
 			}

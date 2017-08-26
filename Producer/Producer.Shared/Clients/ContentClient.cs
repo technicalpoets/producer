@@ -103,12 +103,12 @@ namespace Producer.Shared
 		}
 
 
-		public async Task UpdateAvContent (AvContent item, UserRoles? role = null, bool publish = true)
+		public async Task UpdateAvContent (AvContent item, UserRoles? oldRole = null, bool publish = true)
 		{
-			if (role.HasValue && AvContent [role.Value].Remove (item))
+			if (oldRole.HasValue && AvContent [oldRole.Value].Remove (item))
 			{
 				// specify old role if role is what changed
-				AvContentChanged?.Invoke (this, role.Value);
+				AvContentChanged?.Invoke (this, oldRole.Value);
 			}
 			else if (AvContent [item.PublishedTo].Remove (item))
 			{
@@ -126,7 +126,30 @@ namespace Producer.Shared
 
 			if (publish)
 			{
-				await ProducerClient.Shared.Publish (item, role.HasValue ? item.DisplayName : null, role.HasValue ? "New Content!" : null);
+				await PublishUpdate (newItem, oldRole);
+			}
+		}
+
+
+		async Task PublishUpdate (AvContent newItem, UserRoles? oldRole = null)
+		{
+			if (oldRole.HasValue)
+			{
+				if (oldRole.Value < newItem.PublishedTo)
+				{
+					// moved to more restricted send silent notificaiton to remove from list
+					await ProducerClient.Shared.Publish (newItem, oldRole);
+				}
+				else if (oldRole.Value > newItem.PublishedTo && newItem.PublishedTo < UserRoles.Producer) // published to more users
+				{
+					var groupNam = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
+
+					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupNam}");
+				}
+			}
+			else // not adding to or removing from any group, silently update
+			{
+				await ProducerClient.Shared.Publish (newItem);
 			}
 		}
 

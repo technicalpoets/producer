@@ -78,7 +78,10 @@ namespace Producer.Shared
 		ProducerClient () { }
 
 
-		public async Task Publish<T> (T content, string notificationTitle = null, string notificationMessage = null)
+		public Task Publish<T> (T content, UserRoles? publishTo)
+			where T : Content => Publish (content, null, null, publishTo);
+
+		public async Task Publish<T> (T content, string notificationTitle = null, string notificationMessage = null, UserRoles? publishTo = null)
 			where T : Content
 		{
 			if (content?.HasId ?? false)
@@ -87,7 +90,7 @@ namespace Producer.Shared
 
 				try
 				{
-					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, content.PublishedTo)
+					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, publishTo.HasValue ? publishTo.Value : content.PublishedTo)
 					{
 						Title = notificationTitle,
 						Message = notificationMessage
