@@ -24,13 +24,13 @@ namespace Producer.Domain
 			: this (documentId, collectionId, publishedTo.GetExpressionString ()) { }
 
 		[Newtonsoft.Json.JsonConstructor]
-		public DocumentUpdatedMessage (string documentId, string collectionId, string publishedToTagExpression)
+		public DocumentUpdatedMessage (string documentId, string collectionId, string notificationTags)
 		{
 			DocumentId = documentId ?? throw new ArgumentNullException (nameof (documentId));
 
 			CollectionId = collectionId ?? throw new ArgumentNullException (nameof (collectionId));
 
-			NotificationTags = publishedToTagExpression;
+			NotificationTags = notificationTags;
 		}
 	}
 }
