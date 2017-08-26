@@ -15,7 +15,7 @@ namespace Producer.Functions
 		[FunctionName ("UpdateNotifier")]
 		public static async Task Run (
 			[QueueTrigger ("message-queue-document-update", Connection = "AzureWebJobsStorage")] DocumentUpdatedMessage updateMessage,
-			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
+			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{notificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
 			log.Info ("new DocumentUpdatedMessage");
