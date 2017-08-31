@@ -5,6 +5,8 @@ using Android.App;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
+using Android.Views;
+using Android.Content;
 
 namespace Producer.Droid
 {
@@ -29,6 +31,33 @@ namespace Producer.Droid
 			setupViewPager ();
 		}
 
+		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
+		{
+			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
+			return base.OnCreateOptionsMenu (menu);
+		}
+
+		public override bool OnOptionsItemSelected (IMenuItem item)
+		{
+			switch(item.ItemId)
+			{
+				case Resource.Id.action_settings:
+
+					Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
+
+					FragmentTransaction fragmentTx = this.FragmentManager.BeginTransaction ();
+					SettingsFragment settings = new SettingsFragment ();
+					fragmentTx.Add (Resource.Id.fragment_container, settings);
+					fragmentTx.AddToBackStack (null);
+					fragmentTx.Commit ();
+
+					break;
+				default:
+					break;
+			}
+
+			return base.OnOptionsItemSelected (item);
+		}
 
 		void setupViewPager ()
 		{
