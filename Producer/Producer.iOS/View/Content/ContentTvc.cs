@@ -8,8 +8,6 @@ using AVKit;
 using Foundation;
 using UIKit;
 
-using SettingsStudio;
-
 using Producer.Domain;
 using Producer.Shared;
 

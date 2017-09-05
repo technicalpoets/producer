@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using SettingsStudio;
-
 using Producer.Auth;
 using Producer.Domain;
 

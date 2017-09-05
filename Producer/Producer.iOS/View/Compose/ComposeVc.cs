@@ -8,7 +8,6 @@ using UIKit;
 
 using Producer.Domain;
 using Producer.Shared;
-using SettingsStudio;
 
 namespace Producer.iOS
 {
