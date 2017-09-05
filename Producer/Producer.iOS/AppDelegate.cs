@@ -7,8 +7,6 @@ using UserNotifications;
 
 using WindowsAzure.Messaging;
 
-using SettingsStudio;
-
 using Producer.Domain;
 using Producer.Shared;
 using Producer.Auth;
@@ -38,6 +36,8 @@ namespace Producer.iOS
 			UNUserNotificationCenter.Current.Delegate = this;
 
 			ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
+
+			Log.Debug (SettingsKeys.NameOfTestSetting);
 
 			return true;
 		}

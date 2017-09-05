@@ -12,8 +12,6 @@ using Microsoft.Azure.Documents.Linq;
 
 using Newtonsoft.Json;
 
-using SettingsStudio;
-
 using Producer.Domain;
 using Producer.Auth;
 

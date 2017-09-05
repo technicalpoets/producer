@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using UIKit;
 using Foundation;
 
-using SettingsStudio;
-
 using Producer.Domain;
 using Producer.Shared;
 

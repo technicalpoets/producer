@@ -5,8 +5,6 @@ using Foundation;
 using UIKit;
 using UserNotifications;
 
-using SettingsStudio;
-
 using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
