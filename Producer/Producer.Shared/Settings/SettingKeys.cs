@@ -32,8 +32,6 @@ namespace Producer
 
 		public const string UserReferenceKey = nameof (UserReferenceKey);
 
-		public const string NameOfTestSetting = nameof (NameOfTestSetting);
-
 		public static List<string> VisibleSettings = new List<string>
 		{
 			TestProducer,

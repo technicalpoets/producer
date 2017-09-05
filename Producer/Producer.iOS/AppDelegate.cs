@@ -17,6 +17,9 @@ namespace Producer.iOS
 	public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate
 	{
 
+		static bool processingNotification;
+
+
 		public override UIWindow Window { get; set; }
 
 
@@ -28,16 +31,12 @@ namespace Producer.iOS
 
 		public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
 		{
-			//Log.Debug (ApsPayload.Create ("title", "message", "AvContent").Serialize ());
-
 			AssetPersistenceManager.Shared.Setup ();
 
 			// must assign delegate before app finishes launching.
 			UNUserNotificationCenter.Current.Delegate = this;
 
 			ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
-
-			Log.Debug (SettingsKeys.NameOfTestSetting);
 
 			return true;
 		}
@@ -58,27 +57,17 @@ namespace Producer.iOS
 		}
 
 
-		const string anonymousUserId = "anonymous_user";
 		public override void RegisteredForRemoteNotifications (UIApplication application, NSData deviceToken)
 		{
-			Log.Debug ($"RegisteredForRemoteNotifications");
-
-			// Connection string from your azure dashboard
-			// var cs = SBConnectionString.CreateListenAccess (new NSUrl (Settings.NotificationsUrl), Settings.NotificationsUrl);
-
-			// Register our info with Azure
-			var hub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
-
-			//var tags = new NSSet ("username:colby");
-			// TODO: add tag for username and permissions level
-
 			var tagArray = ProducerClient.Shared.UserRole.GetTagArray ();
 
-			Log.Debug (string.Join (",", tagArray));
+			var notificationHub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
+
+			Log.Debug ($"Registering with Azure Notification Hub {Settings.NotificationsName} with Tags [{string.Join (ConstantStrings.Comma, tagArray)}]");
 
 			var tags = new NSSet (tagArray);
 
-			hub.RegisterNativeAsync (deviceToken, tags, err =>
+			notificationHub.RegisterNativeAsync (deviceToken, tags, err =>
 			{
 				if (err != null)
 				{
@@ -88,8 +77,7 @@ namespace Producer.iOS
 				{
 					var token = deviceToken.ToString ().Replace (" ", string.Empty).Trim ('<', '>');
 
-					//Log.Debug ($"Successfully Registered for Notifications. (deviceToken: {deviceToken.ToString ()})");
-					Log.Debug ($"Successfully Registered for Notifications. (token: {token})");
+					Log.Debug ($"Successfully Registered for Notifications. (device token: {token})");
 				}
 			});
 		}
@@ -101,8 +89,6 @@ namespace Producer.iOS
 		}
 
 
-		static bool processingNotification;
-
 		// For a push notification to trigger a download operation, the notification’s payload must include
 		// the content-available key with its value set to 1. When that key is present, the system wakes
 		// the app in the background (or launches it into the background) and calls the app delegate’s 
@@ -112,7 +98,6 @@ namespace Producer.iOS
 		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 		{
-			// Process a notification received while the app was already open
 #if DEBUG
 			Log.Debug ($"\npayload:\n{userInfo.ToString ()}");
 

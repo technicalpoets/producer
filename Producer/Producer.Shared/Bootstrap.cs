@@ -32,7 +32,7 @@ namespace Producer
 			{
 				Log.Debug ("Starting Mobile Center...");
 
-				//MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
+				MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
 			}
 			else
 			{
