@@ -22,12 +22,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProducerSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\BaseAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthUserConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AzureAppServiceUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\GoogleAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\SecurityExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Auth\UserClaim.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UserStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />

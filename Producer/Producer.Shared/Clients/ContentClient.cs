@@ -49,6 +49,7 @@ namespace Producer.Shared
 			client = null;
 		}
 
+
 		async Task RefreshResourceToken<T> (bool forceTokenRefresh = true)
 			where T : Entity
 		{
@@ -226,7 +227,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -282,7 +283,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -338,7 +339,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -386,7 +387,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -439,7 +440,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
