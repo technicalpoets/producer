@@ -63,7 +63,7 @@ namespace Producer.iOS
 
 			var notificationHub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
 
-			Log.Debug ($"Registering with Azure Notification Hub {Settings.NotificationsName} with Tags [{string.Join (ConstantStrings.Comma, tagArray)}]");
+			Log.Debug ($"Registering with Azure Notification Hub '{Settings.NotificationsName}' with Tags ({string.Join (ConstantStrings.Comma, tagArray)})");
 
 			var tags = new NSSet (tagArray);
 
@@ -98,27 +98,13 @@ namespace Producer.iOS
 		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 		{
-#if DEBUG
-			Log.Debug ($"\npayload:\n{userInfo.ToString ()}");
+			Log.Debug ($"\n{userInfo.ToString ()}");
 
-			var sb = new StringBuilder ("\nuserInfo:\n");
-
-			for (int i = 0; i < userInfo.Keys.Length; i++)
-			{
-				sb.AppendLine ($"{userInfo.Keys [i]} : {userInfo.Values [i]}");
-			}
-
-			Log.Debug (sb.ToString ());
-#endif
-
-			if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr)
-			{
-				Log.Debug ($"collectionId = {nsStr}");
-			}
+			// if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr) { }
 
 			if (processingNotification)
 			{
-				Log.Debug ($"DidReceiveRemoteNotification: Already processing notificaiton. Returning");
+				Log.Debug ($"Already processing notificaiton. Returning...");
 				completionHandler (UIBackgroundFetchResult.NewData);
 				return;
 			}
@@ -126,19 +112,19 @@ namespace Producer.iOS
 
 			processingNotification = true;
 
-			Log.Debug ($"DidReceiveRemoteNotification: Get All AvContent Async...");
+			Log.Debug ($"Get All AvContent Async...");
 
 			try
 			{
 				await ContentClient.Shared.GetAllAvContent ();
 
-				Log.Debug ($"DidReceiveRemoteNotification: Finished Getting Data.");
+				Log.Debug ($"Finished Getting Data.");
 
 				completionHandler (UIBackgroundFetchResult.NewData);
 			}
 			catch (Exception ex)
 			{
-				Log.Debug ($"DidReceiveRemoteNotification: ERROR: FAILED TO GET NEW DATA {ex.Message}");
+				Log.Debug ($"ERROR: FAILED TO GET NEW DATA {ex.Message}");
 
 				completionHandler (UIBackgroundFetchResult.Failed);
 			}
