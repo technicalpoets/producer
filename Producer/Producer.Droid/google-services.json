@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "209705403340-4b2eqnts5p56v1vmqr3b8e45uivp03gd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.colbylwilliams.producer",
+            "certificate_hash": "3672bdb13f10e6df2f10b1733c6ad0a1acd85c29"
+          }
+        },
+        {
           "client_id": "209705403340-vfl95a1olbrkhgvp2if7p7rjm6ap7l9g.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -42,6 +50,13 @@
             {
               "client_id": "209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "209705403340-mfn8i3ha2nkr7c6kjad3q676hg6fs03k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.colbylwilliams.producer"
+              }
             }
           ]
         },

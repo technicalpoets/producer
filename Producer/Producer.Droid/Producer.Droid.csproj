@@ -161,7 +161,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\SettingUtilities.cs" />
@@ -194,6 +193,8 @@
     <Compile Include="Content\ContentRecyclerFragment.cs" />
     <Compile Include="Content\ContentViewHolder.cs" />
     <Compile Include="Content\ContentRecyclerAdapter.cs" />
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Views\User\UserActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -219,11 +220,18 @@
     <AndroidResource Include="Resources\drawable\ic_tabbar_resources.xml" />
     <AndroidResource Include="Resources\drawable\vd_resources_selected.xml" />
     <AndroidResource Include="Resources\drawable\vd_resources.xml" />
+    <AndroidResource Include="Resources\layout\LoginActivityLayout.axml" />
+    <AndroidResource Include="Resources\layout\User.axml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
     <Folder Include="Resources\color\" />
     <Folder Include="Content\" />
+    <Folder Include="Views\" />
+    <Folder Include="Views\User\" />
+  </ItemGroup>
+  <ItemGroup>
+    <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
   <Import Project="..\Producer.Domain\Producer.Domain.projitems" Label="Shared" Condition="Exists('..\Producer.Domain\Producer.Domain.projitems')" />
   <Import Project="..\Producer.Shared\Producer.Shared.projitems" Label="Shared" Condition="Exists('..\Producer.Shared\Producer.Shared.projitems')" />
