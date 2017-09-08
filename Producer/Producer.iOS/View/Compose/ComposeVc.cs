@@ -93,47 +93,26 @@ namespace Producer.iOS
 		}
 
 
-		//partial void createButtonClicked (NSObject sender)
-		//{
-		//	createButton.Enabled = true;
-		//	fileNameTextField.Enabled = true;
-		//	fileDisplayNameTextField.Enabled = true;
-		//	descriptionTextField.Enabled = true;
+		partial void cancelClicked (NSObject sender)
+		{
+			if (avContent != null) // editing existing item
+			{
+				DismissViewController (true, null);
+			}
+			else // creating new draft
+			{
+				Log.Debug ($"Deleting local asset at: {filePath.Path}");
 
+				NSFileManager.DefaultManager.Remove (filePath.Path, out NSError error);
 
-		//	avContent = new AvContent
-		//	{
-		//		Name = fileNameTextField.Text,
-		//		DisplayName = fileDisplayNameTextField.Text,
-		//		Description = descriptionTextField.Text,
-		//		ProducerId = "admin", // TODO: fix this
-		//		ContentType = utiData.Item1 == UTType.Audio ? AvContentTypes.Audio : utiData.Item1 == UTType.Movie ? AvContentTypes.Video : AvContentTypes.Unknown
-		//	};
+				if (error != null)
+				{
+					Log.Debug ($"ERROR: {error}\n{error.Description}");
+				}
 
-		//	UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
-
-
-		//	Task.Run (async () =>
-		//	{
-		//		try
-		//		{
-		//			await ContentClient.Shared.CreateAvContent (avContent);
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			Log.Debug (ex.Message);
-		//		}
-		//		finally
-		//		{
-		//			BeginInvokeOnMainThread (() =>
-		//			{
-		//				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
-
-		//				NavigationController.PopViewController (true);
-		//			});
-		//		}
-		//	});
-		//}
+				NavigationController.PopViewController (true);
+			}
+		}
 
 
 		partial void createButtonClicked (NSObject sender)
@@ -195,24 +174,13 @@ namespace Producer.iOS
 								Settings.LastAvContentDescription = avContent.Description ?? string.Empty;
 
 								NavigationController.PopViewController (true);
-
-								// TODO: Remove this file once we get a successful streaming url
-								//NSError error;
-
-								//NSFileManager.DefaultManager.Remove (filePath.Path, out error);
-
-								//if (error != null)
-								//{
-								//	System.Diagnostics.Debug.WriteLine ($"{error}");
-								//	System.Diagnostics.Debug.WriteLine ($"Error trying to get resource attributes\n\t{error.Code}\n\t{error.Domain}\n\t{error.Description}");
-								//}
 							}
 							else
 							{
 								// TODO: show failed/retry alert
 							}
 
-							UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
+							//UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
 						});
 					}
 					else

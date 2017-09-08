@@ -10,6 +10,7 @@ using WindowsAzure.Messaging;
 using Producer.Domain;
 using Producer.Shared;
 using Producer.Auth;
+using System.Linq;
 
 namespace Producer.iOS
 {
@@ -118,6 +119,8 @@ namespace Producer.iOS
 			{
 				await ContentClient.Shared.GetAllAvContent ();
 
+				deleteLocalUploads ();
+
 				Log.Debug ($"Finished Getting Data.");
 
 				completionHandler (UIBackgroundFetchResult.NewData);
@@ -131,6 +134,33 @@ namespace Producer.iOS
 			finally
 			{
 				processingNotification = false;
+			}
+		}
+
+
+		void deleteLocalUploads ()
+		{
+			var locals = ContentClient.Shared.AvContent? [UserRoles.Producer].Where (avc => avc.HasLocalInboxPath);
+
+			foreach (var asset in locals)
+			{
+				Log.Debug ($"Deleting local asset at: {asset.LocalInboxPath}");
+
+				NSFileManager.DefaultManager.Remove (asset.LocalInboxPath, out NSError error);
+
+				if (error == null)
+				{
+					asset.LocalInboxPath = null;
+				}
+				else
+				{
+					if (error.Code == 4) // not found
+					{
+						asset.LocalInboxPath = null;
+					}
+
+					Log.Debug ($"ERROR: {error}\n{error.Description}");
+				}
 			}
 		}
 	}
