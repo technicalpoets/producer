@@ -21,6 +21,9 @@ namespace Producer.Functions
 		const string usersCollectionId = "Users";
 
 
+		static RequestOptions permissionRequestOptions = new RequestOptions { ResourceTokenExpirySeconds = 18000 };
+
+
 		static Uri UsersCollectionLink = UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId);
 
 
@@ -133,7 +136,7 @@ namespace Producer.Functions
 					{
 						log?.Info ($"Attempting to get {permissionMode.ToString ().ToUpper ()} Permission for User {user.Id} with PermissionId: {permissionId}");
 
-						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, user.Id, permissionId));
+						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, user.Id, permissionId), permissionRequestOptions);
 
 						permission = permissionResponse?.Resource;
 					}
@@ -173,7 +176,7 @@ namespace Producer.Functions
 
 				var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
-				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission);
+				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission, permissionRequestOptions);
 
 				return permissionResponse?.Resource;
 			}
