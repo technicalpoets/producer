@@ -30,7 +30,7 @@ namespace Producer.Functions
 		static string GetUserPermissionId (string dbId, string userId, PermissionMode permissionMode) => $"{dbId}-{userId}-{permissionMode.ToString ().ToUpper ()}";
 
 
-		public static async Task SaveUserStore (this DocumentClient client, string userId, string email, UserRoles role, TraceWriter log = null)
+		public static async Task<UserStore> SaveUserStore (this DocumentClient client, string userId, string email, UserRoles role, TraceWriter log = null)
 		{
 			var userStore = new UserStore { Id = userId, Email = email?.ToLower (), UserRole = role };
 
@@ -38,7 +38,17 @@ namespace Producer.Functions
 			{
 				log?.Info ($"Attempting to create new UserStore document with Id: {userId}");
 
-				await client.CreateDocumentAsync (UsersCollectionLink, userStore);
+				var response = await client.CreateDocumentAsync (UsersCollectionLink, userStore);
+
+				var json = response?.Resource?.ToString ();
+
+				if (!string.IsNullOrEmpty (json))
+				{
+					return JsonConvert.DeserializeObject<UserStore> (json);
+				}
+
+				return null;
+
 			}
 			catch (DocumentClientException dex)
 			{
@@ -50,9 +60,17 @@ namespace Producer.Functions
 
 						log.Info ($"UserStore document with id: {userId} already exists, replacing...");
 
-						await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId), userStore);
+						var response = await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId), userStore);
 
-						break;
+						var json = response?.Resource?.ToString ();
+
+						if (!string.IsNullOrEmpty (json))
+						{
+							return JsonConvert.DeserializeObject<UserStore> (json);
+						}
+
+						return null;
+
 					default: throw;
 				}
 			}
@@ -76,6 +94,51 @@ namespace Producer.Functions
 				log?.Info ($"Attempting to get UserStore document with Id: {userId}");
 
 				var response = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId));
+
+				var json = response?.Resource?.ToString ();
+
+				if (!string.IsNullOrEmpty (json))
+				{
+					return JsonConvert.DeserializeObject<UserStore> (json);
+				}
+
+				return null;
+			}
+			catch (DocumentClientException dex)
+			{
+				dex.Print (log);
+
+				switch (dex.StatusCode)
+				{
+					case HttpStatusCode.NotFound: return null;
+					default: throw;
+				}
+			}
+			catch (Exception ex)
+			{
+				log?.Error ("Error saving new User", ex);
+				throw;
+			}
+		}
+
+
+		public static async Task<UserStore> UpdateUserStore (this DocumentClient client, UserStore userStore, Permission permission, TraceWriter log = null)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty (userStore?.Id) || string.IsNullOrEmpty (permission?.Token))
+				{
+					return null;
+				}
+
+				log?.Info ($"Attempting to update UserStore document with Id: {userStore.Id}");
+
+
+				userStore.Token = permission.Token;
+				userStore.TokenTimestamp = permission.Timestamp;
+
+
+				var response = await client.UpsertDocumentAsync (UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId), userStore);
 
 				var json = response?.Resource?.ToString ();
 

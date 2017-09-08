@@ -37,38 +37,42 @@ namespace Producer.Functions
 		{
 			try
 			{
-				var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier ();
+				var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier () ?? anonymousUserId;
 
-				if (!string.IsNullOrEmpty (userId))
+
+				var userStore = await DocumentClient.GetUserStore (userId, log);
+
+				// create anonymous UserStore if it doesn't alread exist
+				if (userStore == null && userId == anonymousUserId)
 				{
-					log.Info ($"User is authenticated and has Id: {userId}");
-
-					var userStore = await DocumentClient.GetUserStore (userId, log);
-
-
-					var permissionMode = userStore?.UserRole.CanWrite () ?? false ? PermissionMode.All : PermissionMode.Read;
-
-
-					var userPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, userId, collectionId, permissionMode, log);
-
-					if (!string.IsNullOrEmpty (userPermission?.Token))
-					{
-						return req.CreateResponse (HttpStatusCode.OK, userPermission.Token);
-					}
-
-					return req.CreateResponse (HttpStatusCode.InternalServerError);
+					userStore = await DocumentClient.SaveUserStore (anonymousUserId, anonymousUserId, UserRoles.General, log);
 				}
 
-				log.Info ("User is not authenticated, retrieving anonymous read token");
 
-				var anonymousUserPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, anonymousUserId, collectionId, PermissionMode.Read, log);
-
-				if (!string.IsNullOrEmpty (anonymousUserPermission?.Token))
+				// if the token is still valid for the next 10 mins return it
+				if (userStore?.TokenMinutes > 10)
 				{
-					return req.CreateResponse (HttpStatusCode.OK, anonymousUserPermission.Token);
+					return req.CreateResponse (HttpStatusCode.OK, userStore.Token);
 				}
+
+
+				var permissionMode = userStore?.UserRole.CanWrite () ?? false ? PermissionMode.All : PermissionMode.Read;
+
+
+				// simply getting the user permission will refresh the token
+				var userPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, userId, collectionId, permissionMode, log);
+
+
+				if (!string.IsNullOrEmpty (userPermission?.Token))
+				{
+					var userStoreUpdate = await DocumentClient.UpdateUserStore (userStore, userPermission, log);
+
+					return req.CreateResponse (HttpStatusCode.OK, userStoreUpdate.Token);
+				}
+
 
 				return req.CreateResponse (HttpStatusCode.InternalServerError);
+
 			}
 			catch (Exception ex)
 			{
