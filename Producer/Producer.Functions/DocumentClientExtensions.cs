@@ -136,7 +136,7 @@ namespace Producer.Functions
 				log?.Info ($"permission.Timestamp: {permission.Timestamp}");
 
 				userStore.Token = permission.Token;
-				userStore.TokenTimestamp = permission.Timestamp;
+				userStore.TokenTimestamp = DateTime.UtcNow;
 
 
 				var response = await client.ReplaceDocumentAsync (userStore.SelfLink, userStore);
