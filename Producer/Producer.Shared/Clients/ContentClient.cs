@@ -13,7 +13,7 @@ using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 
 using Producer.Domain;
-using Producer.Auth;
+
 
 namespace Producer.Shared
 {

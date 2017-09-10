@@ -21,7 +21,7 @@ namespace Producer.Functions
 		const string usersCollectionId = "Users";
 
 
-		static RequestOptions permissionRequestOptions = new RequestOptions { ResourceTokenExpirySeconds = 18000 };
+		static RequestOptions permissionRequestOptions = new RequestOptions { ResourceTokenExpirySeconds = UserStore.TokenDurationSeconds };
 
 
 		static Uri UsersCollectionLink = UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId);
