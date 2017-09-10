@@ -30,7 +30,7 @@ namespace Producer.Domain
 		public DateTime TokenExpiration => HasToken ? TokenTimestamp.AddSeconds (TokenDurationSeconds) : DateTime.MinValue;
 
 		[JsonIgnore]
-		public bool RefreshToken => TokenExpiration == DateTime.MinValue || TokenExpiration.Subtract (DateTime.UtcNow).TotalSeconds > TokenRefreshSeconds;
+		public bool RefreshToken => TokenExpiration == DateTime.MinValue || TokenExpiration.Subtract (DateTime.UtcNow).TotalSeconds < TokenRefreshSeconds;
 
 		[JsonIgnore]
 		public bool ValidToken => !RefreshToken;
