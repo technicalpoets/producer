@@ -222,6 +222,8 @@
     <AndroidResource Include="Resources\drawable\vd_resources.xml" />
     <AndroidResource Include="Resources\layout\LoginActivityLayout.axml" />
     <AndroidResource Include="Resources\layout\User.axml" />
+    <AndroidResource Include="Resources\menu\menu_logout.axml" />
+    <AndroidResource Include="Resources\menu\menu_compose.axml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -229,6 +231,7 @@
     <Folder Include="Content\" />
     <Folder Include="Views\" />
     <Folder Include="Views\User\" />
+    <Folder Include="Resources\menu\" />
   </ItemGroup>
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />

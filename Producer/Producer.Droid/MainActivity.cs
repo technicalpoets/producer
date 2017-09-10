@@ -12,13 +12,17 @@ using static Android.Gms.Common.Apis.GoogleApiClient;
 using Android.Gms.Common;
 using Producer.Shared;
 using Producer.Droid.Views.User;
+using Producer.Domain;
+using Android.Views;
 
 namespace Producer.Droid
 {
 	[Activity (Label = "Producer", MainLauncher = true, Icon = "@mipmap/icon")]
 	public class MainActivity : BaseActivity, IOnConnectionFailedListener
 	{
-		TabFragmentPagerAdapter PagerAdapter;
+		TabFragmentPagerAdapter PagerAdapter; 
+		IMenu Menu;
+
 
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
@@ -32,21 +36,75 @@ namespace Producer.Droid
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
 			SupportActionBar.SetDisplayHomeAsUpEnabled (true);
+			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
+			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
+
+
 			//final Drawable upArrow = getResources ().getDrawable (R.drawable.abc_ic_ab_back_mtrl_am_alpha);
 			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
 			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
 			setupViewPager ();
+						//ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
+
 		}
+		protected override void OnResume ()
+		{
+			base.OnResume (); 
+			//ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
+		}
+		protected override void OnPause ()
+		{
+			base.OnPause ();
+			//ClientAuthManager.Shared.AthorizationChanged -= handleClientAuthChanged;
+		}
+
+		void handleClientAuthChanged (object sender, ClientAuthDetails e)
+		{
+			Log.Debug ($"Authenticated: {e}");
+
+			Task.Run (async () =>
+			{
+				if (e == null)
+				{
+					ProducerClient.Shared.ResetUser ();
+				}
+				else
+				{
+					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
+				}
+
+				//Activity.RunOnUiThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
+
+				await ContentClient.Shared.GetAllAvContent ();
+			});
+		}
+
+		void handleCurrentUserChanged (object sender, User e)
+		{
+			Log.Debug ($"User: {e?.ToString ()}");
+			var composeItem = Menu.FindItem (Resource.Id.action_compose);
+			RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole ?? UserRoles.General).CanWrite ()));
+		}
+
+		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
+		{
+			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
+			Menu = menu;
+			return base.OnCreateOptionsMenu (menu);
+		}
+
+
 
 		public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
 		{
 			switch (item.ItemId)
 			{
+				case Resource.Id.action_compose:
+					return true;
 				case Android.Resource.Id.Home:
 					//Finish ();
 					profileButtonClicked ();
 					return true;
-
 				default:
 					return base.OnOptionsItemSelected (item);
 			}
