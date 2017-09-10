@@ -131,8 +131,9 @@ namespace Producer.Functions
 					return null;
 				}
 
-				log?.Info ($"Attempting to update UserStore document with Id: {userStore.Id}");
-
+				log?.Info ($"Attempting to replace UserStore document with Id: {userStore.Id}");
+				log?.Info ($"permission.Token: {permission.Token}");
+				log?.Info ($"permission.Timestamp: {permission.Timestamp}");
 
 				userStore.Token = permission.Token;
 				userStore.TokenTimestamp = permission.Timestamp;
