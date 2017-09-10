@@ -5,6 +5,14 @@ namespace Producer.Domain
 {
 	public class UserStore : Entity
 	{
+		[JsonIgnore]
+		public const int TokenDurationSeconds = 18000; // 5 hours
+
+		[JsonIgnore]
+		public const double TokenRefreshSeconds = 600; // 10 minutes
+
+
+
 		public string Email { get; set; }
 
 		public UserRoles UserRole { get; set; }
@@ -19,7 +27,13 @@ namespace Producer.Domain
 		public bool HasToken => !string.IsNullOrEmpty (Token);
 
 		[JsonIgnore]
-		public double TokenMinutes => HasToken ? TokenTimestamp.Subtract (DateTime.UtcNow).TotalMinutes : -1;
+		public DateTime TokenExpiration => HasToken ? TokenTimestamp.AddSeconds (TokenDurationSeconds) : DateTime.MinValue;
+
+		[JsonIgnore]
+		public bool RefreshToken => TokenExpiration == DateTime.MinValue || TokenExpiration.Subtract (DateTime.UtcNow).TotalSeconds > TokenRefreshSeconds;
+
+		[JsonIgnore]
+		public bool ValidToken => !RefreshToken;
 
 
 		public override string ToString ()
@@ -43,8 +57,10 @@ namespace Producer.Domain
 			sb.Append ($"{Token}\n");
 			sb.Append ("  TokenTimestamp".PadRight (15));
 			sb.Append ($"{TokenTimestamp}\n");
-			sb.Append ("  TokenMinutes".PadRight (15));
-			sb.Append ($"{TokenMinutes}\n");
+			sb.Append ("  TokenExpiration".PadRight (15));
+			sb.Append ($"{TokenExpiration}\n");
+			sb.Append ("  RefreshToken".PadRight (15));
+			sb.Append ($"{RefreshToken}\n");
 			return sb.ToString ();
 		}
 	}

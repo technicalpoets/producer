@@ -48,9 +48,10 @@ namespace Producer.Functions
 					userStore = await DocumentClient.SaveUserStore (anonymousUserId, anonymousUserId, UserRoles.General, log);
 				}
 
+				log.Info ($"Found User Store:\n{userStore?.ToString ()}");
 
 				// if the token is still valid for the next 10 mins return it
-				if (userStore?.TokenMinutes > 10)
+				if (userStore?.ValidToken ?? false)
 				{
 					return req.CreateResponse (HttpStatusCode.OK, userStore.Token);
 				}
@@ -66,6 +67,8 @@ namespace Producer.Functions
 				if (!string.IsNullOrEmpty (userPermission?.Token))
 				{
 					var userStoreUpdate = await DocumentClient.UpdateUserStore (userStore, userPermission, log);
+
+					log.Info ($"Updated User Store:\n{userStore?.ToString ()}");
 
 					return req.CreateResponse (HttpStatusCode.OK, userStoreUpdate.Token);
 				}
