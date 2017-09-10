@@ -138,7 +138,7 @@ namespace Producer.Functions
 				userStore.TokenTimestamp = permission.Timestamp;
 
 
-				var response = await client.UpsertDocumentAsync (UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId), userStore);
+				var response = await client.ReplaceDocumentAsync (userStore.SelfLink, userStore);
 
 				var json = response?.Resource?.ToString ();
 
@@ -155,7 +155,20 @@ namespace Producer.Functions
 
 				switch (dex.StatusCode)
 				{
-					case HttpStatusCode.NotFound: return null;
+					case HttpStatusCode.NotFound:
+
+						var response = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId), userStore);
+
+						var json = response?.Resource?.ToString ();
+
+						if (!string.IsNullOrEmpty (json))
+						{
+							return JsonConvert.DeserializeObject<UserStore> (json);
+						}
+
+						return null;
+
+
 					default: throw;
 				}
 			}
