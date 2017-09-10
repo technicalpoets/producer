@@ -10,10 +10,6 @@ PreparePreferenceFile
 		# AddNewTitleValuePreference  -k "GitCommitHash" 	-d "$gitCommitHash" -t "Git Hash"
 
 
-	AddNewPreferenceGroup 	-t "Test Settings"
-		AddNewToggleSwitchPreference -k "TestProducer" 	-d true 	-t "Producer"
-
-
 	# Mobile Center
 	AddNewPreferenceGroup	-t "Mobile Center App Secret"
 		AddNewTextFieldPreference		-k "MobileCenterKey"		-d "" 		-t ""
