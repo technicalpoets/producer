@@ -61,11 +61,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-<<<<<<< HEAD
-	<string>106</string>
-=======
 	<string>130</string>
->>>>>>> master
 	<key>Custom Property</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
