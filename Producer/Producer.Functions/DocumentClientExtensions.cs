@@ -213,12 +213,41 @@ namespace Producer.Functions
 
 					try
 					{
-						log?.Info ($"permissionUri: {permissionUri}");
-						log?.Info ($"user.PermissionsLink: {user.PermissionsLink}");
+						int count = 0;
 
-						log?.Info ($"Attempting to get Permission with Id: {permissionId}  at Uri: {user.PermissionsLink}");
+						string continuation = string.Empty;
 
-						var permissionResponse = await client.ReadPermissionAsync (user.PermissionsLink, permissionRequestOptions);
+						do
+						{
+							// Read the feed 10 items at a time until there are no more items to read
+							var r = await client.ReadPermissionFeedAsync (user.PermissionsLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = continuation });
+
+							// Append the item count
+							count += r.Count;
+
+							// Get the continuation so that we know when to stop.
+							continuation = r.ResponseContinuation;
+
+							foreach (var i in r)
+							{
+								log?.Info ($"permission.Id:             {i.Id}");
+								log?.Info ($"permission.ResourceId:     {i.ResourceId}");
+								log?.Info ($"permission.ResourceLink:   {i.ResourceLink}");
+								log?.Info ($"permission.AltLink:        {i.AltLink}");
+								log?.Info ($"permission.PermissionMode: {i.PermissionMode}");
+								log?.Info ($"permission.SelfLink:       {i.SelfLink}");
+								log?.Info ($"permission.Timestamp:      {i.Timestamp}");
+								log?.Info ($"permission.Token:          {i.Token}");
+								log?.Info ($"permission.ETag:           {i.ETag}");
+								log?.Info ($"");
+							}
+
+						} while (!string.IsNullOrEmpty (continuation));
+
+
+						log?.Info ($"Attempting to get Permission with Id: {permissionId}  at Uri: {permissionUri}");
+
+						var permissionResponse = await client.ReadPermissionAsync (permissionUri, permissionRequestOptions);
 
 						permission = permissionResponse?.Resource;
 					}
@@ -342,5 +371,8 @@ namespace Producer.Functions
 				throw;
 			}
 		}
+
+
+		public static string PermissionLink (this User user, string permissionId) => $"{user?.PermissionsLink}{permissionId}";
 	}
 }
