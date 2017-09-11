@@ -205,15 +205,20 @@ namespace Producer.Functions
 				// if the user was newly created, go ahead and create the permission
 				if (userTup.created && !string.IsNullOrEmpty (user?.Id))
 				{
-					permission = await client.CreateNewPermission (dbId, collection, user.Id, permissionId, permissionMode, log);
+					permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
 				}
 				else // else look for an existing permission with the id
 				{
+					var permissionUri = UriFactory.CreatePermissionUri (dbId, user.Id, permissionId);
+
 					try
 					{
-						log?.Info ($"Attempting to get {permissionMode.ToString ().ToUpper ()} Permission for User {user.Id} with PermissionId: {permissionId}");
+						log?.Info ($"permissionUri: {permissionUri}");
+						log?.Info ($"user.PermissionsLink: {user.PermissionsLink}");
 
-						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, user.Id, permissionId), permissionRequestOptions);
+						log?.Info ($"Attempting to get Permission with Id: {permissionId}  at Uri: {user.PermissionsLink}");
+
+						var permissionResponse = await client.ReadPermissionAsync (user.PermissionsLink, permissionRequestOptions);
 
 						permission = permissionResponse?.Resource;
 					}
@@ -225,9 +230,9 @@ namespace Producer.Functions
 						{
 							case HttpStatusCode.NotFound:
 
-								log?.Info ($"Did not find {permissionMode.ToString ().ToUpper ()} Permission for User {user.Id} with PermissionId {permissionId} - creating...");
+								log?.Info ($"Did not find Permission with Id: {permissionId}  at Uri: {permissionUri} - creating...");
 
-								permission = await client.CreateNewPermission (dbId, collection, user.Id, permissionId, permissionMode, log);
+								permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
 
 								break;
 							default: throw;
@@ -245,38 +250,44 @@ namespace Producer.Functions
 		}
 
 
-		public static async Task<Permission> CreateNewPermission (this DocumentClient client, string dbId, DocumentCollection collection, string userId, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
+		public static async Task<Permission> CreateNewPermission (this DocumentClient client, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
-			log?.Info ($"Creating new {permissionMode.ToString ().ToUpper ()} Permission [Collection: {collection?.Id}  User: {userId}  Permission: {permissionId}]");
+			log?.Info ($"Creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}");
 
 			var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
+			var userUri = UriFactory.CreateUserUri ("Content", user.Id);
+
+			log?.Info ($"newPermission.SelfLink: {newPermission.SelfLink}");
+			log?.Info ($"userUri: {userUri}");
+			log?.Info ($"user.SelfLink: {user.SelfLink}");
+
 			try
 			{
-				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission, permissionRequestOptions);
+				var permissionResponse = await client.CreatePermissionAsync (user.SelfLink, newPermission, permissionRequestOptions);
 
 				return permissionResponse?.Resource;
 			}
-			catch (DocumentClientException dcx)
-			{
-				dcx.Print (log);
+			//catch (DocumentClientException dcx)
+			//{
+			//	dcx.Print (log);
 
-				switch (dcx.StatusCode)
-				{
-					case HttpStatusCode.Conflict:
+			//	switch (dcx.StatusCode)
+			//	{
+			//		case HttpStatusCode.Conflict:
 
-						log?.Info ($"Replacing {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId}...");
+			//			log?.Info ($"Replacing {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId}...");
 
-						var permissionResponse = await client.ReplacePermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId), newPermission, permissionRequestOptions);
+			//			var permissionResponse = await client.ReplacePermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId), newPermission, permissionRequestOptions);
 
-						return permissionResponse?.Resource;
+			//			return permissionResponse?.Resource;
 
-					default: throw;
-				}
-			}
+			//		default: throw;
+			//	}
+			//}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating new {permissionMode.ToString ().ToUpper ()} Permission [Collection: {collection?.Id}  User: {userId}  Permission: {permissionId}]", ex);
+				log?.Error ($"Error creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}", ex);
 				throw;
 			}
 		}
@@ -294,6 +305,11 @@ namespace Producer.Functions
 
 				user = response?.Resource;
 
+				if (user != null)
+				{
+					log?.Info ($"Found existing Database ({dbId}) User with Id {userId}");
+				}
+
 				return (user, false);
 			}
 			catch (DocumentClientException dcx)
@@ -309,6 +325,11 @@ namespace Producer.Functions
 						var response = await client.CreateUserAsync (UriFactory.CreateDatabaseUri (dbId), new User { Id = userId });
 
 						user = response?.Resource;
+
+						if (user != null)
+						{
+							log?.Info ($"Created new Database ({dbId}) User with Id {userId}");
+						}
 
 						return (user, user != null);
 
