@@ -239,7 +239,7 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission [Database: {dbId} Collection: {collectionId}  User: {userId}  Permission: {permissionId}]", ex);
+				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission [Database: {dbId} Collection: {collectionId}  User: {userId}  Permission: {permissionId}", ex);
 				throw;
 			}
 		}
@@ -247,15 +247,32 @@ namespace Producer.Functions
 
 		public static async Task<Permission> CreateNewPermission (this DocumentClient client, string dbId, DocumentCollection collection, string userId, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
+			log?.Info ($"Creating new {permissionMode.ToString ().ToUpper ()} Permission [Collection: {collection?.Id}  User: {userId}  Permission: {permissionId}]");
+
+			var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
+
 			try
 			{
-				log?.Info ($"Creating new {permissionMode.ToString ().ToUpper ()} Permission [Collection: {collection?.Id}  User: {userId}  Permission: {permissionId}]");
-
-				var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
-
 				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission, permissionRequestOptions);
 
 				return permissionResponse?.Resource;
+			}
+			catch (DocumentClientException dcx)
+			{
+				dcx.Print (log);
+
+				switch (dcx.StatusCode)
+				{
+					case HttpStatusCode.Conflict:
+
+						log?.Info ($"Replacing {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId}...");
+
+						var permissionResponse = await client.ReplacePermissionAsync (newPermission, permissionRequestOptions);
+
+						return permissionResponse?.Resource;
+
+					default: throw;
+				}
 			}
 			catch (Exception ex)
 			{
