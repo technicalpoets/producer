@@ -94,6 +94,9 @@ namespace Producer
 		}
 
 
+		public static bool HasUrls => DocumentDbUrl != null && FunctionsUrl != null;
+
+
 		public static string NotificationsName
 		{
 			get => StringForKey (SettingsKeys.NotificationsName);

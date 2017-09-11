@@ -41,11 +41,13 @@ namespace Producer.Shared
 							}
 						}
 					}
-
 					return _user;
 				}
 			}
 		}
+
+
+		public bool Initialized => _httpClient != null;
 
 
 		public UserRoles UserRole => User?.UserRole ?? UserRoles.General;

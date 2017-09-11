@@ -29,6 +29,9 @@ namespace Producer.Shared
 		DocumentClient client;
 
 
+		public bool Initialized => client != null;
+
+
 		public UserRoles UserRole => ProducerClient.Shared.UserRole;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
@@ -37,6 +40,7 @@ namespace Producer.Shared
 			{ UserRoles.Producer, new List<AvContent>() }
 		};
 
+
 		public event EventHandler<UserRoles> AvContentChanged;
 
 
@@ -44,6 +48,7 @@ namespace Producer.Shared
 		{
 			databaseId = dbId;
 		}
+
 
 		public void ResetClient ()
 		{
@@ -58,26 +63,24 @@ namespace Producer.Shared
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
-				await ResetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 			catch (FormatException)
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
 
-				await ResetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 		}
 
 
-		async Task ResetClient (string resourceToken)
+		void ResetClient (string resourceToken)
 		{
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
 
 			try
 			{
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
-
-				await client.OpenAsync ();
 
 			}
 			catch (Exception ex)
@@ -88,10 +91,7 @@ namespace Producer.Shared
 		}
 
 
-		public async Task GetAllAvContent ()
-		{
-			await RefreshAvContentAsync ();
-		}
+		public async Task GetAllAvContent () => await RefreshAvContentAsync ();
 
 
 		public async Task<AvContent> CreateAvContent (AvContent item)
@@ -497,7 +497,7 @@ namespace Producer.Shared
 		readonly Dictionary<string, Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<string, Task<ResourceResponse<DocumentCollection>>> ();
 
 
-		public bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
+		bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
 
 
 		public async Task InitializeCollection (string collectionId)

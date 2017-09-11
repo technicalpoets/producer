@@ -25,19 +25,7 @@ namespace Producer.iOS
 
 			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
-			if (Settings.FunctionsUrl != null && Settings.DocumentDbUrl != null)
-			{
-				Task.Run (async () =>
-				{
-					Log.Debug (ProducerClient.Shared.User?.ToString ());
 
-					await ContentClient.Shared.GetAllAvContent ();
-
-					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
-
-					BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-				});
-			}
 		}
 
 
@@ -45,9 +33,9 @@ namespace Producer.iOS
 		{
 			base.ViewDidAppear (animated);
 
-			if (Settings.FunctionsUrl == null || Settings.DocumentDbUrl == null)
+			if (!Settings.HasUrls)
 			{
-				showSettinsAlert ();
+				this.ShowSettinsAlert ();
 			}
 		}
 
@@ -81,8 +69,6 @@ namespace Producer.iOS
 				{
 					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
 				}
-
-				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 
 				await ContentClient.Shared.GetAllAvContent ();
 			});
@@ -119,35 +105,6 @@ namespace Producer.iOS
 			}
 
 			return canCompose;
-		}
-
-
-		void showSettinsAlert ()
-		{
-			var alertController = UIAlertController.Create ("Configure App", "You must add your Azure information to Settings before using the app.", UIAlertControllerStyle.Alert);
-
-			alertController.AddAction (UIAlertAction.Create ("Open Settings", UIAlertActionStyle.Default, handleAlertControllerActionOpenSettings));
-
-			alertController.AddAction (UIAlertAction.Create ("Cancel", UIAlertActionStyle.Cancel, handleAlertControllerActionDismiss));
-
-			PresentViewController (alertController, true, null);
-		}
-
-
-		void handleAlertControllerActionDismiss (UIAlertAction obj) => DismissViewController (true, null);
-
-
-		void handleAlertControllerActionOpenSettings (UIAlertAction obj)
-		{
-			var settingsString = UIApplication.OpenSettingsUrlString;
-
-			if (!string.IsNullOrEmpty (settingsString))
-			{
-				var settingsUrl = NSUrl.FromString (settingsString);
-
-				UIApplication.SharedApplication.OpenUrl (settingsUrl, new UIApplicationOpenUrlOptions (),
-					(bool opened) => Log.Debug (opened ? "Opening app settings" : "Failed to open app settings"));
-			}
 		}
 
 
