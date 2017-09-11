@@ -5,8 +5,6 @@ using Foundation;
 using UIKit;
 using UserNotifications;
 
-using SettingsStudio;
-
 using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
@@ -27,16 +25,18 @@ namespace Producer.iOS
 
 			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
-			Task.Run (async () =>
+
+		}
+
+
+		public override void ViewDidAppear (bool animated)
+		{
+			base.ViewDidAppear (animated);
+
+			if (!Settings.HasUrls)
 			{
-				Log.Debug (ProducerClient.Shared.User?.ToString ());
-
-				await ContentClient.Shared.GetAllAvContent ();
-
-				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
-
-				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-			});
+				this.ShowSettinsAlert ();
+			}
 		}
 
 
@@ -70,8 +70,6 @@ namespace Producer.iOS
 					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
 				}
 
-				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}
@@ -81,7 +79,7 @@ namespace Producer.iOS
 		{
 			// TODO: Display some type of message for non-producers or figure out how to kill the document type registration
 
-			var canCompose = Settings.TestProducer && (url?.IsFileUrl ?? false);
+			var canCompose = ProducerClient.Shared.UserRole.CanWrite () && (url?.IsFileUrl ?? false);
 
 			if (canCompose)
 			{

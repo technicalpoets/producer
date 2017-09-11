@@ -27,6 +27,9 @@ namespace Producer.iOS
 		[Outlet]
 		UIKit.UITextField fileTypeTextField { get; set; }
 
+		[Action ("cancelClicked:")]
+		partial void cancelClicked (Foundation.NSObject sender);
+
 		[Action ("createButtonClicked:")]
 		partial void createButtonClicked (Foundation.NSObject sender);
 		
@@ -35,6 +38,11 @@ namespace Producer.iOS
 			if (createButton != null) {
 				createButton.Dispose ();
 				createButton = null;
+			}
+
+			if (descriptionTextField != null) {
+				descriptionTextField.Dispose ();
+				descriptionTextField = null;
 			}
 
 			if (fileDisplayNameTextField != null) {
@@ -50,11 +58,6 @@ namespace Producer.iOS
 			if (fileTypeTextField != null) {
 				fileTypeTextField.Dispose ();
 				fileTypeTextField = null;
-			}
-
-			if (descriptionTextField != null) {
-				descriptionTextField.Dispose ();
-				descriptionTextField = null;
 			}
 		}
 	}

@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using SettingsStudio;
-
 using Producer.Auth;
 using Producer.Domain;
 
@@ -43,16 +41,19 @@ namespace Producer.Shared
 							}
 						}
 					}
-
 					return _user;
 				}
 			}
 		}
 
 
+		public bool Initialized => _httpClient != null;
+
+
 		public UserRoles UserRole => User?.UserRole ?? UserRoles.General;
 
 		public event EventHandler<User> CurrentUserChanged;
+
 
 		HttpClient _httpClient;
 		HttpClient httpClient
@@ -80,6 +81,7 @@ namespace Producer.Shared
 
 		public Task Publish<T> (T content, UserRoles? publishTo)
 			where T : Content => Publish (content, null, null, publishTo);
+
 
 		public async Task Publish<T> (T content, string notificationTitle = null, string notificationMessage = null, UserRoles? publishTo = null)
 			where T : Content
@@ -222,7 +224,7 @@ namespace Producer.Shared
 
 				updateNetworkActivityIndicator (true);
 
-				var authResponse = await httpClient.PostAsync (".auth/login/google", new StringContent (auth, Encoding.UTF8, "application/json"));
+				var authResponse = await httpClient.PostAsync (".auth/login/google?access_type=offline", new StringContent (auth, Encoding.UTF8, "application/json"));
 
 				if (authResponse.IsSuccessStatusCode)
 				{

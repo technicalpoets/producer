@@ -21,9 +21,12 @@ namespace Producer.Domain
 		[JsonIgnore]
 		public string LocalInboxPath
 		{
-			get { return SettingsStudio.Settings.StringForKey ($"inbox-{Id}"); }
-			set { SettingsStudio.Settings.SetSetting ($"inbox-{Id}", value ?? string.Empty); }
+			get => Settings.StringForKey ($"inbox-{Id}");
+			set => Settings.SetSetting ($"inbox-{Id}", value ?? string.Empty);
 		}
+
+		[JsonIgnore]
+		public bool HasLocalInboxPath => !string.IsNullOrEmpty (LocalInboxPath);
 
 		//#endif
 

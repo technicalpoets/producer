@@ -12,15 +12,14 @@ using Microsoft.Azure.Documents.Linq;
 
 using Newtonsoft.Json;
 
-using SettingsStudio;
-
 using Producer.Domain;
-using Producer.Auth;
+
 
 namespace Producer.Shared
 {
 	public class ContentClient
 	{
+
 		static ContentClient _shared;
 		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ("Content"));
 
@@ -28,6 +27,9 @@ namespace Producer.Shared
 		readonly string databaseId;
 
 		DocumentClient client;
+
+
+		public bool Initialized => client != null;
 
 
 		public UserRoles UserRole => ProducerClient.Shared.UserRole;
@@ -38,6 +40,7 @@ namespace Producer.Shared
 			{ UserRoles.Producer, new List<AvContent>() }
 		};
 
+
 		public event EventHandler<UserRoles> AvContentChanged;
 
 
@@ -46,10 +49,12 @@ namespace Producer.Shared
 			databaseId = dbId;
 		}
 
+
 		public void ResetClient ()
 		{
 			client = null;
 		}
+
 
 		async Task RefreshResourceToken<T> (bool forceTokenRefresh = true)
 			where T : Entity
@@ -76,6 +81,7 @@ namespace Producer.Shared
 			try
 			{
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
+
 			}
 			catch (Exception ex)
 			{
@@ -85,10 +91,7 @@ namespace Producer.Shared
 		}
 
 
-		public async Task GetAllAvContent ()
-		{
-			await RefreshAvContentAsync ();
-		}
+		public async Task GetAllAvContent () => await RefreshAvContentAsync ();
 
 
 		public async Task<AvContent> CreateAvContent (AvContent item)
@@ -228,7 +231,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -284,7 +287,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -340,7 +343,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -388,7 +391,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -441,7 +444,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				dex.Print ();
+				Log.Debug (dex.Print ());
 
 				switch (dex.StatusCode)
 				{
@@ -494,7 +497,7 @@ namespace Producer.Shared
 		readonly Dictionary<string, Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<string, Task<ResourceResponse<DocumentCollection>>> ();
 
 
-		public bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
+		bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
 
 
 		public async Task InitializeCollection (string collectionId)

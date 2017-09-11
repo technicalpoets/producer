@@ -6,12 +6,8 @@
 
 PreparePreferenceFile
 
-		AddNewTitleValuePreference  -k "VersionNumber" 	-d "$versionNumber ($buildNumber)" 	-t "Version"
+		AddNewTitleValuePreference  -k "VersionDescription" 	-d "$versionNumber ($buildNumber)" 	-t "Version"
 		# AddNewTitleValuePreference  -k "GitCommitHash" 	-d "$gitCommitHash" -t "Git Hash"
-
-
-	AddNewPreferenceGroup 	-t "Test Settings"
-		AddNewToggleSwitchPreference -k "TestProducer" 	-d true 	-t "Producer"
 
 
 	# Mobile Center

@@ -8,8 +8,6 @@ using Microsoft.Azure.Mobile.Distribute;
 
 using Plugin.VersionTracking;
 
-using SettingsStudio;
-
 namespace Producer
 {
 	public static class Bootstrap
@@ -34,7 +32,7 @@ namespace Producer
 			{
 				Log.Debug ("Starting Mobile Center...");
 
-				//MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
+				MobileCenter.Start (Settings.MobileCenterKey, typeof (Analytics), typeof (Crashes), typeof (Distribute));
 			}
 			else
 			{
@@ -57,6 +55,8 @@ namespace Producer
 			Settings.VersionNumber = CrossVersionTracking.Current.CurrentVersion;
 
 			Settings.BuildNumber = CrossVersionTracking.Current.CurrentBuild;
+
+			Settings.VersionDescription = $"{CrossVersionTracking.Current.CurrentVersion} ({CrossVersionTracking.Current.CurrentBuild})";
 #endif
 		}
 

@@ -220,7 +220,7 @@ namespace Producer.iOS
 					Log.Debug ($"An error occured trying to delete the contents on disk for {asset.Id}: {error.LocalizedDescription}");
 				}
 
-				SettingsStudio.Settings.SetSetting (asset.Id, string.Empty);
+				Settings.SetSetting (asset.Id, string.Empty);
 
 				AssetDownloadStateChanged?.Invoke (this, new MusicAssetDownloadStateChangeArgs (asset.Music, MusicAssetDownloadState.NotDownloaded));
 			}
@@ -312,7 +312,7 @@ namespace Producer.iOS
 
 				if (error.Domain == NSError.NSUrlErrorDomain)
 				{
-					if (error.Code == (int)NSUrlError.Cancelled)
+					if (error.Code == (int) NSUrlError.Cancelled)
 					{
 						// This task was canceled, you should perform cleanup using the
 						// URL saved from AVAssetDownloadDelegate.urlSession(_:assetDownloadTask:didFinishDownloadingTo:).
@@ -320,7 +320,7 @@ namespace Producer.iOS
 						DeleteAsset (asset);
 
 					}
-					else if (error.Code == (int)NSUrlError.Unknown)
+					else if (error.Code == (int) NSUrlError.Unknown)
 					{
 						Log.Debug ($"FATAL: Downloading HLS streams is not supported in the simulator.");
 						//fatalError ("Downloading HLS streams is not supported in the simulator.")
@@ -414,7 +414,7 @@ namespace Producer.iOS
 
 			if (activeDownloadsMap.TryGetValue (assetDownloadTask, out asset))
 			{
-				SettingsStudio.Settings.SetSetting (asset.Id, location.RelativePath);
+				Settings.SetSetting (asset.Id, location.RelativePath);
 			}
 		}
 
@@ -460,7 +460,7 @@ namespace Producer.iOS
 
 		NSUrl localFilePath (string id)
 		{
-			var relPath = SettingsStudio.Settings.StringForKey (id);
+			var relPath = Settings.StringForKey (id);
 
 			if (!string.IsNullOrEmpty (relPath))
 			{
@@ -476,7 +476,7 @@ namespace Producer.iOS
 
 		string NSHomeDirectoryNative ()
 		{
-			return (NSString)ObjCRuntime.Runtime.GetNSObject (NSHomeDirectory ());
+			return (NSString) ObjCRuntime.Runtime.GetNSObject (NSHomeDirectory ());
 		}
 
 #if DEBUG
@@ -501,7 +501,7 @@ namespace Producer.iOS
 
 					AssetDownloadProgressChanged?.Invoke (this, new MusicAssetDownloadProgressChangeArgs (asset.Music, progress));
 
-					double inc = (double)rand.Next (1, 15) / 100;
+					double inc = (double) rand.Next (1, 15) / 100;
 
 					progress += inc;
 				}

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using Foundation;
 using UIKit;
@@ -7,17 +9,18 @@ using UserNotifications;
 
 using WindowsAzure.Messaging;
 
-using SettingsStudio;
-
+using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
-using Producer.Auth;
 
 namespace Producer.iOS
 {
 	[Register ("AppDelegate")]
 	public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate
 	{
+
+		static bool processingNotification;
+
 
 		public override UIWindow Window { get; set; }
 
@@ -30,8 +33,6 @@ namespace Producer.iOS
 
 		public override bool FinishedLaunching (UIApplication application, NSDictionary launchOptions)
 		{
-			//Log.Debug (ApsPayload.Create ("title", "message", "AvContent").Serialize ());
-
 			AssetPersistenceManager.Shared.Setup ();
 
 			// must assign delegate before app finishes launching.
@@ -39,7 +40,55 @@ namespace Producer.iOS
 
 			ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
 
+			ProducerClient.Shared.CurrentUserChanged += (sender, e) => registerForNotifications ();
+
+			//getData ();
+
 			return true;
+		}
+
+
+		public override void OnResignActivation (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+			// Sent when the application is about to move from active to inactive state. 
+			// This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) 
+			// or when the user quits the application and it begins the transition to the background state.
+			// Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. 
+			// Games should use this method to pause the game.
+		}
+
+
+		// Called instead of WillTerminate when the user quits if application supports background execution.
+		public override void DidEnterBackground (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+
+			// Use this method to release shared resources, save user data, invalidate timers, and store enough 
+			// application state information to restore your application to its current state in case it is terminated later.
+			// If your application supports background execution, this method is called instead of WillTerminate when the user quits.
+		}
+
+		public override void WillEnterForeground (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+			// Called as part of the transition from the background to the active state; 
+			// here you can undo many of the changes made on entering the background.
+		}
+
+		public override void OnActivated (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+
+			getData ();
+			// Restart any tasks that were paused (or not yet started) while the application was inactive. 
+			// If the application was previously in the background, optionally refresh the user interface.
+		}
+
+		public override void WillTerminate (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+			// Called when the application is about to terminate. Save data if appropriate. See also DidEnterBackground.
 		}
 
 
@@ -58,27 +107,17 @@ namespace Producer.iOS
 		}
 
 
-		const string anonymousUserId = "anonymous_user";
 		public override void RegisteredForRemoteNotifications (UIApplication application, NSData deviceToken)
 		{
-			Log.Debug ($"RegisteredForRemoteNotifications");
-
-			// Connection string from your azure dashboard
-			// var cs = SBConnectionString.CreateListenAccess (new NSUrl (Settings.NotificationsUrl), Settings.NotificationsUrl);
-
-			// Register our info with Azure
-			var hub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
-
-			//var tags = new NSSet ("username:colby");
-			// TODO: add tag for username and permissions level
-
 			var tagArray = ProducerClient.Shared.UserRole.GetTagArray ();
 
-			Log.Debug (string.Join (",", tagArray));
+			var notificationHub = new SBNotificationHub (Settings.NotificationsConnectionString, Settings.NotificationsName);
+
+			Log.Debug ($"Registering with Azure Notification Hub '{Settings.NotificationsName}' with Tags ({string.Join (ConstantStrings.Comma, tagArray)})");
 
 			var tags = new NSSet (tagArray);
 
-			hub.RegisterNativeAsync (deviceToken, tags, err =>
+			notificationHub.RegisterNativeAsync (deviceToken, tags, err =>
 			{
 				if (err != null)
 				{
@@ -88,8 +127,7 @@ namespace Producer.iOS
 				{
 					var token = deviceToken.ToString ().Replace (" ", string.Empty).Trim ('<', '>');
 
-					//Log.Debug ($"Successfully Registered for Notifications. (deviceToken: {deviceToken.ToString ()})");
-					Log.Debug ($"Successfully Registered for Notifications. (token: {token})");
+					Log.Debug ($"Successfully Registered for Notifications. (device token: {token})");
 				}
 			});
 		}
@@ -101,8 +139,6 @@ namespace Producer.iOS
 		}
 
 
-		static bool processingNotification;
-
 		// For a push notification to trigger a download operation, the notification’s payload must include
 		// the content-available key with its value set to 1. When that key is present, the system wakes
 		// the app in the background (or launches it into the background) and calls the app delegate’s 
@@ -112,28 +148,13 @@ namespace Producer.iOS
 		public override async void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 		{
-			// Process a notification received while the app was already open
-#if DEBUG
-			Log.Debug ($"\npayload:\n{userInfo.ToString ()}");
+			Log.Debug ($"\n{userInfo.ToString ()}");
 
-			var sb = new StringBuilder ("\nuserInfo:\n");
-
-			for (int i = 0; i < userInfo.Keys.Length; i++)
-			{
-				sb.AppendLine ($"{userInfo.Keys [i]} : {userInfo.Values [i]}");
-			}
-
-			Log.Debug (sb.ToString ());
-#endif
-
-			if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr)
-			{
-				Log.Debug ($"collectionId = {nsStr}");
-			}
+			// if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr) { }
 
 			if (processingNotification)
 			{
-				Log.Debug ($"DidReceiveRemoteNotification: Already processing notificaiton. Returning");
+				Log.Debug ($"Already processing notificaiton. Returning...");
 				completionHandler (UIBackgroundFetchResult.NewData);
 				return;
 			}
@@ -141,25 +162,83 @@ namespace Producer.iOS
 
 			processingNotification = true;
 
-			Log.Debug ($"DidReceiveRemoteNotification: Get All AvContent Async...");
+			Log.Debug ($"Get All AvContent Async...");
 
 			try
 			{
 				await ContentClient.Shared.GetAllAvContent ();
 
-				Log.Debug ($"DidReceiveRemoteNotification: Finished Getting Data.");
+				deleteLocalUploads ();
+
+				Log.Debug ($"Finished Getting Data.");
 
 				completionHandler (UIBackgroundFetchResult.NewData);
 			}
 			catch (Exception ex)
 			{
-				Log.Debug ($"DidReceiveRemoteNotification: ERROR: FAILED TO GET NEW DATA {ex.Message}");
+				Log.Debug ($"ERROR: FAILED TO GET NEW DATA {ex.Message}");
 
 				completionHandler (UIBackgroundFetchResult.Failed);
 			}
 			finally
 			{
 				processingNotification = false;
+			}
+		}
+
+
+		void registerForNotifications ()
+		{
+			BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, (authorized, error) =>
+			{
+				BeginInvokeOnMainThread (() => UIApplication.SharedApplication.RegisterForRemoteNotifications ());
+			}));
+		}
+
+
+		void getData ()
+		{
+			if (Settings.HasUrls && !ContentClient.Shared.Initialized)
+			{
+				Log.Debug ("Getting Data...");
+
+				Task.Run (async () =>
+				{
+					Log.Debug (ProducerClient.Shared.User?.ToString ());
+
+					await ContentClient.Shared.GetAllAvContent ();
+
+					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+
+					registerForNotifications ();
+				});
+			}
+		}
+
+
+		void deleteLocalUploads ()
+		{
+			var locals = ContentClient.Shared.AvContent? [UserRoles.Producer].Where (avc => avc.HasLocalInboxPath);
+
+			foreach (var asset in locals)
+			{
+				Log.Debug ($"Deleting local asset at: {asset.LocalInboxPath}");
+
+				NSFileManager.DefaultManager.Remove (asset.LocalInboxPath, out NSError error);
+
+				if (error == null)
+				{
+					asset.LocalInboxPath = null;
+				}
+				else
+				{
+					if (error.Code == 4) // not found
+					{
+						asset.LocalInboxPath = null;
+					}
+
+					Log.Debug ($"ERROR: {error}\n{error.Description}");
+				}
 			}
 		}
 	}

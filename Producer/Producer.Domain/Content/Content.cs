@@ -40,8 +40,8 @@ namespace Producer.Domain
 		[JsonIgnore]
 		public string LocalAssetUri
 		{
-			get { return SettingsStudio.Settings.StringForKey (Id); }
-			set { SettingsStudio.Settings.SetSetting (Id, value ?? string.Empty); }
+			get { return Settings.StringForKey (Id); }
+			set { Settings.SetSetting (Id, value ?? string.Empty); }
 		}
 
 #endif

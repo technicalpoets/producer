@@ -6,29 +6,17 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
+<<<<<<< HEAD
 			<string>0.3.1 (106)</string>
+=======
+			<string>0.4.0 (130)</string>
+>>>>>>> master
 			<key>Key</key>
-			<string>VersionNumber</string>
+			<string>VersionDescription</string>
 			<key>Title</key>
 			<string>Version</string>
 			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Test Settings</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>TestProducer</string>
-			<key>Title</key>
-			<string>Producer</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>

@@ -8,8 +8,6 @@ using AVKit;
 using Foundation;
 using UIKit;
 
-using SettingsStudio;
-
 using Producer.Domain;
 using Producer.Shared;
 
@@ -274,7 +272,7 @@ namespace Producer.iOS
 				SetEditing (false, false);
 			}
 
-			NavigationItem.RightBarButtonItem = saved ? EditButtonItem : Settings.TestProducer ? composeButton : null;
+			NavigationItem.RightBarButtonItem = saved ? EditButtonItem : ProducerClient.Shared.UserRole.CanWrite () ? composeButton : null;
 		}
 
 
@@ -285,6 +283,7 @@ namespace Producer.iOS
 				RowSelected (TableView, indexPathCache);
 			}
 		}
+
 
 		#endregion
 
