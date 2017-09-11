@@ -213,36 +213,36 @@ namespace Producer.Functions
 
 					try
 					{
-						int count = 0;
+						//int count = 0;
 
-						string continuation = string.Empty;
+						//string continuation = string.Empty;
 
-						do
-						{
-							// Read the feed 10 items at a time until there are no more items to read
-							var r = await client.ReadPermissionFeedAsync (user.PermissionsLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = continuation });
+						//do
+						//{
+						//	// Read the feed 10 items at a time until there are no more items to read
+						//	var r = await client.ReadPermissionFeedAsync (user.PermissionsLink, new FeedOptions { MaxItemCount = -1, RequestContinuation = continuation });
 
-							// Append the item count
-							count += r.Count;
+						//	// Append the item count
+						//	count += r.Count;
 
-							// Get the continuation so that we know when to stop.
-							continuation = r.ResponseContinuation;
+						//	// Get the continuation so that we know when to stop.
+						//	continuation = r.ResponseContinuation;
 
-							foreach (var i in r)
-							{
-								log?.Info ($"permission.Id:             {i.Id}");
-								log?.Info ($"permission.ResourceId:     {i.ResourceId}");
-								log?.Info ($"permission.ResourceLink:   {i.ResourceLink}");
-								log?.Info ($"permission.AltLink:        {i.AltLink}");
-								log?.Info ($"permission.PermissionMode: {i.PermissionMode}");
-								log?.Info ($"permission.SelfLink:       {i.SelfLink}");
-								log?.Info ($"permission.Timestamp:      {i.Timestamp}");
-								log?.Info ($"permission.Token:          {i.Token}");
-								log?.Info ($"permission.ETag:           {i.ETag}");
-								log?.Info ($"");
-							}
+						//	foreach (var i in r)
+						//	{
+						//		log?.Info ($"permission.Id:             {i.Id}");
+						//		log?.Info ($"permission.ResourceId:     {i.ResourceId}");
+						//		log?.Info ($"permission.ResourceLink:   {i.ResourceLink}");
+						//		log?.Info ($"permission.AltLink:        {i.AltLink}");
+						//		log?.Info ($"permission.PermissionMode: {i.PermissionMode}");
+						//		log?.Info ($"permission.SelfLink:       {i.SelfLink}");
+						//		log?.Info ($"permission.Timestamp:      {i.Timestamp}");
+						//		log?.Info ($"permission.Token:          {i.Token}");
+						//		log?.Info ($"permission.ETag:           {i.ETag}");
+						//		log?.Info ($"");
+						//	}
 
-						} while (!string.IsNullOrEmpty (continuation));
+						//} while (!string.IsNullOrEmpty (continuation));
 
 
 						log?.Info ($"Attempting to get Permission with Id: {permissionId}  at Uri: {permissionUri}");
@@ -250,6 +250,11 @@ namespace Producer.Functions
 						var permissionResponse = await client.ReadPermissionAsync (permissionUri, permissionRequestOptions);
 
 						permission = permissionResponse?.Resource;
+
+						if (permission != null)
+						{
+							log?.Info ($"Found existing Permission with Id: {permission.Id}");
+						}
 					}
 					catch (DocumentClientException dcx)
 					{
@@ -285,35 +290,49 @@ namespace Producer.Functions
 
 			var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
-			var userUri = UriFactory.CreateUserUri ("Content", user.Id);
-
-			log?.Info ($"newPermission.SelfLink: {newPermission.SelfLink}");
-			log?.Info ($"userUri: {userUri}");
-			log?.Info ($"user.SelfLink: {user.SelfLink}");
-
 			try
 			{
 				var permissionResponse = await client.CreatePermissionAsync (user.SelfLink, newPermission, permissionRequestOptions);
 
-				return permissionResponse?.Resource;
+				var permission = permissionResponse?.Resource;
+
+				if (permission != null)
+				{
+					log?.Info ($"Created new Permission with Id: {permission.Id}");
+				}
+
+				return permission;
 			}
-			//catch (DocumentClientException dcx)
-			//{
-			//	dcx.Print (log);
+			catch (DocumentClientException dcx)
+			{
+				dcx.Print (log);
 
-			//	switch (dcx.StatusCode)
-			//	{
-			//		case HttpStatusCode.Conflict:
+				switch (dcx.StatusCode)
+				{
+					case HttpStatusCode.Conflict:
 
-			//			log?.Info ($"Replacing {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId}...");
+						var oldPermissionId = permissionId.Replace (permissionMode.ToString ().ToUpper (), permissionMode == PermissionMode.All ? PermissionMode.Read.ToString ().ToUpper () : PermissionMode.All.ToString ().ToUpper ());
 
-			//			var permissionResponse = await client.ReplacePermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId), newPermission, permissionRequestOptions);
+						log?.Info ($"Deleting old Permission with Id: {oldPermissionId}...");
 
-			//			return permissionResponse?.Resource;
+						await client.DeletePermissionAsync (UriFactory.CreatePermissionUri ("Content", user.Id, oldPermissionId));
 
-			//		default: throw;
-			//	}
-			//}
+						log?.Info ($"Creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}");
+
+						var permissionResponse = await client.CreatePermissionAsync (user.SelfLink, newPermission, permissionRequestOptions);
+
+						var permission = permissionResponse?.Resource;
+
+						if (permission != null)
+						{
+							log?.Info ($"Created new Permission with Id: {permission.Id}");
+						}
+
+						return permission;
+
+					default: throw;
+				}
+			}
 			catch (Exception ex)
 			{
 				log?.Error ($"Error creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}", ex);
