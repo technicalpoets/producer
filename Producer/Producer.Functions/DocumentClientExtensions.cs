@@ -267,7 +267,7 @@ namespace Producer.Functions
 
 						log?.Info ($"Replacing {permissionMode.ToString ().ToUpper ()} Permission for User {userId} with PermissionId {permissionId}...");
 
-						var permissionResponse = await client.ReplacePermissionAsync (newPermission, permissionRequestOptions);
+						var permissionResponse = await client.ReplacePermissionAsync (UriFactory.CreatePermissionUri (dbId, userId, permissionId), newPermission, permissionRequestOptions);
 
 						return permissionResponse?.Resource;
 
