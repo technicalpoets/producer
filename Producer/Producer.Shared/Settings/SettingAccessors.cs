@@ -40,17 +40,6 @@ namespace Producer
 		public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
 
 
-		public static bool TestProducer
-		{
-#if DEBUG
-			get => BoolForKey (SettingsKeys.TestProducer);
-#else
-			get => false;
-#endif
-			set => SetSetting (SettingsKeys.TestProducer, value);
-		}
-
-
 		public static string RemoteFunctionsUrl
 		{
 			get => StringForKey (SettingsKeys.RemoteFunctionsUrl);
@@ -64,13 +53,11 @@ namespace Producer
 		{
 			get
 			{
-				if (_functionsUrl == null)
+				if (_functionsUrl == null && !string.IsNullOrEmpty (RemoteFunctionsUrl))
 				{
-					var urlString = !string.IsNullOrEmpty (RemoteFunctionsUrl) ? RemoteFunctionsUrl : throw new Exception ("No Functions Url");
-
-					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && urlString.EndsWith (".azurewebsites.net", StringComparison.Ordinal))
+					if (!RemoteFunctionsUrl.StartsWith ("http", StringComparison.Ordinal) && RemoteFunctionsUrl.EndsWith (".azurewebsites.net", StringComparison.Ordinal))
 					{
-						var uriBuilder = new UriBuilder ("https", urlString);
+						var uriBuilder = new UriBuilder ("https", RemoteFunctionsUrl);
 
 						_functionsUrl = uriBuilder.Uri;
 					}
@@ -93,13 +80,11 @@ namespace Producer
 		{
 			get
 			{
-				if (_documentDbUrl == null)
+				if (_documentDbUrl == null && !string.IsNullOrEmpty (RemoteDocumentDbUrl))
 				{
-					var urlString = !string.IsNullOrEmpty (RemoteDocumentDbUrl) ? RemoteDocumentDbUrl : throw new Exception ("No DocumentDB Url");
-
-					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && urlString.EndsWith (".documents.azure.com", StringComparison.Ordinal))
+					if (!RemoteDocumentDbUrl.StartsWith ("http", StringComparison.Ordinal) && RemoteDocumentDbUrl.EndsWith (".documents.azure.com", StringComparison.Ordinal))
 					{
-						var uriBuilder = new UriBuilder ("https", urlString, 443);
+						var uriBuilder = new UriBuilder ("https", RemoteDocumentDbUrl, 443);
 
 						_documentDbUrl = uriBuilder.Uri;
 					}

@@ -76,7 +76,7 @@
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </view>
                                         <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZJ6-0i-dmv">
-                                            <rect key="frame" x="333.5" y="22" width="27" height="22"/>
+                                            <rect key="frame" x="313.5" y="12" width="47" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <state key="normal" image="i_download"/>
@@ -513,7 +513,13 @@ Sign in to listen to new music before it drops.</string>
                             <constraint firstItem="QuW-6c-KjI" firstAttribute="trailing" secondItem="I83-F4-dqt" secondAttribute="trailingMargin" id="LHd-nG-POb"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="New Item" id="TEV-5a-xTW"/>
+                    <navigationItem key="navigationItem" title="New Item" id="TEV-5a-xTW">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="F2s-Ya-cnj">
+                            <connections>
+                                <action selector="cancelClicked:" destination="oRw-Ma-a46" id="VH0-wo-JyS"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="createButton" destination="Ih4-JI-e2P" id="AHZ-ki-6lc"/>
                         <outlet property="descriptionTextField" destination="G1b-jB-YDg" id="X1S-zC-EjS"/>

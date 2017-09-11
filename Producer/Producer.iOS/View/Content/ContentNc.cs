@@ -25,16 +25,30 @@ namespace Producer.iOS
 
 			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
-			Task.Run (async () =>
+			if (Settings.FunctionsUrl != null && Settings.DocumentDbUrl != null)
 			{
-				Log.Debug (ProducerClient.Shared.User?.ToString ());
+				Task.Run (async () =>
+				{
+					Log.Debug (ProducerClient.Shared.User?.ToString ());
 
-				await ContentClient.Shared.GetAllAvContent ();
+					await ContentClient.Shared.GetAllAvContent ();
 
-				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
 
-				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-			});
+					BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
+				});
+			}
+		}
+
+
+		public override void ViewDidAppear (bool animated)
+		{
+			base.ViewDidAppear (animated);
+
+			if (Settings.FunctionsUrl == null || Settings.DocumentDbUrl == null)
+			{
+				showSettinsAlert ();
+			}
 		}
 
 
@@ -79,7 +93,7 @@ namespace Producer.iOS
 		{
 			// TODO: Display some type of message for non-producers or figure out how to kill the document type registration
 
-			var canCompose = Settings.TestProducer && (url?.IsFileUrl ?? false);
+			var canCompose = ProducerClient.Shared.UserRole.CanWrite () && (url?.IsFileUrl ?? false);
 
 			if (canCompose)
 			{
@@ -105,6 +119,35 @@ namespace Producer.iOS
 			}
 
 			return canCompose;
+		}
+
+
+		void showSettinsAlert ()
+		{
+			var alertController = UIAlertController.Create ("Configure App", "You must add your Azure information to Settings before using the app.", UIAlertControllerStyle.Alert);
+
+			alertController.AddAction (UIAlertAction.Create ("Open Settings", UIAlertActionStyle.Default, handleAlertControllerActionOpenSettings));
+
+			alertController.AddAction (UIAlertAction.Create ("Cancel", UIAlertActionStyle.Cancel, handleAlertControllerActionDismiss));
+
+			PresentViewController (alertController, true, null);
+		}
+
+
+		void handleAlertControllerActionDismiss (UIAlertAction obj) => DismissViewController (true, null);
+
+
+		void handleAlertControllerActionOpenSettings (UIAlertAction obj)
+		{
+			var settingsString = UIApplication.OpenSettingsUrlString;
+
+			if (!string.IsNullOrEmpty (settingsString))
+			{
+				var settingsUrl = NSUrl.FromString (settingsString);
+
+				UIApplication.SharedApplication.OpenUrl (settingsUrl, new UIApplicationOpenUrlOptions (),
+					(bool opened) => Log.Debug (opened ? "Opening app settings" : "Failed to open app settings"));
+			}
 		}
 
 

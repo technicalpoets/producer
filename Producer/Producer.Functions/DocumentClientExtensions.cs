@@ -21,13 +21,16 @@ namespace Producer.Functions
 		const string usersCollectionId = "Users";
 
 
+		static RequestOptions permissionRequestOptions = new RequestOptions { ResourceTokenExpirySeconds = UserStore.TokenDurationSeconds };
+
+
 		static Uri UsersCollectionLink = UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId);
 
 
 		static string GetUserPermissionId (string dbId, string userId, PermissionMode permissionMode) => $"{dbId}-{userId}-{permissionMode.ToString ().ToUpper ()}";
 
 
-		public static async Task SaveUserStore (this DocumentClient client, string userId, string email, UserRoles role, TraceWriter log = null)
+		public static async Task<UserStore> SaveUserStore (this DocumentClient client, string userId, string email, UserRoles role, TraceWriter log = null)
 		{
 			var userStore = new UserStore { Id = userId, Email = email?.ToLower (), UserRole = role };
 
@@ -35,7 +38,17 @@ namespace Producer.Functions
 			{
 				log?.Info ($"Attempting to create new UserStore document with Id: {userId}");
 
-				await client.CreateDocumentAsync (UsersCollectionLink, userStore);
+				var response = await client.CreateDocumentAsync (UsersCollectionLink, userStore);
+
+				var json = response?.Resource?.ToString ();
+
+				if (!string.IsNullOrEmpty (json))
+				{
+					return JsonConvert.DeserializeObject<UserStore> (json);
+				}
+
+				return null;
+
 			}
 			catch (DocumentClientException dex)
 			{
@@ -47,9 +60,17 @@ namespace Producer.Functions
 
 						log.Info ($"UserStore document with id: {userId} already exists, replacing...");
 
-						await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId), userStore);
+						var response = await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId), userStore);
 
-						break;
+						var json = response?.Resource?.ToString ();
+
+						if (!string.IsNullOrEmpty (json))
+						{
+							return JsonConvert.DeserializeObject<UserStore> (json);
+						}
+
+						return null;
+
 					default: throw;
 				}
 			}
@@ -101,6 +122,65 @@ namespace Producer.Functions
 		}
 
 
+		public static async Task<UserStore> UpdateUserStore (this DocumentClient client, UserStore userStore, Permission permission, TraceWriter log = null)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty (userStore?.Id) || string.IsNullOrEmpty (permission?.Token))
+				{
+					return null;
+				}
+
+				log?.Info ($"Attempting to replace UserStore document with Id: {userStore.Id}");
+				log?.Info ($"permission.Token: {permission.Token}");
+				log?.Info ($"permission.Timestamp: {permission.Timestamp}");
+
+				userStore.Token = permission.Token;
+				userStore.TokenTimestamp = DateTime.UtcNow;
+
+
+				var response = await client.ReplaceDocumentAsync (userStore.SelfLink, userStore);
+
+				var json = response?.Resource?.ToString ();
+
+				if (!string.IsNullOrEmpty (json))
+				{
+					return JsonConvert.DeserializeObject<UserStore> (json);
+				}
+
+				return null;
+			}
+			catch (DocumentClientException dex)
+			{
+				dex.Print (log);
+
+				switch (dex.StatusCode)
+				{
+					case HttpStatusCode.NotFound:
+
+						var response = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId), userStore);
+
+						var json = response?.Resource?.ToString ();
+
+						if (!string.IsNullOrEmpty (json))
+						{
+							return JsonConvert.DeserializeObject<UserStore> (json);
+						}
+
+						return null;
+
+
+					default: throw;
+				}
+			}
+			catch (Exception ex)
+			{
+				log?.Error ("Error saving new User", ex);
+				throw;
+			}
+		}
+
+
 		public static async Task<Permission> GetOrCreatePermission (this DocumentClient client, string dbId, string userId, string collectionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
 			var permissionId = string.Empty;
@@ -133,7 +213,7 @@ namespace Producer.Functions
 					{
 						log?.Info ($"Attempting to get {permissionMode.ToString ().ToUpper ()} Permission for User {user.Id} with PermissionId: {permissionId}");
 
-						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, user.Id, permissionId));
+						var permissionResponse = await client.ReadPermissionAsync (UriFactory.CreatePermissionUri (dbId, user.Id, permissionId), permissionRequestOptions);
 
 						permission = permissionResponse?.Resource;
 					}
@@ -173,7 +253,7 @@ namespace Producer.Functions
 
 				var newPermission = new Permission { Id = permissionId, ResourceLink = collection.SelfLink, PermissionMode = permissionMode };
 
-				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission);
+				var permissionResponse = await client.CreatePermissionAsync (UriFactory.CreateUserUri (dbId, userId), newPermission, permissionRequestOptions);
 
 				return permissionResponse?.Resource;
 			}

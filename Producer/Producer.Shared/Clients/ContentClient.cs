@@ -13,12 +13,13 @@ using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 
 using Producer.Domain;
-using Producer.Auth;
+
 
 namespace Producer.Shared
 {
 	public class ContentClient
 	{
+
 		static ContentClient _shared;
 		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ("Content"));
 
@@ -57,24 +58,27 @@ namespace Producer.Shared
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
-				ResetClient (resourceToken);
+				await ResetClient (resourceToken);
 			}
 			catch (FormatException)
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
 
-				ResetClient (resourceToken);
+				await ResetClient (resourceToken);
 			}
 		}
 
 
-		void ResetClient (string resourceToken)
+		async Task ResetClient (string resourceToken)
 		{
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
 
 			try
 			{
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
+
+				await client.OpenAsync ();
+
 			}
 			catch (Exception ex)
 			{
