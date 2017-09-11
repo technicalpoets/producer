@@ -43,7 +43,7 @@ namespace Producer.Droid
 			{
 				case Resource.Id.action_settings:
 
-					Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
+					//Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
 
 					FragmentTransaction fragmentTx = this.FragmentManager.BeginTransaction ();
 					SettingsFragment settings = new SettingsFragment ();

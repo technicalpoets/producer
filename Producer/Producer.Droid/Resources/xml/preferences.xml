@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/setting_title">
-	<PreferenceCategory android:title="@string/setting_andrew">
-		<Preference android:title="@string/setting_version" android:key="VersionNumberString" android:selectable="false" android:summary="@string/setting_version_summary" />
+	<PreferenceCategory android:title="@string/setting_title">
+		<Preference android:title="@string/setting_version" android:key="VersionDescription" android:selectable="false" android:summary="@string/setting_version_summary" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/setting_test">
 		<CheckBoxPreference android:title="@string/setting_producer" android:key="TestProducer" android:defaultValue="true" android:summary="@string/setting_producer_summary" />

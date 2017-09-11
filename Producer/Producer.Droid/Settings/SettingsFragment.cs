@@ -1,33 +1,19 @@
 ﻿using Android.Views;
 using Android.OS;
-using Android.Content;
-using Producer.Domain;
 using Android.Preferences;
 using Android.Support.V4.Content;
-using SettingsStudio;
-using System.Collections.Generic;
 
 namespace Producer.Droid
 {
 	public class SettingsFragment : PreferenceFragment
 	{
-		static readonly string [] Preferences = { 
-			SettingsKeys.TestProducer,
-			SettingsKeys.MobileCenterKey,
-			SettingsKeys.RemoteFunctionsUrl,
-			SettingsKeys.RemoteDocumentDbUrl,
-			SettingsKeys.NotificationsName,
-			SettingsKeys.NotificationsConnectionString,
-			SettingsKeys.EmbeddedSocialKey,
-			SettingsKeys.UserReferenceKey
-		};
-
 		public override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
 			SetHasOptionsMenu (true);
 			AddPreferencesFromResource (Resource.Xml.preferences);
-			FindPreference ("VersionNumberString").Summary = $"{Settings.VersionNumber} ({Settings.BuildNumber})";
+			Preference preference = FindPreference (nameof(Settings.VersionDescription));
+			preference.Summary = $"{Settings.VersionNumber} ({Settings.BuildNumber})";
 		}
 
 		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -47,10 +33,9 @@ namespace Producer.Droid
 		{
 			base.OnResume ();
 
-			foreach (var item in Preferences)
+			foreach (var item in SettingsKeys.VisibleSettings)
 			{
-				var preference = FindPreference (item);
-				if (preference.GetType () == typeof (EditTextPreference))
+				if (FindPreference (item) is EditTextPreference preference)
 				{
 					preference.PreferenceChange += handlePreferenceChange;
 					preference.Summary = ((EditTextPreference) preference).Text ?? " ";
@@ -62,10 +47,9 @@ namespace Producer.Droid
 		{
 			base.OnPause ();
 
-			foreach (var item in Preferences)
+			foreach (var item in SettingsKeys.VisibleSettings)
 			{
-				var preference = FindPreference (item);
-				if (preference.GetType () == typeof (EditTextPreference))
+				if (FindPreference (item) is EditTextPreference preference)
 				{
 					preference.PreferenceChange -= handlePreferenceChange;
 				}
@@ -74,12 +58,7 @@ namespace Producer.Droid
 
 		void handlePreferenceChange (object sender, Preference.PreferenceChangeEventArgs e)
 		{
-			var preference = e.Preference;
-
-			if (preference.GetType () == typeof (EditTextPreference))
-			{
-				e.Preference.Summary = e.NewValue.ToString ();
-			}
+			e.Preference.Summary = e.NewValue.ToString ();
 		}
 	}
 }
