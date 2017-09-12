@@ -77,8 +77,6 @@ namespace Producer.Shared
 			{
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
 
-				await client.OpenAsync ();
-
 			}
 			catch (Exception ex)
 			{
