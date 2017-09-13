@@ -20,7 +20,23 @@ namespace Producer.Shared
 
 		static AuthUserConfig authUser;
 
+
+		static Keychain _keychain;
+
+		Keychain keychain
+		{
+			get
+			{
+				lock (_object)
+				{
+					return _keychain ?? (_keychain = new Keychain ());
+				}
+			}
+		}
+
+
 		static User _user;
+
 		public User User
 		{
 			get
@@ -33,7 +49,7 @@ namespace Producer.Shared
 
 						if (clientAuth != null)
 						{
-							authUser = AuthUserConfig.FromKeychain ();
+							authUser = AuthUserConfig.FromKeychain (keychain);
 
 							if (authUser != null)
 							{
@@ -64,7 +80,7 @@ namespace Producer.Shared
 				{
 					_httpClient = new HttpClient { BaseAddress = Settings.FunctionsUrl };
 
-					var storedKeys = new Keychain ().GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+					var storedKeys = keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
 					if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
 					{
@@ -197,9 +213,9 @@ namespace Producer.Shared
 		{
 			_user = null;
 
-			new Keychain ().RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+			keychain.RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
-			AuthUserConfig.RemoveFromKeychain ();
+			AuthUserConfig.RemoveFromKeychain (keychain);
 
 			Settings.SetContentToken<AvContent> (string.Empty);
 
@@ -234,7 +250,7 @@ namespace Producer.Shared
 
 					var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
 
-					new Keychain ().SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+					keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
 
 					_httpClient = null;
 
@@ -242,11 +258,13 @@ namespace Producer.Shared
 
 					authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-					authUser.SaveToKeychain ();
+					authUser.SaveToKeychain (keychain);
 
 					Log.Debug (authUser.ToString ());
 
-					CurrentUserChanged?.Invoke (this, User);
+					var user = User;
+
+					CurrentUserChanged?.Invoke (this, user);
 				}
 				else
 				{

@@ -15,28 +15,24 @@ using Newtonsoft.Json;
 using Producer.Auth;
 using Producer.Domain;
 
+using HttpStatusCode = System.Net.HttpStatusCode;
+
 namespace Producer.Functions
 {
-	public static class AuthUserConfigProvider
+	public static class AuthenticateUser
 	{
-
-		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
-		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
-
-		static readonly string [] _admins = Environment.GetEnvironmentVariable ("AppAdminEmails").ToLower ().Trim (';').Split (';');
-		static readonly string [] _producers = Environment.GetEnvironmentVariable ("AppProducerEmails").ToLower ().Trim (';').Split (';');
 
 		static HttpClient _httpClient;
 		static HttpClient HttpClient => _httpClient ?? (_httpClient = new HttpClient ());
 
 		static DocumentClient _documentClient;
-		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (EnvironmentVariables.DocumentDbUri, EnvironmentVariables.DocumentDbKey));
 
 
 		[Authorize]
-		[FunctionName ("GetUserConfig")]
+		[FunctionName (nameof (AuthenticateUser))]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "user/config")] HttpRequestMessage req, TraceWriter log)
+			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Get, Route = Routes.AuthenticateUser)] HttpRequestMessage req, TraceWriter log)
 		{
 			var identity = Thread.CurrentPrincipal.GetClaimsIdentity ();
 
@@ -62,7 +58,7 @@ namespace Producer.Functions
 					await DocumentClient.SaveUserStore (userId, googleUser?.EmailAddress, role, log);
 
 
-					return req.CreateResponse (System.Net.HttpStatusCode.OK, googleUser.GetAuthUserConfig (userId, role));
+					return req.CreateResponse (HttpStatusCode.OK, googleUser.GetAuthUserConfig (userId, role));
 				}
 				catch (Exception ex)
 				{
@@ -73,18 +69,18 @@ namespace Producer.Functions
 
 			log.Info ("User is not authenticated");
 
-			return req.CreateResponse (System.Net.HttpStatusCode.Unauthorized);
+			return req.CreateResponse (HttpStatusCode.Unauthorized);
 		}
 
 
 		static UserRoles GetAuthorizedUserRole (GoogleAuthUser googleUser)
 		{
-			if (_admins.Contains (googleUser.EmailAddress.ToLower ()))
+			if (EnvironmentVariables.Admins.Contains (googleUser.EmailAddress.ToLower ()))
 			{
 				return UserRoles.Admin;
 			}
 
-			if (_producers.Contains (googleUser.EmailAddress.ToLower ()))
+			if (EnvironmentVariables.Producers.Contains (googleUser.EmailAddress.ToLower ()))
 			{
 				return UserRoles.Producer;
 			}

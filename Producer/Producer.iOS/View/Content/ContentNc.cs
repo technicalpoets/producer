@@ -23,9 +23,7 @@ namespace Producer.iOS
 
 			this.AddStatusBarView (Colors.ThemeDark);
 
-			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
-
-
+			//ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 		}
 
 

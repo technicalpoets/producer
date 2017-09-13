@@ -17,14 +17,10 @@ namespace Producer.Functions
 	public static class DocumentClientExtensions
 	{
 
-		const string usersDatabaseId = "Users";
-		const string usersCollectionId = "Users";
+		static Uri UsersCollectionLink = UriFactory.CreateDocumentCollectionUri (UserStore.DatabaseId, UserStore.CollectionId);
 
 
 		static RequestOptions permissionRequestOptions = new RequestOptions { ResourceTokenExpirySeconds = UserStore.TokenDurationSeconds };
-
-
-		static Uri UsersCollectionLink = UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId);
 
 
 		static string GetUserPermissionId (string dbId, string userId, PermissionMode permissionMode) => $"{dbId}-{userId}-{permissionMode.ToString ().ToUpper ()}";
@@ -42,13 +38,7 @@ namespace Producer.Functions
 
 				var json = response?.Resource?.ToString ();
 
-				if (!string.IsNullOrEmpty (json))
-				{
-					return JsonConvert.DeserializeObject<UserStore> (json);
-				}
-
-				return null;
-
+				return string.IsNullOrEmpty (json) ? null : JsonConvert.DeserializeObject<UserStore> (json);
 			}
 			catch (DocumentClientException dex)
 			{
@@ -60,16 +50,11 @@ namespace Producer.Functions
 
 						log.Info ($"UserStore document with id: {userId} already exists, replacing...");
 
-						var response = await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId), userStore);
+						var response = await client.ReplaceDocumentAsync (UriFactory.CreateDocumentUri (UserStore.DatabaseId, UserStore.CollectionId, userId), userStore);
 
 						var json = response?.Resource?.ToString ();
 
-						if (!string.IsNullOrEmpty (json))
-						{
-							return JsonConvert.DeserializeObject<UserStore> (json);
-						}
-
-						return null;
+						return string.IsNullOrEmpty (json) ? null : JsonConvert.DeserializeObject<UserStore> (json);
 
 					default: throw;
 				}
@@ -93,16 +78,11 @@ namespace Producer.Functions
 
 				log?.Info ($"Attempting to get UserStore document with Id: {userId}");
 
-				var response = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (usersDatabaseId, usersCollectionId, userId));
+				var response = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (UserStore.DatabaseId, UserStore.CollectionId, userId));
 
 				var json = response?.Resource?.ToString ();
 
-				if (!string.IsNullOrEmpty (json))
-				{
-					return JsonConvert.DeserializeObject<UserStore> (json);
-				}
-
-				return null;
+				return string.IsNullOrEmpty (json) ? null : JsonConvert.DeserializeObject<UserStore> (json);
 			}
 			catch (DocumentClientException dex)
 			{
@@ -132,8 +112,6 @@ namespace Producer.Functions
 				}
 
 				log?.Info ($"Attempting to replace UserStore document with Id: {userStore.Id}");
-				log?.Info ($"permission.Token: {permission.Token}");
-				log?.Info ($"permission.Timestamp: {permission.Timestamp}");
 
 				userStore.Token = permission.Token;
 				userStore.TokenTimestamp = DateTime.UtcNow;
@@ -143,12 +121,7 @@ namespace Producer.Functions
 
 				var json = response?.Resource?.ToString ();
 
-				if (!string.IsNullOrEmpty (json))
-				{
-					return JsonConvert.DeserializeObject<UserStore> (json);
-				}
-
-				return null;
+				return string.IsNullOrEmpty (json) ? null : JsonConvert.DeserializeObject<UserStore> (json);
 			}
 			catch (DocumentClientException dex)
 			{
@@ -158,17 +131,11 @@ namespace Producer.Functions
 				{
 					case HttpStatusCode.NotFound:
 
-						var response = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (usersDatabaseId, usersCollectionId), userStore);
+						var response = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (UserStore.DatabaseId, UserStore.CollectionId), userStore);
 
 						var json = response?.Resource?.ToString ();
 
-						if (!string.IsNullOrEmpty (json))
-						{
-							return JsonConvert.DeserializeObject<UserStore> (json);
-						}
-
-						return null;
-
+						return string.IsNullOrEmpty (json) ? null : JsonConvert.DeserializeObject<UserStore> (json);
 
 					default: throw;
 				}
