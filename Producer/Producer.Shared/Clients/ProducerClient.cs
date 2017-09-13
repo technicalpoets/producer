@@ -234,7 +234,7 @@ namespace Producer.Shared
 
 			ContentClient.Shared.ResetClient ();
 
-			CurrentUserChanged?.Invoke (this, User);
+			CurrentUserChanged?.Invoke (this, null);
 		}
 
 
