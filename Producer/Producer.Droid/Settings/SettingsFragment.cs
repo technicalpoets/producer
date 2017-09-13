@@ -1,7 +1,7 @@
-﻿using Android.Views;
-using Android.OS;
+﻿using Android.OS;
 using Android.Preferences;
 using Android.Support.V4.Content;
+using Android.Views;
 
 namespace Producer.Droid
 {
@@ -10,24 +10,32 @@ namespace Producer.Droid
 		public override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
+
 			SetHasOptionsMenu (true);
+
 			AddPreferencesFromResource (Resource.Xml.preferences);
-			Preference preference = FindPreference (nameof(Settings.VersionDescription));
-			preference.Summary = $"{Settings.VersionNumber} ({Settings.BuildNumber})";
+
+			FindPreference (SettingsKeys.VersionDescription).Summary = Settings.VersionDescription;
 		}
+
 
 		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
 			var view = base.OnCreateView (inflater, container, savedInstanceState);
-			var color = new Android.Graphics.Color (ContextCompat.GetColor (this.Context, Resource.Color.primary));
+
+			var color = new Android.Graphics.Color (ContextCompat.GetColor (Context, Resource.Color.primary));
+
 			view.SetBackgroundColor (color);
+
 			return view;
 		}
+
 
 		public override void OnCreateOptionsMenu (IMenu menu, MenuInflater inflater)
 		{
 			base.OnCreateOptionsMenu (menu, inflater);
 		}
+
 
 		public override void OnResume ()
 		{
@@ -38,10 +46,11 @@ namespace Producer.Droid
 				if (FindPreference (item) is EditTextPreference preference)
 				{
 					preference.PreferenceChange += handlePreferenceChange;
-					preference.Summary = ((EditTextPreference) preference).Text ?? " ";
+					preference.Summary = preference.Text ?? " ";
 				}
 			}
 		}
+
 
 		public override void OnPause ()
 		{
@@ -56,9 +65,10 @@ namespace Producer.Droid
 			}
 		}
 
+
 		void handlePreferenceChange (object sender, Preference.PreferenceChangeEventArgs e)
 		{
-			e.Preference.Summary = e.NewValue.ToString ();
+			e.Preference.Summary = e.NewValue?.ToString ();
 		}
 	}
 }

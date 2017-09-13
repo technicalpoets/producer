@@ -25,39 +25,41 @@ namespace Producer.Droid
 			SetContentView (Resource.Layout.Main);
 
 			var toolbar = FindViewById<Toolbar> (Resource.Id.main_toolbar);
+
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
 
 			setupViewPager ();
 		}
 
-		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
+
+		public override bool OnCreateOptionsMenu (IMenu menu)
 		{
 			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
+
 			return base.OnCreateOptionsMenu (menu);
 		}
 
+
 		public override bool OnOptionsItemSelected (IMenuItem item)
 		{
-			switch(item.ItemId)
+			switch (item.ItemId)
 			{
 				case Resource.Id.action_settings:
 
 					//Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
 
-					FragmentTransaction fragmentTx = this.FragmentManager.BeginTransaction ();
-					SettingsFragment settings = new SettingsFragment ();
-					fragmentTx.Add (Resource.Id.fragment_container, settings);
-					fragmentTx.AddToBackStack (null);
-					fragmentTx.Commit ();
+					FragmentManager.BeginTransaction ()
+								   .Add (Resource.Id.fragment_container, new SettingsFragment ())
+								   .AddToBackStack (null)
+								   .Commit ();
 
-					break;
-				default:
 					break;
 			}
 
 			return base.OnOptionsItemSelected (item);
 		}
+
 
 		void setupViewPager ()
 		{
