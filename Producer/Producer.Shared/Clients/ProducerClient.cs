@@ -23,7 +23,7 @@ namespace Producer.Shared
 
 		static Keychain _keychain;
 
-		Keychain keychain
+		Keychain Keychain
 		{
 			get
 			{
@@ -49,7 +49,7 @@ namespace Producer.Shared
 
 						if (clientAuth != null)
 						{
-							authUser = AuthUserConfig.FromKeychain (keychain);
+							authUser = AuthUserConfig.FromKeychain (Keychain);
 
 							if (authUser != null)
 							{
@@ -72,7 +72,7 @@ namespace Producer.Shared
 
 
 		HttpClient _httpClient;
-		HttpClient httpClient
+		HttpClient HttpClient
 		{
 			get
 			{
@@ -80,7 +80,7 @@ namespace Producer.Shared
 				{
 					_httpClient = new HttpClient { BaseAddress = Settings.FunctionsUrl };
 
-					var storedKeys = keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+					var storedKeys = Keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
 					if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
 					{
@@ -104,11 +104,9 @@ namespace Producer.Shared
 		{
 			if (content?.HasId ?? false)
 			{
-				var url = $"api/publish";
-
 				try
 				{
-					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, publishTo.HasValue ? publishTo.Value : content.PublishedTo)
+					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, publishTo ?? content.PublishedTo)
 					{
 						Title = notificationTitle,
 						Message = notificationMessage
@@ -116,20 +114,23 @@ namespace Producer.Shared
 
 					Log.Debug (updateMessage.NotificationTags);
 
-					updateNetworkActivityIndicator (true);
+					UpdateNetworkActivityIndicator (true);
 
-					var response = await httpClient.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, "application/json"));
+					var response = await HttpClient.PostAsync (Routes.PublishContent, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, Routes.Json));
 
-					Log.Debug (response.ToString ());
+					if (!response.IsSuccessStatusCode)
+					{
+						throw new Exception ($"Error posting document update message: {updateMessage}");
+					}
 				}
 				catch (Exception ex)
 				{
-					Log.Debug (ex.Message);
+					Log.Error (ex);
 					throw;
 				}
 				finally
 				{
-					updateNetworkActivityIndicator (false);
+					UpdateNetworkActivityIndicator (false);
 				}
 			}
 		}
@@ -138,28 +139,33 @@ namespace Producer.Shared
 		public async Task<StorageToken> GetStorageToken<T> (T content)
 			where T : Content
 		{
+			var collectionId = typeof (T).Name;
+
 			if (content?.HasId ?? false)
 			{
-				var url = $"api/tokens/storage/{typeof (T).Name}/{content.Id}";
-
 				try
 				{
-					updateNetworkActivityIndicator (true);
+					UpdateNetworkActivityIndicator (true);
 
-					var response = await httpClient.GetAsync (url);
+					var response = await HttpClient.GetAsync (Routes.StorageToken (collectionId, content.Id));
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
+
+					if (!response.IsSuccessStatusCode || string.IsNullOrEmpty (stringContent))
+					{
+						throw new Exception ($"Error getting new storage token from server for {collectionId} with Id: {content.Id}");
+					}
 
 					return JsonConvert.DeserializeObject<StorageToken> (stringContent);
 				}
 				catch (Exception ex)
 				{
-					Log.Debug (ex.Message);
+					Log.Error (ex);
 					throw;
 				}
 				finally
 				{
-					updateNetworkActivityIndicator (false);
+					UpdateNetworkActivityIndicator (false);
 				}
 			}
 
@@ -172,7 +178,7 @@ namespace Producer.Shared
 		{
 			const string errorToken = "{\"Message\":\"An error has occurred.\"}";
 
-			var url = $"api/tokens/content/{typeof (T).Name}";
+			var collectionId = typeof (T).Name;
 
 			try
 			{
@@ -180,11 +186,11 @@ namespace Producer.Shared
 
 				if (refresh || string.IsNullOrEmpty (resourceToken) || resourceToken == errorToken)
 				{
-					Log.Info ($"Getting new content token from server for {typeof (T).Name}");
+					Log.Info ($"Getting new content token from server for {collectionId}");
 
-					updateNetworkActivityIndicator (true);
+					UpdateNetworkActivityIndicator (true);
 
-					var response = await httpClient.GetAsync (url);
+					var response = await HttpClient.GetAsync (Routes.ContentToken (collectionId));
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
 
@@ -192,26 +198,26 @@ namespace Producer.Shared
 
 					if (!response.IsSuccessStatusCode || resourceToken == errorToken)
 					{
-						throw new Exception ($"Error getting new content token from server for {typeof (T).Name}");
+						throw new Exception ($"Error getting new content token from server for {collectionId}");
 					}
 
 					Settings.SetContentToken<T> (resourceToken);
 				}
 				else
 				{
-					Log.Info ($"Found existing content token {typeof (T).Name}");
+					Log.Info ($"Found existing content token for {collectionId}");
 				}
 
 				return resourceToken;
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
@@ -220,9 +226,9 @@ namespace Producer.Shared
 		{
 			_user = null;
 
-			keychain.RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+			Keychain.RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
-			AuthUserConfig.RemoveFromKeychain (keychain);
+			AuthUserConfig.RemoveFromKeychain (Keychain);
 
 			Settings.SetContentToken<AvContent> (string.Empty);
 
@@ -230,7 +236,7 @@ namespace Producer.Shared
 
 			ContentClient.Shared.ResetClient ();
 
-			CurrentUserChanged?.Invoke (this, null);
+			CurrentUserChanged?.Invoke (this, User);
 		}
 
 
@@ -245,33 +251,29 @@ namespace Producer.Shared
 
 				var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
-				var authResponse = await httpClient.PostAsync (".auth/login/google?access_type=offline", new StringContent (auth, Encoding.UTF8, "application/json"));
+				var authResponse = await HttpClient.PostAsync (Routes.LoginGoogle, new StringContent (auth, Encoding.UTF8, Routes.Json));
 
 				if (authResponse.IsSuccessStatusCode)
 				{
-					var azureUserJson = await authResponse.Content.ReadAsStringAsync ();
+					var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (await authResponse.Content.ReadAsStringAsync ());
 
-					Log.Debug ($"azureUserJson: {azureUserJson}");
-
-					var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
-
-					keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+					Keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
 
 					_httpClient = null;
 
-					var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+					var userConfigJson = await HttpClient.GetStringAsync (Routes.AuthenticateUser);
 
 					authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-					authUser.SaveToKeychain (keychain);
+					authUser.SaveToKeychain (Keychain);
 
 					Log.Debug (authUser.ToString ());
 
-					var user = User;
+					_user = null;
 
-					CurrentUserChanged?.Invoke (this, user);
+					CurrentUserChanged?.Invoke (this, User);
 				}
 				else
 				{
@@ -281,17 +283,17 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
 
-		public void updateNetworkActivityIndicator (bool visible)
+		public void UpdateNetworkActivityIndicator (bool visible)
 		{
 #if __IOS__
 			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);

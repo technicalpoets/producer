@@ -282,7 +282,7 @@ namespace Producer.Functions
 
 						log?.Info ($"Deleting old Permission with Id: {oldPermissionId}...");
 
-						await client.DeletePermissionAsync (UriFactory.CreatePermissionUri ("Content", user.Id, oldPermissionId));
+						await client.DeletePermissionAsync (UriFactory.CreatePermissionUri (nameof (Content), user.Id, oldPermissionId));
 
 						log?.Info ($"Creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}");
 

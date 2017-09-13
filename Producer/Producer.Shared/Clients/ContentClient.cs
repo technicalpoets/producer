@@ -21,7 +21,7 @@ namespace Producer.Shared
 	{
 
 		static ContentClient _shared;
-		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ("Content"));
+		public static ContentClient Shared => _shared ?? (_shared = new ContentClient (nameof (Content)));
 
 
 		readonly string databaseId;
@@ -145,9 +145,9 @@ namespace Producer.Shared
 				}
 				else if (oldRole.Value > newItem.PublishedTo && newItem.PublishedTo < UserRoles.Producer) // published to more users
 				{
-					var groupNam = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
+					var groupName = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
 
-					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupNam}");
+					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupName}");
 				}
 			}
 			else // not adding to or removing from any group, silently update

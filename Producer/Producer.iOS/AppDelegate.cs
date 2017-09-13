@@ -135,7 +135,9 @@ namespace Producer.iOS
 
 		public override void FailedToRegisterForRemoteNotifications (UIApplication application, NSError error)
 		{
-			Log.Debug ($"FailedToRegisterForRemoteNotifications {error}");
+			Log.Debug (string.Join (ConstantStrings.Comma, ProducerClient.Shared.UserRole.GetTagArray ()));
+
+			Log.Debug (error.LocalizedDescription);
 		}
 
 
