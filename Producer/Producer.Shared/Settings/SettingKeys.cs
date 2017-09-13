@@ -56,6 +56,8 @@ namespace Producer
 
 		public const string ContentTokenBase = nameof (ContentTokenBase);
 
+		public const string ContentDataCache = nameof (ContentDataCache);
+
 
 		#endregion
 	}

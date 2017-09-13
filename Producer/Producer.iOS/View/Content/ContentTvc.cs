@@ -142,7 +142,7 @@ namespace Producer.iOS
 
 			cell.Tag = indexPath.Row;
 
-			cell.SetData (asset.Music, AssetPersistenceManager.Shared.DownloadState (asset));
+			cell.SetData (asset.Music, AssetPersistenceManager.Shared.DownloadState (asset), ContentClient.Shared.Initialized);
 
 			return cell;
 		}
@@ -157,7 +157,7 @@ namespace Producer.iOS
 
 			var asset = saved ? savedAssets [indexPath.Row] : allAssets [indexPath.Row];
 
-			if (asset != null)
+			if (asset != null && (ContentClient.Shared.Initialized || AssetPersistenceManager.Shared.DownloadState (asset) == MusicAssetDownloadState.Downloaded))
 			{
 				if (asset.Music.ContentType == AvContentTypes.Video)
 				{
@@ -374,6 +374,8 @@ namespace Producer.iOS
 
 		void updateMusicAssets ()
 		{
+			Log.Debug ("Load Content");
+
 			if (allAssets?.Count == 0 && ContentClient.Shared.AvContent.Count > 0)
 			{
 				allAssets = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri)
@@ -392,8 +394,6 @@ namespace Producer.iOS
 				allAssets.Sort ((x, y) => y.Music.Timestamp.CompareTo (x.Music.Timestamp));
 			}
 
-			Log.Debug ("Load Content");
-
 			BeginInvokeOnMainThread (() => { TableView.ReloadData (); });
 		}
 
@@ -402,13 +402,15 @@ namespace Producer.iOS
 		{
 			updateMusicAssets ();
 
+			Log.Debug ("adding AvContentChanged handler");
+
 			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
 		}
 
 
 		void handlePersistanceManagerAssetDownloadStateChanged (object sender, MusicAssetDownloadStateChangeArgs e)
 		{
-			Log.Debug ($"handlePersistanceManagerAssetDownloadStateChanged: {e.Music.DisplayName} | {e.State}");
+			Log.Debug ($"{e.Music.DisplayName} | {e.State}");
 
 			BeginInvokeOnMainThread (() =>
 			{
@@ -424,7 +426,7 @@ namespace Producer.iOS
 
 		void handlePersistanceManagerAssetDownloadProgressChanged (object sender, MusicAssetDownloadProgressChangeArgs e)
 		{
-			Log.Debug ($"handlePersistanceManagerAssetDownloadProgressChanged: {e.Music.DisplayName} | {e.Progress}");
+			Log.Debug ($"{e.Music.DisplayName} | {e.Progress}");
 
 			BeginInvokeOnMainThread (() =>
 			{
@@ -443,7 +445,7 @@ namespace Producer.iOS
 
 		void handlePlaybackManagerCurrentItemChanged (object sender, AVPlayer player)
 		{
-			Log.Debug ($"handlePlaybackManagerCurrentItemChanged {sender}");
+			Log.Debug ($"{sender}");
 
 			var playbackManager = sender as AssetPlaybackManager;
 

@@ -40,7 +40,7 @@ namespace Producer.iOS
 
 			ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
 
-			ProducerClient.Shared.CurrentUserChanged += (sender, e) => registerForNotifications ();
+			ProducerClient.Shared.CurrentUserChanged += (sender, e) => RegisterForNotifications ();
 
 			//getData ();
 
@@ -80,7 +80,7 @@ namespace Producer.iOS
 		{
 			Log.Debug (string.Empty);
 
-			getData ();
+			InitializeContent ();
 			// Restart any tasks that were paused (or not yet started) while the application was inactive. 
 			// If the application was previously in the background, optionally refresh the user interface.
 		}
@@ -170,7 +170,7 @@ namespace Producer.iOS
 			{
 				await ContentClient.Shared.GetAllAvContent ();
 
-				deleteLocalUploads ();
+				DeleteLocalUploads ();
 
 				Log.Debug ($"Finished Getting Data.");
 
@@ -189,7 +189,7 @@ namespace Producer.iOS
 		}
 
 
-		void registerForNotifications ()
+		void RegisterForNotifications ()
 		{
 			BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, (authorized, error) =>
 			{
@@ -198,7 +198,7 @@ namespace Producer.iOS
 		}
 
 
-		void getData ()
+		void InitializeContent ()
 		{
 			if (Settings.HasUrls && !ContentClient.Shared.Initialized)
 			{
@@ -208,17 +208,17 @@ namespace Producer.iOS
 				{
 					Log.Debug (ProducerClient.Shared.User?.ToString ());
 
-					await ContentClient.Shared.GetAllAvContent ();
-
 					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
 
-					registerForNotifications ();
+					await ContentClient.Shared.GetAllAvContent ();
+
+					RegisterForNotifications ();
 				});
 			}
 		}
 
 
-		void deleteLocalUploads ()
+		void DeleteLocalUploads ()
 		{
 			var locals = ContentClient.Shared.AvContent? [UserRoles.Producer].Where (avc => avc.HasLocalInboxPath);
 
