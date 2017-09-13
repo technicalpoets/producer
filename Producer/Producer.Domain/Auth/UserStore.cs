@@ -11,6 +11,14 @@ namespace Producer.Domain
 		[JsonIgnore]
 		public const double TokenRefreshSeconds = 600; // 10 minutes
 
+		[JsonIgnore]
+		public const string DatabaseId = "Users";
+
+		[JsonIgnore]
+		public const string CollectionId = "Users";
+
+		[JsonIgnore]
+		public const string AnonymousId = "anonymous_user";
 
 
 		public string Email { get; set; }
@@ -39,27 +47,27 @@ namespace Producer.Domain
 		public override string ToString ()
 		{
 			var sb = new System.Text.StringBuilder ("\n\nUserStore\n");
-			sb.Append ("  Id".PadRight (15));
+			sb.Append ("  Id".PadRight (20));
 			sb.Append ($"{Id}\n");
-			sb.Append ("  ETag".PadRight (15));
+			sb.Append ("  ETag".PadRight (20));
 			sb.Append ($"{ETag}\n");
-			sb.Append ("  ResourceId".PadRight (15));
+			sb.Append ("  ResourceId".PadRight (20));
 			sb.Append ($"{ResourceId}\n");
-			sb.Append ("  SelfLink".PadRight (15));
+			sb.Append ("  SelfLink".PadRight (20));
 			sb.Append ($"{SelfLink}\n");
-			sb.Append ("  Timestamp".PadRight (15));
+			sb.Append ("  Timestamp".PadRight (20));
 			sb.Append ($"{Timestamp}\n");
-			sb.Append ("  Email".PadRight (15));
+			sb.Append ("  Email".PadRight (20));
 			sb.Append ($"{Email}\n");
-			sb.Append ("  UserRole".PadRight (15));
+			sb.Append ("  UserRole".PadRight (20));
 			sb.Append ($"{UserRole}\n");
-			sb.Append ("  Token".PadRight (15));
+			sb.Append ("  Token".PadRight (20));
 			sb.Append ($"{Token}\n");
-			sb.Append ("  TokenTimestamp".PadRight (15));
+			sb.Append ("  TokenTimestamp".PadRight (20));
 			sb.Append ($"{TokenTimestamp}\n");
-			sb.Append ("  TokenExpiration".PadRight (15));
+			sb.Append ("  TokenExpiration".PadRight (20));
 			sb.Append ($"{TokenExpiration}\n");
-			sb.Append ("  RefreshToken".PadRight (15));
+			sb.Append ("  RefreshToken".PadRight (20));
 			sb.Append ($"{RefreshToken}\n");
 			return sb.ToString ();
 		}

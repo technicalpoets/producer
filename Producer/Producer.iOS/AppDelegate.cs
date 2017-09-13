@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using Foundation;
 using UIKit;
@@ -7,10 +9,9 @@ using UserNotifications;
 
 using WindowsAzure.Messaging;
 
+using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
-using Producer.Auth;
-using System.Linq;
 
 namespace Producer.iOS
 {
@@ -39,7 +40,55 @@ namespace Producer.iOS
 
 			ClientAuthManager.Shared.InitializeAuthProviders (application, launchOptions);
 
+			ProducerClient.Shared.CurrentUserChanged += (sender, e) => registerForNotifications ();
+
+			//getData ();
+
 			return true;
+		}
+
+
+		public override void OnResignActivation (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+			// Sent when the application is about to move from active to inactive state. 
+			// This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) 
+			// or when the user quits the application and it begins the transition to the background state.
+			// Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. 
+			// Games should use this method to pause the game.
+		}
+
+
+		// Called instead of WillTerminate when the user quits if application supports background execution.
+		public override void DidEnterBackground (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+
+			// Use this method to release shared resources, save user data, invalidate timers, and store enough 
+			// application state information to restore your application to its current state in case it is terminated later.
+			// If your application supports background execution, this method is called instead of WillTerminate when the user quits.
+		}
+
+		public override void WillEnterForeground (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+			// Called as part of the transition from the background to the active state; 
+			// here you can undo many of the changes made on entering the background.
+		}
+
+		public override void OnActivated (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+
+			getData ();
+			// Restart any tasks that were paused (or not yet started) while the application was inactive. 
+			// If the application was previously in the background, optionally refresh the user interface.
+		}
+
+		public override void WillTerminate (UIApplication application)
+		{
+			Log.Debug (string.Empty);
+			// Called when the application is about to terminate. Save data if appropriate. See also DidEnterBackground.
 		}
 
 
@@ -86,7 +135,9 @@ namespace Producer.iOS
 
 		public override void FailedToRegisterForRemoteNotifications (UIApplication application, NSError error)
 		{
-			Log.Debug ($"FailedToRegisterForRemoteNotifications {error}");
+			Log.Debug (string.Join (ConstantStrings.Comma, ProducerClient.Shared.UserRole.GetTagArray ()));
+
+			Log.Debug (error.LocalizedDescription);
 		}
 
 
@@ -134,6 +185,35 @@ namespace Producer.iOS
 			finally
 			{
 				processingNotification = false;
+			}
+		}
+
+
+		void registerForNotifications ()
+		{
+			BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, (authorized, error) =>
+			{
+				BeginInvokeOnMainThread (() => UIApplication.SharedApplication.RegisterForRemoteNotifications ());
+			}));
+		}
+
+
+		void getData ()
+		{
+			if (Settings.HasUrls && !ContentClient.Shared.Initialized)
+			{
+				Log.Debug ("Getting Data...");
+
+				Task.Run (async () =>
+				{
+					Log.Debug (ProducerClient.Shared.User?.ToString ());
+
+					await ContentClient.Shared.GetAllAvContent ();
+
+					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+
+					registerForNotifications ();
+				});
 			}
 		}
 

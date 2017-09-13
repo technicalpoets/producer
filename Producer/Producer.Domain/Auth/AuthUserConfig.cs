@@ -46,10 +46,8 @@ namespace Producer.Auth
 
 		static string serviceName (string prop) => $"authconfig.{prop}";
 
-		public static AuthUserConfig FromKeychain ()
+		public static AuthUserConfig FromKeychain (Keychain keychain)
 		{
-			var keychain = new Keychain ();
-
 			var config = new AuthUserConfig
 			{
 				Id = keychain.GetItemFromKeychain (serviceName (nameof (Id))).PrivateKey,
@@ -65,10 +63,8 @@ namespace Producer.Auth
 			return config;
 		}
 
-		public void SaveToKeychain ()
+		public void SaveToKeychain (Keychain keychain)
 		{
-			var keychain = new Keychain ();
-
 			if (!string.IsNullOrEmpty (Id)) keychain.SaveItemToKeychain (serviceName (nameof (Id)), "authconfig", Id);
 			if (!string.IsNullOrEmpty (Name)) keychain.SaveItemToKeychain (serviceName (nameof (Name)), "authconfig", Name);
 			if (!string.IsNullOrEmpty (GivenName)) keychain.SaveItemToKeychain (serviceName (nameof (GivenName)), "authconfig", GivenName);
@@ -79,10 +75,8 @@ namespace Producer.Auth
 			keychain.SaveItemToKeychain (serviceName (nameof (UserRole)), "authconfig", UserRole.Claim ());
 		}
 
-		public static void RemoveFromKeychain ()
+		public static void RemoveFromKeychain (Keychain keychain)
 		{
-			var keychain = new Keychain ();
-
 			keychain.RemoveItemFromKeychain (serviceName (nameof (Id)));
 			keychain.RemoveItemFromKeychain (serviceName (nameof (Name)));
 			keychain.RemoveItemFromKeychain (serviceName (nameof (GivenName)));

@@ -32,5 +32,21 @@ namespace Producer.Domain
 
 			NotificationTags = notificationTags;
 		}
+
+		public override string ToString ()
+		{
+			var sb = new System.Text.StringBuilder ("\n\nDocumentUpdatedMessage\n");
+			sb.Append ("  Title".PadRight (20));
+			sb.Append ($"{Title}\n");
+			sb.Append ("  Message".PadRight (20));
+			sb.Append ($"{Message}\n");
+			sb.Append ("  DocumentId".PadRight (20));
+			sb.Append ($"{DocumentId}\n");
+			sb.Append ("  CollectionId".PadRight (20));
+			sb.Append ($"{CollectionId}\n");
+			sb.Append ("  NotificationTags".PadRight (20));
+			sb.Append ($"{NotificationTags}\n");
+			return sb.ToString ();
+		}
 	}
 }

@@ -1,5 +1,8 @@
 ﻿using Microsoft.Azure.Documents;
 
+using HttpStatusCode = System.Net.HttpStatusCode;
+
+
 namespace Producer.Domain
 {
 	public static class ExceptionExtensions
@@ -15,13 +18,13 @@ namespace Producer.Domain
 			{
 				switch (dex.StatusCode)
 				{
-					case System.Net.HttpStatusCode.BadRequest:
+					case HttpStatusCode.BadRequest:
 						return "BadRequest - This means something was wrong with the document supplied. It is likely that disableAutomaticIdGeneration was true and an id was not supplied";
-					case System.Net.HttpStatusCode.Forbidden:
+					case HttpStatusCode.Forbidden:
 						return "Forbidden - This likely means the collection in to which you were trying to create the document is full.";
-					case System.Net.HttpStatusCode.Conflict:
+					case HttpStatusCode.Conflict:
 						return "Conflict - This means a Document with an id matching the id field of document already existed";
-					case System.Net.HttpStatusCode.RequestEntityTooLarge:
+					case HttpStatusCode.RequestEntityTooLarge:
 						return "RequestEntityTooLarge - This means the Document exceeds the current max entity size. Consult documentation for limits and quotas.";
 					default:
 						return dex.Message;
@@ -39,16 +42,16 @@ namespace Producer.Domain
 			{
 				switch (dex.StatusCode)
 				{
-					case System.Net.HttpStatusCode.BadRequest:
+					case HttpStatusCode.BadRequest:
 						log?.Info ("BadRequest - This means something was wrong with the document supplied. It is likely that disableAutomaticIdGeneration was true and an id was not supplied");
 						break;
-					case System.Net.HttpStatusCode.Forbidden:
+					case HttpStatusCode.Forbidden:
 						log?.Info ("Forbidden - This likely means the collection in to which you were trying to create the document is full.");
 						break;
-					case System.Net.HttpStatusCode.Conflict:
+					case HttpStatusCode.Conflict:
 						log?.Info ("Conflict - This means a Document with an id matching the id field of document already existed");
 						break;
-					case System.Net.HttpStatusCode.RequestEntityTooLarge:
+					case HttpStatusCode.RequestEntityTooLarge:
 						log?.Info ("RequestEntityTooLarge - This means the Document exceeds the current max entity size. Consult documentation for limits and quotas.");
 						break;
 					default:

@@ -1,4 +1,5 @@
 ﻿using System;
+using Foundation;
 using UIKit;
 
 namespace Producer.iOS
@@ -49,6 +50,30 @@ namespace Producer.iOS
 			{
 				statusBarView.Hidden = traitCollection.VerticalSizeClass == UIUserInterfaceSizeClass.Compact;
 			}
+		}
+
+
+		public static void ShowSettinsAlert (this UIViewController viewController, string alertTitle = "Configure App", string alertMessage = "You must add your Azure information to Settings before using the app.")
+		{
+			var alertController = UIAlertController.Create (alertTitle, alertMessage, UIAlertControllerStyle.Alert);
+
+			alertController.AddAction (UIAlertAction.Create ("Open Settings", UIAlertActionStyle.Default, (obj) =>
+			{
+				var settingsString = UIApplication.OpenSettingsUrlString;
+
+				if (!string.IsNullOrEmpty (settingsString))
+				{
+					var settingsUrl = NSUrl.FromString (settingsString);
+
+					UIApplication.SharedApplication.OpenUrl (settingsUrl, new UIApplicationOpenUrlOptions (),
+						(bool opened) => Log.Debug (opened ? "Opening app settings" : "Failed to open app settings"));
+
+				}
+			}));
+
+			alertController.AddAction (UIAlertAction.Create ("Cancel", UIAlertActionStyle.Cancel, (obj) => viewController.DismissViewController (true, null)));
+
+			viewController.PresentViewController (alertController, true, null);
 		}
 	}
 }

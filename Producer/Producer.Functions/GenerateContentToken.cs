@@ -17,38 +17,31 @@ using HttpStatusCode = System.Net.HttpStatusCode;
 
 namespace Producer.Functions
 {
-	public static class ContentTokenGenerator
+	public static class GenerateContentToken
 	{
-
-		const string contentDatabaseId = "Content";
-		const string anonymousUserId = "anonymous_user";
-
-		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
-		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
-
 		static DocumentClient _documentClient;
-		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (EnvironmentVariables.DocumentDbUri, EnvironmentVariables.DocumentDbKey));
 
 
 		[Authorize]
-		[FunctionName ("GetContentToken")]
+		[FunctionName (nameof (GenerateContentToken))]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/content/{collectionId}")] HttpRequestMessage req, string collectionId, TraceWriter log)
+			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Get, Route = Routes.GenerateContentToken)] HttpRequestMessage req, string collectionId, TraceWriter log)
 		{
 			try
 			{
-				var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier () ?? anonymousUserId;
+				var userId = Thread.CurrentPrincipal.GetClaimsIdentity ()?.UniqueIdentifier () ?? UserStore.AnonymousId;
 
 
 				var userStore = await DocumentClient.GetUserStore (userId, log);
 
 				// create anonymous UserStore if it doesn't alread exist
-				if (userStore == null && userId == anonymousUserId)
+				if (userStore == null && userId == UserStore.AnonymousId)
 				{
-					userStore = await DocumentClient.SaveUserStore (anonymousUserId, anonymousUserId, UserRoles.General, log);
+					userStore = await DocumentClient.SaveUserStore (UserStore.AnonymousId, UserStore.AnonymousId, UserRoles.General, log);
 				}
 
-				log.Info ($"Found User Store:\n{userStore?.ToString ()}");
+				log.Info ($"Found User Store:\n{userStore}");
 
 				// if the token is still valid for the next 10 mins return it
 				if (userStore?.ValidToken ?? false)
@@ -61,26 +54,24 @@ namespace Producer.Functions
 
 
 				// simply getting the user permission will refresh the token
-				var userPermission = await DocumentClient.GetOrCreatePermission (contentDatabaseId, userId, collectionId, permissionMode, log);
+				var userPermission = await DocumentClient.GetOrCreatePermission (nameof (Content), userId, collectionId, permissionMode, log);
 
 
 				if (!string.IsNullOrEmpty (userPermission?.Token))
 				{
 					var userStoreUpdate = await DocumentClient.UpdateUserStore (userStore, userPermission, log);
 
-					log.Info ($"Updated User Store:\n{userStore?.ToString ()}");
+					log.Info ($"Updated User Store:\n{userStore}");
 
 					return req.CreateResponse (HttpStatusCode.OK, userStoreUpdate.Token);
 				}
 
 
 				return req.CreateResponse (HttpStatusCode.InternalServerError);
-
 			}
 			catch (Exception ex)
 			{
 				log.Error (ex.Message);
-
 				return req.CreateErrorResponse (HttpStatusCode.InternalServerError, ex);
 			}
 		}

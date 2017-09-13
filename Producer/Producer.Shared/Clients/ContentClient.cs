@@ -21,12 +21,15 @@ namespace Producer.Shared
 	{
 
 		static ContentClient _shared;
-		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ("Content"));
+		public static ContentClient Shared => _shared ?? (_shared = new ContentClient (nameof (Content)));
 
 
 		readonly string databaseId;
 
 		DocumentClient client;
+
+
+		public bool Initialized => client != null;
 
 
 		public UserRoles UserRole => ProducerClient.Shared.UserRole;
@@ -37,6 +40,7 @@ namespace Producer.Shared
 			{ UserRoles.Producer, new List<AvContent>() }
 		};
 
+
 		public event EventHandler<UserRoles> AvContentChanged;
 
 
@@ -44,6 +48,7 @@ namespace Producer.Shared
 		{
 			databaseId = dbId;
 		}
+
 
 		public void ResetClient ()
 		{
@@ -58,18 +63,18 @@ namespace Producer.Shared
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
-				await ResetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 			catch (FormatException)
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
 
-				await ResetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 		}
 
 
-		async Task ResetClient (string resourceToken)
+		void ResetClient (string resourceToken)
 		{
 			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
 
@@ -86,10 +91,7 @@ namespace Producer.Shared
 		}
 
 
-		public async Task GetAllAvContent ()
-		{
-			await RefreshAvContentAsync ();
-		}
+		public async Task GetAllAvContent () => await RefreshAvContentAsync ();
 
 
 		public async Task<AvContent> CreateAvContent (AvContent item)
@@ -143,9 +145,9 @@ namespace Producer.Shared
 				}
 				else if (oldRole.Value > newItem.PublishedTo && newItem.PublishedTo < UserRoles.Producer) // published to more users
 				{
-					var groupNam = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
+					var groupName = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
 
-					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupNam}");
+					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupName}");
 				}
 			}
 			else // not adding to or removing from any group, silently update
@@ -495,7 +497,7 @@ namespace Producer.Shared
 		readonly Dictionary<string, Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<string, Task<ResourceResponse<DocumentCollection>>> ();
 
 
-		public bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
+		bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
 
 
 		public async Task InitializeCollection (string collectionId)
