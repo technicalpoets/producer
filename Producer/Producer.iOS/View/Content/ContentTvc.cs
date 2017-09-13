@@ -390,9 +390,9 @@ namespace Producer.iOS
 				allAssets.AddRange (newAssets);
 
 				allAssets.RemoveAll (ma => !ContentClient.Shared.AvContent [UserRoles.General].Any (a => a.Id == ma.Id));
-
-				allAssets.Sort ((x, y) => y.Music.Timestamp.CompareTo (x.Music.Timestamp));
 			}
+
+			allAssets?.Sort ((x, y) => y.Music.Timestamp.CompareTo (x.Music.Timestamp));
 
 			BeginInvokeOnMainThread (() => { TableView.ReloadData (); });
 		}
@@ -401,8 +401,6 @@ namespace Producer.iOS
 		void handlePersistanceManagerDidRestore (object sender, EventArgs e)
 		{
 			updateMusicAssets ();
-
-			Log.Debug ("adding AvContentChanged handler");
 
 			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
 		}

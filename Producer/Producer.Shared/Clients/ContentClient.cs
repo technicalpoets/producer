@@ -132,9 +132,6 @@ namespace Producer.Shared
 
 			AvContent [newItem.PublishedTo].Add (newItem);
 
-			//TODO: Sort
-			//AvContent[newItem.PublishedTo].Sort(x, y)
-
 			AvContentChanged?.Invoke (this, newItem.PublishedTo);
 
 			if (publish)

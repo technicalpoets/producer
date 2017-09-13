@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Foundation;
@@ -42,8 +41,6 @@ namespace Producer.iOS
 
 			ProducerClient.Shared.CurrentUserChanged += (sender, e) => RegisterForNotifications ();
 
-			//getData ();
-
 			return true;
 		}
 
@@ -69,12 +66,15 @@ namespace Producer.iOS
 			// If your application supports background execution, this method is called instead of WillTerminate when the user quits.
 		}
 
+
 		public override void WillEnterForeground (UIApplication application)
 		{
 			Log.Debug (string.Empty);
+
 			// Called as part of the transition from the background to the active state; 
 			// here you can undo many of the changes made on entering the background.
 		}
+
 
 		public override void OnActivated (UIApplication application)
 		{
@@ -84,6 +84,7 @@ namespace Producer.iOS
 			// Restart any tasks that were paused (or not yet started) while the application was inactive. 
 			// If the application was previously in the background, optionally refresh the user interface.
 		}
+
 
 		public override void WillTerminate (UIApplication application)
 		{
@@ -178,7 +179,7 @@ namespace Producer.iOS
 			}
 			catch (Exception ex)
 			{
-				Log.Debug ($"ERROR: FAILED TO GET NEW DATA {ex.Message}");
+				Log.Error ($"FAILED TO GET NEW DATA {ex.Message}");
 
 				completionHandler (UIBackgroundFetchResult.Failed);
 			}
@@ -202,8 +203,6 @@ namespace Producer.iOS
 		{
 			if (Settings.HasUrls && !ContentClient.Shared.Initialized)
 			{
-				Log.Debug ("Getting Data...");
-
 				Task.Run (async () =>
 				{
 					Log.Debug (ProducerClient.Shared.User?.ToString ());
@@ -239,7 +238,7 @@ namespace Producer.iOS
 						asset.LocalInboxPath = null;
 					}
 
-					Log.Debug ($"ERROR: {error}\n{error.Description}");
+					Log.Error ($"{error}\n{error.Description}");
 				}
 			}
 		}
