@@ -30,7 +30,7 @@ namespace Producer.Domain
 
 		public override string ToString ()
 		{
-			var sb = new System.Text.StringBuilder ("\nUser\n");
+			var sb = new System.Text.StringBuilder ("\n\nUser\n");
 			sb.Append ("  Id".PadRight (13));
 			sb.Append ($"{Id}\n");
 			sb.Append ("  Alias".PadRight (13));

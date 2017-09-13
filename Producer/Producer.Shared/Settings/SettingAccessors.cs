@@ -55,13 +55,11 @@ namespace Producer
 			{
 				if (_functionsUrl == null && !string.IsNullOrEmpty (RemoteFunctionsUrl))
 				{
-					if (!RemoteFunctionsUrl.StartsWith ("http", StringComparison.Ordinal) && RemoteFunctionsUrl.EndsWith (".azurewebsites.net", StringComparison.Ordinal))
-					{
-						var uriBuilder = new UriBuilder ("https", RemoteFunctionsUrl);
+					var url = RemoteFunctionsUrl.Replace ("https://", string.Empty).Replace ("http://", string.Empty).TrimEnd ('/');
 
-						_functionsUrl = uriBuilder.Uri;
-					}
+					_functionsUrl = string.IsNullOrEmpty (url) ? null : new UriBuilder ("https", url, 443).Uri;
 				}
+
 				return _functionsUrl;
 			}
 		}
@@ -82,13 +80,11 @@ namespace Producer
 			{
 				if (_documentDbUrl == null && !string.IsNullOrEmpty (RemoteDocumentDbUrl))
 				{
-					if (!RemoteDocumentDbUrl.StartsWith ("http", StringComparison.Ordinal) && RemoteDocumentDbUrl.EndsWith (".documents.azure.com", StringComparison.Ordinal))
-					{
-						var uriBuilder = new UriBuilder ("https", RemoteDocumentDbUrl, 443);
+					var url = RemoteDocumentDbUrl.Replace ("https://", string.Empty).Replace ("http://", string.Empty).TrimEnd ('/');
 
-						_documentDbUrl = uriBuilder.Uri;
-					}
+					_documentDbUrl = string.IsNullOrEmpty (url) ? null : new UriBuilder ("https", url, 443).Uri;
 				}
+
 				return _documentDbUrl;
 			}
 		}
@@ -129,21 +125,6 @@ namespace Producer
 		{
 			get => StringForKey (SettingsKeys.UserReferenceKey);
 			set => SetSetting (SettingsKeys.UserReferenceKey, value ?? "anonymous");
-		}
-
-
-		public static void ConfigureSettings (ProducerSettings producerSettings)
-		{
-			RemoteFunctionsUrl = producerSettings.RemoteFunctionsUrl;
-			RemoteDocumentDbUrl = producerSettings.RemoteDocumentDbUrl;
-			EmbeddedSocialKey = producerSettings.EmbeddedSocialKey;
-			NotificationsName = producerSettings.NotificationsName;
-			NotificationsConnectionString = producerSettings.NotificationsConnectionString;
-#if __IOS__
-			MobileCenterKey = producerSettings.MobileCenterKeyiOS;
-#else
-			MobileCenterKey = producerSettings.MobileCenterKeyAndroid;
-#endif
 		}
 
 

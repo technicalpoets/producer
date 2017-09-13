@@ -21,7 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ContentEncodedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProducerSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\BaseAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthUserConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AzureAppServiceUser.cs" />
@@ -33,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TagExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Routes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />

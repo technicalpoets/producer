@@ -11,6 +11,14 @@ namespace Producer.Domain
 		[JsonIgnore]
 		public const double TokenRefreshSeconds = 600; // 10 minutes
 
+		[JsonIgnore]
+		public const string DatabaseId = "Users";
+
+		[JsonIgnore]
+		public const string CollectionId = "Users";
+
+		[JsonIgnore]
+		public const string AnonymousId = "anonymous_user";
 
 
 		public string Email { get; set; }

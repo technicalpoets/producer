@@ -16,26 +16,21 @@ using Newtonsoft.Json;
 
 namespace Producer.Functions
 {
-	public static class ContentPublisher
+	public static class PublishContent
 	{
 
-		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
-		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
-
 		static DocumentClient _documentClient;
-		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{EnvironmentVariables.DocumentDbUrl}/"), EnvironmentVariables.DocumentDbKey));
 
 
 		[Authorize]
-		[FunctionName ("ContentPublisher")]
+		[FunctionName (nameof (PublishContent))]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")] DocumentUpdatedMessage updateMessage,
-			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
+			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Post, Route = Routes.PublishContent)] DocumentUpdatedMessage updateMessage,
+			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureNotificationHubConnection, HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
-			log.Info ("new DocumentUpdatedMessage");
-
-			log.Info (updateMessage.NotificationTags);
+			log.Info (updateMessage?.ToString ());
 
 			UserStore userStore = null;
 
@@ -58,11 +53,7 @@ namespace Producer.Functions
 
 			try
 			{
-				if (string.IsNullOrEmpty (updateMessage?.CollectionId))
-				{
-					throw new ArgumentException ("Must have value set for CollectionId", nameof (updateMessage));
-				}
-
+				FunctionExtensions.HasValueOrThrow (updateMessage?.CollectionId, "CollectionId");
 
 				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();
 
