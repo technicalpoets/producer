@@ -21,7 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ContentEncodedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProducerSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\BaseAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthUserConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AzureAppServiceUser.cs" />

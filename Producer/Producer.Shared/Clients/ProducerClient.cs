@@ -45,9 +45,7 @@ namespace Producer.Shared
 				{
 					if (_user == null)
 					{
-						var clientAuth = ClientAuthManager.Shared.ClientAuthDetails;
-
-						if (clientAuth != null)
+						if (ClientAuthManager.Shared.ClientAuthDetails != null)
 						{
 							authUser = AuthUserConfig.FromKeychain (Keychain);
 
