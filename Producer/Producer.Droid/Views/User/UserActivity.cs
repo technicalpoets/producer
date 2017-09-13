@@ -12,11 +12,16 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Producer.Auth;
+using Android.Gms.Common.Apis;
+using Android.Gms.Common;
 
 namespace Producer.Droid.Views.User
 {
 	[Activity (Label = "UserActivity")]
 	public class UserActivity : BaseActivity
+#if NC_AUTH_GOOGLE
+		, GoogleApiClient.IOnConnectionFailedListener//AppCompatActivity
+#endif
 	{
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
@@ -24,9 +29,12 @@ namespace Producer.Droid.Views.User
 
 			SetContentView (Resource.Layout.User);
 			// Create your application here
+
 			var toolbar = FindViewById<Toolbar> (Resource.Id.toolbar);
 			SetSupportActionBar (toolbar);
-
+#if NC_AUTH_GOOGLE
+			ClientAuthManager.Shared.InitializeAuthProviders (this);
+#endif
 		}
 
 		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
@@ -45,6 +53,11 @@ namespace Producer.Droid.Views.User
 					break;
 			}
 			return base.OnOptionsItemSelected (item);
+		}
+
+		public void OnConnectionFailed (ConnectionResult result)
+		{
+			Log.Debug ($"{result.ErrorMessage} code: {result.ErrorCode}");
 		}
 	}
 }

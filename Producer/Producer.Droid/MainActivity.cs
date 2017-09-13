@@ -18,10 +18,10 @@ using Android.Views;
 namespace Producer.Droid
 {
 	[Activity (Label = "Producer", MainLauncher = true, Icon = "@mipmap/icon")]
-	public class MainActivity : BaseActivity, IOnConnectionFailedListener
+	public class MainActivity : BaseActivity
 	{
-		TabFragmentPagerAdapter PagerAdapter; 
-		IMenu Menu;
+		TabFragmentPagerAdapter PagerAdapter;
+		static IMenu _menu;
 
 
 		protected override void OnCreate (Bundle savedInstanceState)
@@ -36,25 +36,30 @@ namespace Producer.Droid
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
 			SupportActionBar.SetDisplayHomeAsUpEnabled (true);
-			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
-			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
-
 
 			//final Drawable upArrow = getResources ().getDrawable (R.drawable.abc_ic_ab_back_mtrl_am_alpha);
 			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
 			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
 			setupViewPager ();
-						//ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
+			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;			
+			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
+
 
 		}
 		protected override void OnResume ()
 		{
-			base.OnResume (); 
+			base.OnResume ();
+			checkCompose ();
+
 			//ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 		}
 		protected override void OnPause ()
 		{
 			base.OnPause ();
+
+			//ClientAuthManager.Shared.AuthorizationChanged -= handleClientAuthChanged;
+			//ProducerClient.Shared.CurrentUserChanged -= handleCurrentUserChanged;
+
 			//ClientAuthManager.Shared.AthorizationChanged -= handleClientAuthChanged;
 		}
 
@@ -79,17 +84,31 @@ namespace Producer.Droid
 			});
 		}
 
+		public override bool OnPrepareOptionsMenu (IMenu menu)
+		{
+			checkCompose ();
+
+			return base.OnPrepareOptionsMenu (menu);
+		}
+
 		void handleCurrentUserChanged (object sender, User e)
 		{
 			Log.Debug ($"User: {e?.ToString ()}");
-			var composeItem = Menu.FindItem (Resource.Id.action_compose);
-			RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole ?? UserRoles.General).CanWrite ()));
 		}
 
+		void checkCompose ()
+		{
+			if (_menu != null)
+			{
+				var e = ProducerClient.Shared.User;
+				var composeItem = _menu.FindItem (Resource.Id.action_compose);
+				RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole == UserRoles.General)));//?? UserRoles.General).CanWrite ()));
+			}
+		}
 		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
 		{
 			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
-			Menu = menu;
+			_menu = menu;
 			return base.OnCreateOptionsMenu (menu);
 		}
 
@@ -143,61 +162,6 @@ namespace Producer.Droid
 			};
 		}
 
-		async Task loginAsync ()
-		{
-			try
-			{
-				//BotClient.Shared.ResetCurrentUser();
-				//ClientAuthManager.Shared.LogoutAuthProviders();
-
-				//var details = ClientAuthManager.Shared.ClientAuthDetails;
-
-				// try authenticating with an existing token
-
-
-				if (false)
-				{
-					//var user = await ProducerClient.Shared.User  ?? await AgenciesClient.Shared.GetAuthUserConfigAsync (details?.Token, details?.AuthCode);
-
-					//if (user != null)
-					//{
-					//	BotClient.Shared.CurrentUserId = user.Id;
-
-					//	BotClient.Shared.CurrentUserName = details.Username;
-					//	BotClient.Shared.CurrentUserEmail = details.Email;
-					//	BotClient.Shared.SetAvatarUrl (user.Id, details.AvatarUrl);
-
-					//	await BotClient.Shared.ConnectSocketAsync (conversationId => AgenciesClient.Shared.GetConversationAsync (conversationId));
-
-					//	FaceClient.Shared.SubscriptionKey = await AgenciesClient.Shared.GetFaceApiTokenAsync ();
-					//}
-					//else
-					//{
-					//	//logoutAsync();
-					//	BotClient.Shared.ResetCurrentUser ();
-					//	ClientAuthManager.Shared.LogoutAuthProviders ();
-					//}
-				}
-				else // otherwise prompt the user to login
-				{
-					RunOnUiThread (() =>
-					{
-						ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
-
-						ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
-						ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
-
-						StartActivity (typeof (AuthActivity));
-					});
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Error (ex.Message);
-				throw;
-			}
-		}
-		 
 		void profileButtonClicked ()
 		{
 			if (ProducerClient.Shared.User == null)
@@ -220,9 +184,5 @@ namespace Producer.Droid
 		}
 
 
-		public void OnConnectionFailed (ConnectionResult result)
-		{
-			throw new NotImplementedException ();
-		}
 	}
 }

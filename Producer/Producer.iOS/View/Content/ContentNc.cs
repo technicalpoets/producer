@@ -23,7 +23,7 @@ namespace Producer.iOS
 
 			this.AddStatusBarView (Colors.ThemeDark);
 
-			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
+			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 
 			if (Settings.FunctionsUrl != null && Settings.DocumentDbUrl != null)
 			{

@@ -12,6 +12,8 @@ using Android.OS;
 using Android.Views;
 
 using Android.Support.V4.App;
+using Android;
+using Android.Widget;
 
 #if NC_AUTH_GOOGLE
 using GoogleAuth = Android.Gms.Auth.Api.Auth;
@@ -44,6 +46,7 @@ namespace Producer.Auth
 			ClientAuthManager.Shared.InitializeAuthProviders (this);
 
 			FindViewById<SignInButton> (ClientAuthManager.Shared.GoogleButtonResId).SetOnClickListener (this);
+
 #endif
 		}
 
