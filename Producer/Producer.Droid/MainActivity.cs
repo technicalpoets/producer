@@ -5,6 +5,8 @@ using Android.App;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
+using Android.Views;
+using Android.Content;
 
 namespace Producer.Droid
 {
@@ -23,10 +25,39 @@ namespace Producer.Droid
 			SetContentView (Resource.Layout.Main);
 
 			var toolbar = FindViewById<Toolbar> (Resource.Id.main_toolbar);
+
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
 
 			setupViewPager ();
+		}
+
+
+		public override bool OnCreateOptionsMenu (IMenu menu)
+		{
+			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
+
+			return base.OnCreateOptionsMenu (menu);
+		}
+
+
+		public override bool OnOptionsItemSelected (IMenuItem item)
+		{
+			switch (item.ItemId)
+			{
+				case Resource.Id.action_settings:
+
+					//Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
+
+					FragmentManager.BeginTransaction ()
+								   .Add (Resource.Id.fragment_container, new SettingsFragment ())
+								   .AddToBackStack (null)
+								   .Commit ();
+
+					break;
+			}
+
+			return base.OnOptionsItemSelected (item);
 		}
 
 
