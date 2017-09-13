@@ -128,21 +128,6 @@ namespace Producer
 		}
 
 
-		public static void ConfigureSettings (ProducerSettings producerSettings)
-		{
-			RemoteFunctionsUrl = producerSettings.RemoteFunctionsUrl;
-			RemoteDocumentDbUrl = producerSettings.RemoteDocumentDbUrl;
-			EmbeddedSocialKey = producerSettings.EmbeddedSocialKey;
-			NotificationsName = producerSettings.NotificationsName;
-			NotificationsConnectionString = producerSettings.NotificationsConnectionString;
-#if __IOS__
-			MobileCenterKey = producerSettings.MobileCenterKeyiOS;
-#else
-			MobileCenterKey = producerSettings.MobileCenterKeyAndroid;
-#endif
-		}
-
-
 		#endregion
 
 

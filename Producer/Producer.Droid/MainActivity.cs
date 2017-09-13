@@ -102,7 +102,7 @@ namespace Producer.Droid
 			{
 				var e = ProducerClient.Shared.User;
 				var composeItem = _menu.FindItem (Resource.Id.action_compose);
-				RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole == UserRoles.General)));//?? UserRoles.General).CanWrite ()));
+				RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole /*== UserRoles.General)));*/?? UserRoles.General).CanWrite ()));
 			}
 		}
 		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
