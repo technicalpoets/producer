@@ -1,5 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Producer</string>
   <string name="user_logout">Log out</string>
+  <string name="setting_title">Settings</string>
+	<string name="setting_version">Version</string>
+	<string name="setting_version_summary">0.0.0 (0)</string>
+  <string name="setting_test">Test Settings</string>
+	<string name="setting_producer">Producer</string>
+	<string name="setting_producer_summary">Enable test settings.</string>
+	<string name="setting_mobilecenter">Mobile Center App Secret</string>
+	<string name="setting_functions">Azure Functions URL</string>
+	<string name="setting_functions_summary">Example Url: producer.azurewebsites.net (do not include https:// or trailing /</string>
+	<string name="setting_document">Azure DocumentDB URL</string>
+	<string name="setting_document_summary">Example Url: producer.document.azure.com (do not include https:// or trailing /</string>
+	<string name="setting_notificationhub">Azure Notification Hub</string>
+	<string name="setting_notificationhub_title">Hub Name</string>
+	<string name="setting_embeddedsocial">Embedded Social Key</string>
+	<string name="setting_diagnostics">Diagnostics Key</string>
+	<string name="setting_diagnostics_summary">1</string>
 </resources>

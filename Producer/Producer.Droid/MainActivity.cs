@@ -1,4 +1,4 @@
-﻿using Android.Widget;
+using Android.Widget;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.App;
@@ -14,6 +14,7 @@ using Producer.Shared;
 using Producer.Droid.Views.User;
 using Producer.Domain;
 using Android.Views;
+using Android.Content;
 
 namespace Producer.Droid
 {
@@ -33,6 +34,7 @@ namespace Producer.Droid
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
 			var toolbar = FindViewById<Toolbar> (Resource.Id.main_toolbar);
+
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
 			SupportActionBar.SetDisplayHomeAsUpEnabled (true);
@@ -105,29 +107,39 @@ namespace Producer.Droid
 				RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole /*== UserRoles.General)));*/?? UserRoles.General).CanWrite ()));
 			}
 		}
-		public override bool OnCreateOptionsMenu (Android.Views.IMenu menu)
-		{
-			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
-			_menu = menu;
-			return base.OnCreateOptionsMenu (menu);
-		}
-
-
-
-		public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
+        
+        public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
 		{
 			switch (item.ItemId)
-			{
+            {
+                case Resource.Id.action_settings:
+                
+                //Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
+                
+                FragmentManager.BeginTransaction ()
+                .Add (Resource.Id.fragment_container, new SettingsFragment ())
+                .AddToBackStack (null)
+                .Commit ();
+                break;
 				case Resource.Id.action_compose:
 					return true;
 				case Android.Resource.Id.Home:
 					//Finish ();
 					profileButtonClicked ();
 					return true;
-				default:
-					return base.OnOptionsItemSelected (item);
 			}
+            
+            return base.OnOptionsItemSelected (item);
 		}
+
+		public override bool OnCreateOptionsMenu (IMenu menu)
+        {
+            _menu = menu;
+			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
+            MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
+            return base.OnCreateOptionsMenu (menu);
+		}
+
 
 		void setupViewPager ()
 		{
