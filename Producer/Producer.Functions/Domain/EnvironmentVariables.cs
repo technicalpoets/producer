@@ -4,7 +4,9 @@ namespace Producer.Functions
 {
 	public static class EnvironmentVariables
 	{
-		public static readonly Uri DocumentDbUri = new Uri ($"https://{DocumentDbUrl}/");
+		static Uri _documentDbUri;
+
+		public static Uri DocumentDbUri => _documentDbUri ?? (_documentDbUri = new Uri ($"https://{DocumentDbUrl}/"));
 
 		public static readonly string DocumentDbUrl = Environment.GetEnvironmentVariable (RemoteDocumentDbUrl);
 

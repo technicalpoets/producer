@@ -170,13 +170,15 @@ namespace Producer.Shared
 		public async Task<string> GetContentToken<T> (bool refresh = false)
 			where T : Entity
 		{
+			const string errorToken = "{\"Message\":\"An error has occurred.\"}";
+
 			var url = $"api/tokens/content/{typeof (T).Name}";
 
 			try
 			{
 				var resourceToken = Settings.GetContentToken<T> ();
 
-				if (refresh || string.IsNullOrEmpty (resourceToken))
+				if (refresh || string.IsNullOrEmpty (resourceToken) || resourceToken == errorToken)
 				{
 					Log.Info ($"Getting new content token from server for {typeof (T).Name}");
 
@@ -187,6 +189,11 @@ namespace Producer.Shared
 					var stringContent = await response.Content.ReadAsStringAsync ();
 
 					resourceToken = stringContent.Trim ('"');
+
+					if (!response.IsSuccessStatusCode || resourceToken == errorToken)
+					{
+						throw new Exception ($"Error getting new content token from server for {typeof (T).Name}");
+					}
 
 					Settings.SetContentToken<T> (resourceToken);
 				}
