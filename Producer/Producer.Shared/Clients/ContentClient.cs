@@ -36,8 +36,8 @@ namespace Producer.Shared
 		public UserRoles UserRole => ProducerClient.Shared.UserRole;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
-			{ UserRoles.General, new List<AvContent>() },
-			{ UserRoles.Insider, new List<AvContent>() },
+			{ UserRoles.General,  new List<AvContent>() },
+			{ UserRoles.Insider,  new List<AvContent>() },
 			{ UserRoles.Producer, new List<AvContent>() }
 		};
 
