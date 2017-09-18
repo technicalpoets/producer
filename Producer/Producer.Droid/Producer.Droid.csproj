@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Producer.Droid</RootNamespace>
     <AssemblyName>Producer.Droid</AssemblyName>
-    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -197,6 +197,7 @@
     <Compile Include="Content\ContentRecyclerAdapter.cs" />
     <Compile Include="Settings\SettingsFragment.cs" />
     <Compile Include="View\Login\LoginActivity.cs" />
+    <Compile Include="Settings\SettingsActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -229,6 +230,7 @@
     <AndroidResource Include="Resources\drawable\i_settings.xml" />
     <AndroidResource Include="Resources\menu\menu_settings.xml" />
     <AndroidResource Include="Resources\xml\preferences.xml" />
+    <AndroidResource Include="Resources\layout\Settings.axml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
