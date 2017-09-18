@@ -44,6 +44,9 @@ namespace Producer.Domain
 			set { Settings.SetSetting (Id, value ?? string.Empty); }
 		}
 
+		[JsonIgnore]
+		public bool HasLocalAssetUri => !string.IsNullOrWhiteSpace (LocalAssetUri);
+
 #endif
 	}
 }

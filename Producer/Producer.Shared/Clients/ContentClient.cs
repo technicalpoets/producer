@@ -28,15 +28,16 @@ namespace Producer.Shared
 
 		DocumentClient client;
 
+		bool initialDataLoad;
 
-		public bool Initialized => client != null;
+		public bool Initialized => client != null && initialDataLoad;
 
 
 		public UserRoles UserRole => ProducerClient.Shared.UserRole;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
-			{ UserRoles.General, new List<AvContent>() },
-			{ UserRoles.Insider, new List<AvContent>() },
+			{ UserRoles.General,  new List<AvContent>() },
+			{ UserRoles.Insider,  new List<AvContent>() },
 			{ UserRoles.Producer, new List<AvContent>() }
 		};
 
@@ -81,7 +82,6 @@ namespace Producer.Shared
 			try
 			{
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
-
 			}
 			catch (Exception ex)
 			{
@@ -91,7 +91,17 @@ namespace Producer.Shared
 		}
 
 
-		public async Task GetAllAvContent () => await RefreshAvContentAsync ();
+		public async Task GetAllAvContent ()
+		{
+			if (!Initialized && !string.IsNullOrEmpty (Settings.ContentDataCache))
+			{
+				AvContent = JsonConvert.DeserializeObject<Dictionary<UserRoles, List<AvContent>>> (Settings.ContentDataCache);
+
+				AvContentChanged?.Invoke (this, UserRole);
+			}
+
+			await RefreshAvContentAsync ();
+		}
 
 
 		public async Task<AvContent> CreateAvContent (AvContent item)
@@ -121,9 +131,6 @@ namespace Producer.Shared
 			var newItem = await Replace (item);
 
 			AvContent [newItem.PublishedTo].Add (newItem);
-
-			//TODO: Sort
-			//AvContent[newItem.PublishedTo].Sort(x, y)
 
 			AvContentChanged?.Invoke (this, newItem.PublishedTo);
 
@@ -196,7 +203,12 @@ namespace Producer.Shared
 				if (!AvContent.ContainsKey (UserRoles.Insider)) AvContent [UserRoles.Insider] = new List<AvContent> ();
 				if (!AvContent.ContainsKey (UserRoles.Producer)) AvContent [UserRoles.Producer] = new List<AvContent> ();
 
+
+				initialDataLoad = true;
+
 				AvContentChanged?.Invoke (this, UserRole);
+
+				Settings.ContentDataCache = JsonConvert.SerializeObject (AvContent);
 			}
 			catch (Exception ex)
 			{

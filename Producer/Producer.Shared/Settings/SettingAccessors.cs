@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Producer.Domain;
-
 namespace Producer
 {
 	public static partial class Settings
@@ -154,6 +152,12 @@ namespace Producer
 			set => SetSetting (SettingsKeys.LastAvContentDescription, value);
 		}
 
+
+		public static string ContentDataCache
+		{
+			get => StringForKey (SettingsKeys.ContentDataCache);
+			set => SetSetting (SettingsKeys.ContentDataCache, value);
+		}
 
 		public static string GetContentToken<T> () => StringForKey ($"{SettingsKeys.ContentTokenBase}{typeof (T).Name}");
 

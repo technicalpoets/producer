@@ -13,7 +13,7 @@ namespace Producer.iOS
 		public ContentMusicTvCell (IntPtr handle) : base (handle) { }
 
 
-		public void SetData (AvContent music, MusicAssetDownloadState downloadState)
+		public void SetData (AvContent music, MusicAssetDownloadState downloadState, bool online = true)
 		{
 			TextLabel.Text = music.DisplayName;
 			DetailTextLabel.Text = music.Description;
@@ -65,7 +65,7 @@ namespace Producer.iOS
 
 					accessoryProgressView.Hidden = true;
 
-					var audio = music.ContentType == AvContentTypes.Audio;
+					var audio = music.ContentType == AvContentTypes.Audio && online;
 
 					AccessoryView = audio ? accessoryButton : null;
 
@@ -76,6 +76,8 @@ namespace Producer.iOS
 
 					break;
 			}
+
+			ContentView.Alpha = online || downloadState == MusicAssetDownloadState.Downloaded ? 1.0f : 0.5f;
 
 			isPlaying = false;
 
@@ -105,7 +107,7 @@ namespace Producer.iOS
 			{
 				progressBar.Hidden = false;
 
-				progressBar.SetProgress ((float)progress, true);
+				progressBar.SetProgress ((float) progress, true);
 			}
 		}
 

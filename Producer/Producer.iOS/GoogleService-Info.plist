@@ -7,9 +7,9 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>209705403340-mfn8i3ha2nkr7c6kjad3q676hg6fs03k.apps.googleusercontent.com</string>
+	<string>209705403340-jl7ff9kuieeeibf5flaqea76gufjkc58.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.209705403340-mfn8i3ha2nkr7c6kjad3q676hg6fs03k</string>
+	<string>com.googleusercontent.apps.209705403340-jl7ff9kuieeeibf5flaqea76gufjkc58</string>
 	<key>SERVER_CLIENT_ID</key>
 	<string>209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -19,7 +19,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.colbylwilliams.producer</string>
+	<string>com.xamarin.producer</string>
 	<key>PROJECT_ID</key>
 	<string>producer-7c667</string>
 	<key>STORAGE_BUCKET</key>
@@ -35,7 +35,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:209705403340:ios:96e7d6978d6d94ba</string>
+	<string>1:209705403340:ios:4c186a69db46ed30</string>
 	<key>DATABASE_URL</key>
 	<string>https://producer-7c667.firebaseio.com</string>
 </dict>

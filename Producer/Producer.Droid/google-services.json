@@ -1,70 +1,101 @@
 {
-	"project_info": {
-		"project_number": "209705403340",
-		"firebase_url": "https://producer-7c667.firebaseio.com",
-		"project_id": "producer-7c667",
-		"storage_bucket": "producer-7c667.appspot.com"
-	},
-	"client": [
-		{
-			"client_info": {
-				"mobilesdk_app_id": "1:209705403340:android:96e7d6978d6d94ba",
-				"android_client_info": {
-					"package_name": "com.colbylwilliams.producer"
-				}
-			},
-			"oauth_client": [
-				{
-					"client_id": "209705403340-4b2eqnts5p56v1vmqr3b8e45uivp03gd.apps.googleusercontent.com",
-					"client_type": 1,
-					"android_info": {
-						"package_name": "com.colbylwilliams.producer",
-						"certificate_hash": "3672bdb13f10e6df2f10b1733c6ad0a1acd85c29"
-					}
-				},
-				{
-					"client_id": "209705403340-vfl95a1olbrkhgvp2if7p7rjm6ap7l9g.apps.googleusercontent.com",
-					"client_type": 1,
-					"android_info": {
-						"package_name": "com.colbylwilliams.producer",
-						"certificate_hash": "126186416983917e14da031f6652231da9e567c9"
-					}
-				},
-				{
-					"client_id": "209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com",
-					"client_type": 3
-				}
-			],
-			"api_key": [
-				{
-					"current_key": "AIzaSyCjVmRtHGWmOLxBLw5Bkn10H3htlOjBxN0"
-				}
-			],
-			"services": {
-				"analytics_service": {
-					"status": 1
-				},
-				"appinvite_service": {
-					"status": 2,
-					"other_platform_oauth_client": [
-						{
-							"client_id": "209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com",
-							"client_type": 3
-						},
-						{
-							"client_id": "209705403340-mfn8i3ha2nkr7c6kjad3q676hg6fs03k.apps.googleusercontent.com",
-							"client_type": 2,
-							"ios_info": {
-								"bundle_id": "com.colbylwilliams.producer"
-							}
-						}
-					]
-				},
-				"ads_service": {
-					"status": 2
-				}
-			}
-		}
-	],
-	"configuration_version": "1"
+  "project_info": {
+    "project_number": "209705403340",
+    "firebase_url": "https://producer-7c667.firebaseio.com",
+    "project_id": "producer-7c667",
+    "storage_bucket": "producer-7c667.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209705403340:android:96e7d6978d6d94ba",
+        "android_client_info": {
+          "package_name": "com.colbylwilliams.producer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209705403340-4b2eqnts5p56v1vmqr3b8e45uivp03gd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.colbylwilliams.producer",
+            "certificate_hash": "3672bdb13f10e6df2f10b1733c6ad0a1acd85c29"
+          }
+        },
+        {
+          "client_id": "209705403340-vfl95a1olbrkhgvp2if7p7rjm6ap7l9g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.colbylwilliams.producer",
+            "certificate_hash": "126186416983917e14da031f6652231da9e567c9"
+          }
+        },
+        {
+          "client_id": "209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjVmRtHGWmOLxBLw5Bkn10H3htlOjBxN0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "209705403340-jl7ff9kuieeeibf5flaqea76gufjkc58.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xamarin.producer"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209705403340:android:4c186a69db46ed30",
+        "android_client_info": {
+          "package_name": "com.xamarin.producer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209705403340-fpm494gp8ise10jinv8hn7onjjt6vdoc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjVmRtHGWmOLxBLw5Bkn10H3htlOjBxN0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }
