@@ -1,20 +1,16 @@
-using Android.Widget;
-using Android.OS;
-using Android.Support.V7.App;
+using System.Threading.Tasks;
+
 using Android.App;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
-using Producer.Auth;
-using System.Threading.Tasks;
-using System;
-using static Android.Gms.Common.Apis.GoogleApiClient;
-using Android.Gms.Common;
-using Producer.Shared;
-using Producer.Droid.Views.User;
-using Producer.Domain;
 using Android.Views;
-using Android.Content;
+
+using Producer.Auth;
+using Producer.Domain;
+using Producer.Shared;
+
+using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Producer.Droid
 {
@@ -46,15 +42,15 @@ namespace Producer.Droid
 
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
-
-
 		}
+
 
 		protected override void OnResume ()
 		{
 			base.OnResume ();
 			checkCompose ();
 		}
+
 
 		protected override void Dispose (bool disposing)
 		{
@@ -64,9 +60,11 @@ namespace Producer.Droid
 			base.Dispose (disposing);
 
 		}
+
+
 		void handleClientAuthChanged (object sender, ClientAuthDetails e)
 		{
-			
+
 			Log.Debug ($"Authenticated: {e}");
 
 			Task.Run (async () =>
@@ -80,10 +78,11 @@ namespace Producer.Droid
 					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
 				}
 
-				//Activity.RunOnUiThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
+				//todo Activity.RunOnUiThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}
+
 
 		void handleCurrentUserChanged (object sender, User e)
 		{
@@ -91,16 +90,20 @@ namespace Producer.Droid
 			Log.Debug ($"User: {e?.ToString ()}");
 		}
 
+
 		void checkCompose ()
 		{
 			// Check if signed-in user has write access
 			if (_menu != null)
 			{
-				var e = ProducerClient.Shared.User;
-				var composeItem = _menu.FindItem (Resource.Id.action_compose);
-				RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole /*== UserRoles.General)));*/?? UserRoles.General).CanWrite ()));
+				RunOnUiThread (() =>
+				{
+					var composeItem = _menu.FindItem (Resource.Id.action_compose);
+					composeItem?.SetVisible (ProducerClient.Shared.UserRole.CanWrite ());
+				});
 			}
 		}
+
 
 		public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
 		{
@@ -125,6 +128,14 @@ namespace Producer.Droid
 
 			return base.OnOptionsItemSelected (item);
 		}
+
+
+		public override bool OnPrepareOptionsMenu (IMenu menu)
+		{
+			checkCompose ();
+			return base.OnPrepareOptionsMenu (menu);
+		}
+
 
 		public override bool OnCreateOptionsMenu (IMenu menu)
 		{
@@ -168,6 +179,7 @@ namespace Producer.Droid
 			};
 		}
 
+
 		void profileButtonClicked ()
 		{
 			RunOnUiThread (() =>
@@ -177,9 +189,13 @@ namespace Producer.Droid
 				ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
 
 				if (ProducerClient.Shared.User == null)
-					StartActivity (typeof (AuthActivity));
+				{
+					StartActivity (typeof (LoginActivity));
+				}
 				else
+				{
 					StartActivity (typeof (UserActivity));
+				}
 			});
 		}
 

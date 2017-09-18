@@ -126,9 +126,13 @@ namespace Producer.Auth
 			catch (Exception e)
 			{
 				if (e is FileNotFoundException || e is EOFException)
+				{
 					keystore.Load (null, password);
+				}
 				else
-					throw e;
+				{
+					throw;
+				}
 			}
 
 			keyStoresCache [serviceId] = keystore;
@@ -201,9 +205,10 @@ namespace Producer.Auth
 			var keystore = getKeystore (service);
 			using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
 			{
-				var tuple = item.ToTuple ();
-				if (!string.IsNullOrWhiteSpace (tuple?.Item1) && !string.IsNullOrWhiteSpace (tuple?.Item1))
-					keystore.DeleteEntry (item.Item1);
+				if (!string.IsNullOrWhiteSpace (item.Account) && !string.IsNullOrWhiteSpace (item.PrivateKey))
+				{
+					keystore.DeleteEntry (item.Account);
+				}
 			}
 
 

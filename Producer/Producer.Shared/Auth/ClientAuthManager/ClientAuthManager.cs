@@ -112,6 +112,7 @@ namespace Producer.Auth
 			removeItemFromKeychain (KeychainServiceName (provider, ClientAuthDetailTypes.AvatarUrl));
 		}
 
+
 		void saveClientAuthDetailsToKeychain (ClientAuthDetails details)
 		{
 			if (!string.IsNullOrEmpty (details?.Token)) saveItemToKeychain (KeychainServiceName (details.ClientAuthProvider, ClientAuthDetailTypes.Token), ClientAuthDetailTypes.Token.ToString (), details.Token);

@@ -166,7 +166,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\SettingUtilities.cs" />
     <Compile Include="ProducerApp.cs" />
-    <Compile Include="Views\User\UserActivity.cs" />
+    <Compile Include="View\User\UserActivity.cs" />
     <Compile Include="Framework\Adapters\BaseFragmentPagerAdapter.cs" />
     <Compile Include="Framework\Adapters\RecyclerViewAdapter.cs" />
     <Compile Include="Framework\Adapters\TabFragmentPagerAdapter.cs" />
@@ -196,6 +196,7 @@
     <Compile Include="Content\ContentViewHolder.cs" />
     <Compile Include="Content\ContentRecyclerAdapter.cs" />
     <Compile Include="Settings\SettingsFragment.cs" />
+    <Compile Include="View\Login\LoginActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -233,10 +234,11 @@
     <Folder Include="Resources\drawable\" />
     <Folder Include="Resources\color\" />
     <Folder Include="Content\" />
-    <Folder Include="Views\" />
-    <Folder Include="Views\User\" />
+    <Folder Include="View\" />
+    <Folder Include="View\User\" />
     <Folder Include="Resources\menu\" />
     <Folder Include="Resources\xml\" />
+    <Folder Include="View\Login\" />
   </ItemGroup>
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
