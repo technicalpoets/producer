@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -19,9 +18,9 @@ namespace Producer.Shared
 		{
 			try
 			{
-				var sasUri = new Uri (storageToken.SasUri);
+				Log.Debug (storageToken?.ToString ());
 
-				Log.Debug ($"SasUri: {storageToken.SasUri}");
+				var sasUri = new Uri (storageToken.SasUri);
 
 				var blockBlob = new CloudBlockBlob (sasUri);
 
@@ -29,7 +28,7 @@ namespace Producer.Shared
 
 				blockBlob.Metadata [DocumentUpdatedMessage.CollectionIdKey] = typeof (AvContent).Name;
 
-				updateNetworkActivityIndicator (true);
+				UpdateNetworkActivityIndicator (true);
 
 				await blockBlob.UploadFromFileAsync (avContent.LocalInboxPath);
 
@@ -39,17 +38,18 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Debug ($"{ex.Message}");
+				Log.Error (ex);
 
 				return false;
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				UpdateNetworkActivityIndicator (false);
 			}
 		}
 
-		void updateNetworkActivityIndicator (bool visible)
+
+		void UpdateNetworkActivityIndicator (bool visible)
 		{
 #if __IOS__
 			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);

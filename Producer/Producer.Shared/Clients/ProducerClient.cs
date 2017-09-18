@@ -291,7 +291,7 @@ namespace Producer.Shared
 		}
 
 
-		public void UpdateNetworkActivityIndicator (bool visible)
+		void UpdateNetworkActivityIndicator (bool visible)
 		{
 #if __IOS__
 			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);

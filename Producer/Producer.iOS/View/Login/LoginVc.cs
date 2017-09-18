@@ -9,8 +9,6 @@ using Foundation;
 using UIKit;
 
 using Producer.Auth;
-using SignInButton = Producer.Auth.SignInButton;
-
 
 #if NC_AUTH_GOOGLE
 #endif
