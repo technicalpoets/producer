@@ -1,6 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Producer</string>
+  <string name="user_logout">Log out</string>
   <string name="setting_title">Settings</string>
 	<string name="setting_version">Version</string>
 	<string name="setting_version_summary">0.0.0 (0)</string>
@@ -17,4 +18,5 @@
 	<string name="setting_embeddedsocial">Embedded Social Key</string>
 	<string name="setting_diagnostics">Diagnostics Key</string>
 	<string name="setting_diagnostics_summary">1</string>
+	<string name="login_desc">Howdy.\n\nSign in to listen to new music before it drops.</string>
 </resources>

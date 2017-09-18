@@ -72,6 +72,7 @@ namespace Producer.Auth
 
 		public int GoogleWebClientResId { get; set; }
 
+
 		void initializeAuthProviderGoogle<T> (T context)
 			where T : FragmentActivity, GoogleApiClient.IOnConnectionFailedListener
 		{
@@ -89,7 +90,14 @@ namespace Producer.Auth
 												 .Build ();
 		}
 
-		void logoutAuthProviderGoogle () { }
+
+		void logoutAuthProviderGoogle ()
+		{
+			if (googleApiClient?.IsConnected ?? false)
+			{
+				GoogleAuth.GoogleSignInApi.SignOut (googleApiClient);
+			}
+		}
 #else
 		void initializeAuthProviderGoogle<T> (T context) where T : FragmentActivity { }
 

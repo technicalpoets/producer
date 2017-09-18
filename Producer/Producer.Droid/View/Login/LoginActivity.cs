@@ -3,39 +3,44 @@
 //#define NC_AUTH_MICROSOFT
 //#define NC_AUTH_TWITTER
 
-#if __ANDROID__
-
 using Android.App;
 using Android.Content;
 
 using Android.OS;
-using Android.Views;
+using AView = Android.Views.View;
 
 using Android.Support.V4.App;
 
+using System;
+
+using Producer.Auth;
+
 #if NC_AUTH_GOOGLE
+
 using GoogleAuth = Android.Gms.Auth.Api.Auth;
+
 using Android.Gms.Auth.Api.SignIn;
 using Android.Gms.Common;
 using Android.Gms.Common.Apis;
 #endif
 
 
-namespace Producer.Auth
+namespace Producer.Droid
 {
-	[Activity (Label = "AuthActivity")]
-	public class AuthActivity : FragmentActivity, View.IOnClickListener
+	[Activity (Label = "LoginActivity")]
+	public class LoginActivity : FragmentActivity, AView.IOnClickListener
 #if NC_AUTH_GOOGLE
 		, GoogleApiClient.IOnConnectionFailedListener//AppCompatActivity
 #endif
 	{
 		const int RC_SIGN_IN = 9001;
 
+
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
 
-			SetContentView (ClientAuthManager.Shared.AuthActivityLayoutResId);
+			SetContentView (Resource.Layout.Login);
 
 			// use this format to help users set up the app
 			//if (GetString (Resource.String.google_app_id) == "YOUR-APP-ID")
@@ -44,11 +49,12 @@ namespace Producer.Auth
 			ClientAuthManager.Shared.InitializeAuthProviders (this);
 
 			FindViewById<SignInButton> (ClientAuthManager.Shared.GoogleButtonResId).SetOnClickListener (this);
+
 #endif
 		}
 
 
-		public void OnClick (View v)
+		public void OnClick (AView v)
 		{
 #if NC_AUTH_GOOGLE
 			if (v.Id == ClientAuthManager.Shared.GoogleButtonResId)
@@ -106,18 +112,7 @@ namespace Producer.Auth
 					Log.Debug ($"acct.PhotoUrl: {user.PhotoUrl}");
 					Log.Debug ($"acct.ServerAuthCode: {user.ServerAuthCode}");
 
-					var details = new ClientAuthDetails
-					{
-						ClientAuthProvider = ClientAuthProviders.Google,
-						Username = user.DisplayName,
-						Email = user.Email,
-						Token = user.IdToken,
-						AuthCode = user.ServerAuthCode,
-						AvatarUrl = user.PhotoUrl.ToString ()
-					};
-
-					ClientAuthManager.Shared.SetClientAuthDetails (details);
-
+					ClientAuthManager.Shared.SetClientAuthDetails (user.GetAuthDetails ());
 					Finish ();
 				}
 			}
@@ -133,8 +128,7 @@ namespace Producer.Auth
 		{
 			Log.Debug ($"{result.ErrorMessage} code: {result.ErrorCode}");
 		}
+
 #endif
 	}
 }
-
-#endif
