@@ -54,11 +54,12 @@ namespace Producer.Droid
 
 		protected override void Dispose (bool disposing)
 		{
-			ClientAuthManager.Shared.AuthorizationChanged -= handleClientAuthChanged;
-			ProducerClient.Shared.CurrentUserChanged -= handleCurrentUserChanged;
-
+			if (disposing)
+			{
+				ClientAuthManager.Shared.AuthorizationChanged -= handleClientAuthChanged;
+				ProducerClient.Shared.CurrentUserChanged -= handleCurrentUserChanged;
+			}
 			base.Dispose (disposing);
-
 		}
 
 
