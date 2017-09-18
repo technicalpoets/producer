@@ -43,11 +43,12 @@ namespace Producer.Droid
 			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
 			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
 			setupViewPager ();
-			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;			
+			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
 
 
 		}
+
 		protected override void OnResume ()
 		{
 			base.OnResume ();
@@ -107,20 +108,20 @@ namespace Producer.Droid
 				RunOnUiThread (() => composeItem?.SetVisible ((e?.UserRole /*== UserRoles.General)));*/?? UserRoles.General).CanWrite ()));
 			}
 		}
-        
-        public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
+
+		public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
 		{
 			switch (item.ItemId)
-            {
-                case Resource.Id.action_settings:
-                
-                //Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
-                
-                FragmentManager.BeginTransaction ()
-                .Add (Resource.Id.fragment_container, new SettingsFragment ())
-                .AddToBackStack (null)
-                .Commit ();
-                break;
+			{
+				case Resource.Id.action_settings:
+
+					//Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
+
+					FragmentManager.BeginTransaction ()
+					.Add (Resource.Id.fragment_container, new SettingsFragment ())
+					.AddToBackStack (null)
+					.Commit ();
+					break;
 				case Resource.Id.action_compose:
 					return true;
 				case Android.Resource.Id.Home:
@@ -128,16 +129,16 @@ namespace Producer.Droid
 					profileButtonClicked ();
 					return true;
 			}
-            
-            return base.OnOptionsItemSelected (item);
+
+			return base.OnOptionsItemSelected (item);
 		}
 
 		public override bool OnCreateOptionsMenu (IMenu menu)
-        {
-            _menu = menu;
+		{
+			_menu = menu;
 			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
-            MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
-            return base.OnCreateOptionsMenu (menu);
+			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
+			return base.OnCreateOptionsMenu (menu);
 		}
 
 
@@ -176,23 +177,17 @@ namespace Producer.Droid
 
 		void profileButtonClicked ()
 		{
-			if (ProducerClient.Shared.User == null)
+			RunOnUiThread (() =>
 			{
-				RunOnUiThread (() =>
-				{
-					ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
+				ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
+				ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
+				ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
 
-					ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
-					ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
-
+				if (ProducerClient.Shared.User == null)
 					StartActivity (typeof (AuthActivity));
-				});
-			}
-			else
-			{
-				StartActivity (typeof (UserActivity));
-
-			}
+				else
+					StartActivity (typeof (UserActivity));
+			});
 		}
 
 
