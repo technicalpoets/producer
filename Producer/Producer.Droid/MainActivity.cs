@@ -65,9 +65,7 @@ namespace Producer.Droid
 
 		void handleClientAuthChanged (object sender, ClientAuthDetails e)
 		{
-
 			Log.Debug ($"Authenticated: {e}");
-
 			Task.Run (async () =>
 			{
 				if (e == null)
