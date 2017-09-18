@@ -221,7 +221,7 @@
     <AndroidResource Include="Resources\drawable\ic_tabbar_resources.xml" />
     <AndroidResource Include="Resources\drawable\vd_resources_selected.xml" />
     <AndroidResource Include="Resources\drawable\vd_resources.xml" />
-    <AndroidResource Include="Resources\layout\LoginActivityLayout.axml" />
+    <AndroidResource Include="Resources\layout\Login.axml" />
     <AndroidResource Include="Resources\layout\User.axml" />
     <AndroidResource Include="Resources\menu\menu_logout.axml" />
     <AndroidResource Include="Resources\menu\menu_compose.axml" />

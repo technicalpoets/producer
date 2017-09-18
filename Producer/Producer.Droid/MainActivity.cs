@@ -85,15 +85,9 @@ namespace Producer.Droid
 			});
 		}
 
-		public override bool OnPrepareOptionsMenu (IMenu menu)
-		{
-			checkCompose ();
-
-			return base.OnPrepareOptionsMenu (menu);
-		}
-
 		void handleCurrentUserChanged (object sender, User e)
 		{
+			checkCompose ();
 			Log.Debug ($"User: {e?.ToString ()}");
 		}
 
@@ -178,7 +172,7 @@ namespace Producer.Droid
 		{
 			RunOnUiThread (() =>
 			{
-				ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.LoginActivityLayout;
+				ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.Login;
 				ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
 				ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
 

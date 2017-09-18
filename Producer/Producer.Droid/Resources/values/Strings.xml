@@ -18,4 +18,5 @@
 	<string name="setting_embeddedsocial">Embedded Social Key</string>
 	<string name="setting_diagnostics">Diagnostics Key</string>
 	<string name="setting_diagnostics_summary">1</string>
+	<string name="login_desc">Howdy.\n\nSign in to listen to new music before it drops.</string>
 </resources>
