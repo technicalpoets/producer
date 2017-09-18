@@ -33,7 +33,7 @@ namespace Producer.Auth
 		ClientAuthManager () { }
 
 
-		public event EventHandler<ClientAuthDetails> AthorizationChanged;
+		public event EventHandler<ClientAuthDetails> AuthorizationChanged;
 
 
 		ClientAuthDetails _clientAuthDetails;
@@ -78,7 +78,7 @@ namespace Producer.Auth
 
 			ClientAuthDetails = details;
 
-			AthorizationChanged?.Invoke (this, ClientAuthDetails);
+			AuthorizationChanged?.Invoke (this, ClientAuthDetails);
 		}
 
 

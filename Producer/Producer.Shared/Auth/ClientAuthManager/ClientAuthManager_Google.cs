@@ -89,7 +89,10 @@ namespace Producer.Auth
 												 .Build ();
 		}
 
-		void logoutAuthProviderGoogle () { }
+		void logoutAuthProviderGoogle () {
+			if (googleApiClient?.IsConnected ?? false)
+				GoogleAuth.GoogleSignInApi.SignOut (googleApiClient);
+		}
 #else
 		void initializeAuthProviderGoogle<T> (T context) where T : FragmentActivity { }
 

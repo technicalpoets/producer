@@ -123,9 +123,12 @@ namespace Producer.Auth
 					keystore.Load (stream, password);
 				}
 			}
-			catch (FileNotFoundException)
+			catch (Exception e)
 			{
-				keystore.Load (null, password);
+				if (e is FileNotFoundException || e is EOFException)
+					keystore.Load (null, password);
+				else
+					throw e;
 			}
 
 			keyStoresCache [serviceId] = keystore;
@@ -191,6 +194,20 @@ namespace Producer.Auth
 
 		public bool RemoveItemFromKeychain (string service)
 		{
+			var context = Android.App.Application.Context;
+			var serviceId = $"{context.PackageName}.nomadcode.auth-{service}";
+
+			var item = GetItemFromKeychain (service);
+			var keystore = getKeystore (service);
+			using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
+			{
+				var tuple = item.ToTuple ();
+				if (!string.IsNullOrWhiteSpace (tuple?.Item1) && !string.IsNullOrWhiteSpace (tuple?.Item1))
+					keystore.DeleteEntry (item.Item1);
+			}
+
+
+
 			return true;
 			//throw new NotImplementedException ();
 		}
