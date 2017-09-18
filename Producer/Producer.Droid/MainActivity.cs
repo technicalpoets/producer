@@ -43,6 +43,7 @@ namespace Producer.Droid
 			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
 			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
 			setupViewPager ();
+
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
 
@@ -53,21 +54,19 @@ namespace Producer.Droid
 		{
 			base.OnResume ();
 			checkCompose ();
-
-			//ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 		}
-		protected override void OnPause ()
+
+		protected override void Dispose (bool disposing)
 		{
-			base.OnPause ();
+			ClientAuthManager.Shared.AuthorizationChanged -= handleClientAuthChanged;
+			ProducerClient.Shared.CurrentUserChanged -= handleCurrentUserChanged;
 
-			//ClientAuthManager.Shared.AuthorizationChanged -= handleClientAuthChanged;
-			//ProducerClient.Shared.CurrentUserChanged -= handleCurrentUserChanged;
+			base.Dispose (disposing);
 
-			//ClientAuthManager.Shared.AthorizationChanged -= handleClientAuthChanged;
 		}
-
 		void handleClientAuthChanged (object sender, ClientAuthDetails e)
 		{
+			
 			Log.Debug ($"Authenticated: {e}");
 
 			Task.Run (async () =>
@@ -82,7 +81,6 @@ namespace Producer.Droid
 				}
 
 				//Activity.RunOnUiThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}
@@ -101,6 +99,7 @@ namespace Producer.Droid
 
 		void checkCompose ()
 		{
+			// Check if signed-in user has write access
 			if (_menu != null)
 			{
 				var e = ProducerClient.Shared.User;
