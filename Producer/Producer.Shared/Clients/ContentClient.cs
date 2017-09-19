@@ -77,15 +77,15 @@ namespace Producer.Shared
 
 		void ResetClient (string resourceToken)
 		{
-			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
-
 			try
 			{
+				Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
+
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex);
+				Log.Error (ex, "ResetClient", "ContentClient.cs", 88);
 				throw;
 			}
 		}
@@ -212,7 +212,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex);
+				Log.Error (ex, "RefreshAvContentAsync", "ContentClient.cs", 215);
 				throw;
 			}
 		}
@@ -259,18 +259,26 @@ namespace Producer.Shared
 		async Task<List<T>> GetList<T> (Expression<Func<T, bool>> predicate, string collectionId = null)
 			where T : Entity
 		{
-			var results = new List<T> ();
-
-			var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId ?? typeof (T).Name), new FeedOptions { MaxItemCount = -1 })
-				  .Where (predicate)
-				  .AsDocumentQuery ();
-
-			while (query.HasMoreResults)
+			try
 			{
-				results.AddRange (await query.ExecuteNextAsync<T> ());
-			}
+				var results = new List<T> ();
 
-			return results;
+				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId ?? typeof (T).Name), new FeedOptions { MaxItemCount = -1 })
+					  .Where (predicate)
+					  .AsDocumentQuery ();
+
+				while (query.HasMoreResults)
+				{
+					results.AddRange (await query.ExecuteNextAsync<T> ());
+				}
+
+				return results;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex, "GetList", "ContentClient.cs", 279);
+				throw;
+			}
 		}
 
 
@@ -287,7 +295,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				Log.Debug (dex.Print ());
+				Log.Error (dex, "ExecuteWithRetry", "ContentClient.cs", 298);
 
 				switch (dex.StatusCode)
 				{
@@ -303,7 +311,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex);
+				Log.Error (ex, "ExecuteWithRetry", "ContentClient.cs", 314);
 				throw;
 			}
 			finally
@@ -326,7 +334,7 @@ namespace Producer.Shared
 			}
 			catch (DocumentClientException dex)
 			{
-				Log.Debug (dex.Print ());
+				Log.Error (dex, "ExecuteWithRetry", "ContentClient.cs", 337);
 
 				switch (dex.StatusCode)
 				{
@@ -342,7 +350,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex);
+				Log.Error (ex, "ExecuteWithRetry", "ContentClient.cs", 353);
 				throw;
 			}
 			finally
