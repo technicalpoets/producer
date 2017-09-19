@@ -67,7 +67,8 @@ namespace Producer
 #else
 		public static void Error (Exception error, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
 		{
-			Error (error.Message, memberName, sourceFilePath, sourceLineNumber);
+			var message = $"{error.Message}{Environment.NewLine}{error.StackTrace}{Environment.NewLine}{error.InnerException?.StackTrace}";
+			Error (message, memberName, sourceFilePath, sourceLineNumber);
 		}
 #endif
 	}
