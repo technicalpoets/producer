@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 
 #if DEBUG
 using System.Runtime.CompilerServices;
-using System.Linq;
 #endif
 
 namespace Producer
@@ -49,7 +49,14 @@ namespace Producer
 			//System.Diagnostics.Trace.WriteLine ($"[{DateTime.Now:MM/dd/yyyy h:mm:ss.fff tt}] [{sourceFilePath}] [{memberName}] [{sourceLineNumber}] : {message}");
 		}
 #else
-		public static void Error (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) { }
+		public static void Error (string message, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0)
+		{
+			memberName = string.IsNullOrEmpty (memberName) ? string.Empty : $"[{memberName}] ";
+			sourceFilePath = string.IsNullOrEmpty (sourceFilePath) ? string.Empty : $"[{sourceFilePath.Split ('/').LastOrDefault ()}] ";
+			var sourceLineNumberString = sourceLineNumber == 0 ? string.Empty : $"[{sourceLineNumber}] : ";
+
+			Console.WriteLine ($"ERROR: {sourceFilePath}{memberName}{sourceLineNumberString}{message}");
+		}
 #endif
 
 #if DEBUG
