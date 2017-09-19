@@ -85,7 +85,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 		}
@@ -212,7 +212,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 		}
