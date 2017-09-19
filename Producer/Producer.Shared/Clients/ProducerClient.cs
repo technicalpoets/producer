@@ -123,7 +123,7 @@ namespace Producer.Shared
 				}
 				catch (Exception ex)
 				{
-					Log.Error (ex);
+					Log.Error (ex, "Publish", "ProducerClient.cs", 126);
 					throw;
 				}
 				finally
@@ -158,7 +158,7 @@ namespace Producer.Shared
 				}
 				catch (Exception ex)
 				{
-					Log.Error (ex);
+					Log.Error (ex, "GetStorageToken", "ProducerClient.cs", 161);
 					throw;
 				}
 				finally
@@ -210,7 +210,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex);
+				Log.Error (ex, "GetContentToken", "ProducerClient.cs", 213);
 				throw;
 			}
 			finally
@@ -281,7 +281,7 @@ namespace Producer.Shared
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex);
+				Log.Error (ex, "AuthenticateUser", "ProducerClient.cs", 284);
 				throw;
 			}
 			finally
