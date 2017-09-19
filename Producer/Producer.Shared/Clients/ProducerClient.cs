@@ -276,7 +276,7 @@ namespace Producer.Shared
 				else
 				{
 					Log.Error (auth);
-					Log.Error (authResponse.ToString ());
+					Log.Error (authResponse?.ToString ());
 				}
 			}
 			catch (Exception ex)
