@@ -6,121 +6,13 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
-			<string>0.4.1 (166)</string>
+			<string>0.5.0 (167)</string>
 			<key>Key</key>
 			<string>VersionDescription</string>
 			<key>Title</key>
 			<string>Version</string>
 			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Mobile Center App Secret</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>MobileCenterKey</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string></string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Example Url: producer.azurewebsites.net (do not include https:// or a trailing /)</string>
-			<key>Title</key>
-			<string>Azure Functions Url</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>RemoteFunctionsUrl</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string></string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Example Url: producer.documents.azure.com (do not include https:// or a trailing /)</string>
-			<key>Title</key>
-			<string>Azure DocumentDB Url</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>RemoteDocumentDbUrl</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string></string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Your Notification Hub Connection String</string>
-			<key>Title</key>
-			<string>Azure Notification Hub</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>NotificationsName</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Hub Name:</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>NotificationsConnectionString</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string></string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Embedded Social Key</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>Key</key>
-			<string>EmbeddedSocialKey</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string></string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
 			<key>FooterText</key>

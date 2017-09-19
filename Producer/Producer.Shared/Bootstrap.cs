@@ -10,6 +10,16 @@ using Plugin.VersionTracking;
 
 namespace Producer
 {
+
+	public static class ProducerDefaults
+	{
+		public const string MobileCenterKey = "9d538360-1ae5-4dc2-b0ea-bec01585a6bb";
+		public const string RemoteFunctionsUrl = "producer.azurewebsites.net";
+		public const string RemoteDocumentDbUrl = "producer.documents.azure.com";
+		public const string NotificationsName = "producer";
+		public const string NotificationsConnectionString = "Endpoint=sb://producer.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=14RzlGYJqu0M7diG6NS+d2399yMUllnAgpn0Vse6y6M=";		
+	}
+
 	public static class Bootstrap
 	{
 		public static void Run ()
@@ -18,8 +28,13 @@ namespace Producer
 
 			Log.Debug (CrossVersionTracking.Current.ToString ());
 
-
 			Settings.RegisterDefaultSettings ();
+
+			Settings.MobileCenterKey = ProducerDefaults.MobileCenterKey;
+			Settings.RemoteFunctionsUrl = ProducerDefaults.RemoteFunctionsUrl;
+			Settings.RemoteDocumentDbUrl = ProducerDefaults.RemoteDocumentDbUrl;
+			Settings.NotificationsName = ProducerDefaults.NotificationsName;
+			Settings.NotificationsConnectionString = ProducerDefaults.NotificationsConnectionString;
 
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>
