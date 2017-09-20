@@ -289,7 +289,7 @@ namespace Producer.Shared
 			{
 				if (client == null) await RefreshResourceToken<T> (false);
 
-				UpdateNetworkActivityIndicator (true);
+				NetworkIndicator.ToggleVisibility (true);
 
 				return Deserialize<T> (await task ());
 			}
@@ -316,7 +316,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
 
@@ -328,7 +328,7 @@ namespace Producer.Shared
 			{
 				if (client == null) await RefreshResourceToken<T> (false);
 
-				UpdateNetworkActivityIndicator (true);
+				NetworkIndicator.ToggleVisibility (true);
 
 				return await task ();
 			}
@@ -355,7 +355,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
 
@@ -370,13 +370,5 @@ namespace Producer.Shared
 
 
 		#endregion
-
-
-		void UpdateNetworkActivityIndicator (bool visible)
-		{
-#if __IOS__
-			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
-#endif
-		}
 	}
 }
