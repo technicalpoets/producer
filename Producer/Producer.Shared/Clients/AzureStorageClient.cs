@@ -39,7 +39,6 @@ namespace Producer.Shared
 			catch (Exception ex)
 			{
 				Log.Error (ex);
-
 				return false;
 			}
 			finally
