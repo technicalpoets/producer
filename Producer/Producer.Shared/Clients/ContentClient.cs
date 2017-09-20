@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 using HttpStatusCode = System.Net.HttpStatusCode;
@@ -178,7 +179,23 @@ namespace Producer.Shared
 		{
 			try
 			{
-				var content = await ExecuteWithRetry (() => GetAvContent ());
+				Expression<Func<AvContent, bool>> predicate = null;
+
+				switch (UserRole)
+				{
+					case UserRoles.General:
+						predicate = c => c.PublishedTo == UserRoles.General;
+						break;
+					case UserRoles.Insider:
+						predicate = c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider;
+						break;
+					case UserRoles.Producer:
+					case UserRoles.Admin:
+						predicate = c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider || c.PublishedTo == UserRoles.Producer;
+						break;
+				}
+
+				var content = await Get (predicate);
 
 				AvContent = content.GroupBy (c => c.PublishedTo).ToDictionary (g => g.Key, g => g.OrderByDescending (i => i.Timestamp).ToList ());
 
@@ -201,49 +218,6 @@ namespace Producer.Shared
 		}
 
 
-		async Task<List<AvContent>> GetAvContent ()
-		{
-			try
-			{
-				var results = new List<AvContent> ();
-
-				IDocumentQuery<AvContent> query = null;
-
-				var feedOptions = new FeedOptions { MaxItemCount = -1 };
-
-				var url = UriFactory.CreateDocumentCollectionUri (databaseId, typeof (AvContent).Name);
-
-				switch (UserRole)
-				{
-					case UserRoles.General:
-						query = client.CreateDocumentQuery<AvContent> (url, feedOptions).Where (c => c.PublishedTo == UserRoles.General).AsDocumentQuery ();
-						break;
-					case UserRoles.Insider:
-						query = client.CreateDocumentQuery<AvContent> (url, feedOptions).Where (c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider).AsDocumentQuery ();
-						break;
-					case UserRoles.Producer:
-					case UserRoles.Admin:
-						query = client.CreateDocumentQuery<AvContent> (url, feedOptions).Where (c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider || c.PublishedTo == UserRoles.Producer).AsDocumentQuery ();
-						break;
-				}
-
-				while (query?.HasMoreResults ?? false)
-				{
-					var feed = await query.ExecuteNextAsync<AvContent> ();
-
-					results.AddRange (feed.ToList ());
-				}
-
-				return results;
-			}
-			catch (Exception ex)
-			{
-				Log.Error (ex);
-				throw;
-			}
-		}
-
-
 		#region CRUD
 
 
@@ -251,6 +225,13 @@ namespace Producer.Shared
 			where T : Entity
 		{
 			return ExecuteWithRetry<T> (() => client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId ?? typeof (T).Name, id)));
+		}
+
+
+		public Task<List<T>> Get<T> (Expression<Func<T, bool>> predicate, string collectionId = null)
+			where T : Entity
+		{
+			return ExecuteWithRetry (() => GetList (predicate, collectionId));
 		}
 
 
@@ -272,6 +253,32 @@ namespace Producer.Shared
 			where T : Entity
 		{
 			return ExecuteWithRetry<T> (() => client.DeleteDocumentAsync (item.SelfLink));
+		}
+
+
+		async Task<List<T>> GetList<T> (Expression<Func<T, bool>> predicate, string collectionId = null)
+			where T : Entity
+		{
+			try
+			{
+				var results = new List<T> ();
+
+				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId ?? typeof (T).Name), new FeedOptions { MaxItemCount = -1 })
+					  .Where (predicate)
+					  .AsDocumentQuery ();
+
+				while (query.HasMoreResults)
+				{
+					results.AddRange (await query.ExecuteNextAsync<T> ());
+				}
+
+				return results;
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex);
+				throw;
+			}
 		}
 
 
