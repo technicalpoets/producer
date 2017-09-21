@@ -6,7 +6,7 @@ namespace Producer.Functions
 	{
 		static Uri _documentDbUri;
 
-		public static Uri DocumentDbUri => _documentDbUri ?? (_documentDbUri = new Uri ($"https://{DocumentDbUrl}/"));
+		public static Uri DocumentDbUri => _documentDbUri ?? (_documentDbUri = new Uri (DocumentDbUrl));
 
 		public static readonly string DocumentDbUrl = Environment.GetEnvironmentVariable (RemoteDocumentDbUrl);
 
@@ -17,6 +17,8 @@ namespace Producer.Functions
 		public static readonly string MediaServicesAccountKey = Environment.GetEnvironmentVariable (AzureMediaServicesKey);
 
 		public static readonly string MediaServicesAccountName = Environment.GetEnvironmentVariable (AzureMediaServicesAccount);
+
+		public static readonly string NotificationHubName = Environment.GetEnvironmentVariable (AzureWebJobsNotificationHubName);
 
 		public static readonly string [] Admins = Environment.GetEnvironmentVariable (AppAdminEmails).ToLower ().Trim (';').Split (';');
 
@@ -37,6 +39,8 @@ namespace Producer.Functions
 
 		public const string AppProducerEmails = nameof (AppProducerEmails);
 
-		public const string AzureNotificationHubConnection = nameof (AzureNotificationHubConnection);
+		public const string AzureWebJobsNotificationHubsConnectionString = nameof (AzureWebJobsNotificationHubsConnectionString);
+
+		public const string AzureWebJobsNotificationHubName = nameof (AzureWebJobsNotificationHubName);
 	}
 }

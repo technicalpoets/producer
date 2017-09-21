@@ -13,8 +13,8 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
-using Producer.Domain;
 using Producer.Auth;
+using Producer.Domain;
 
 namespace Producer.Functions
 {

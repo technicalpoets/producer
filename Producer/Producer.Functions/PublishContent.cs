@@ -2,17 +2,17 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
+
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
-using Producer.Domain;
 using Producer.Auth;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.NotificationHubs;
-using Newtonsoft.Json;
+using Producer.Domain;
 
 namespace Producer.Functions
 {
@@ -20,14 +20,14 @@ namespace Producer.Functions
 	{
 
 		static DocumentClient _documentClient;
-		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{EnvironmentVariables.DocumentDbUrl}/"), EnvironmentVariables.DocumentDbKey));
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (EnvironmentVariables.DocumentDbUri, EnvironmentVariables.DocumentDbKey));
 
 
 		[Authorize]
 		[FunctionName (nameof (PublishContent))]
 		public static async Task<HttpResponseMessage> Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Post, Route = Routes.PublishContent)] DocumentUpdatedMessage updateMessage,
-			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureNotificationHubConnection, HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
+			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString, Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
 			log.Info (updateMessage?.ToString ());

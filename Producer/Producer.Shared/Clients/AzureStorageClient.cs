@@ -28,7 +28,7 @@ namespace Producer.Shared
 
 				blockBlob.Metadata [DocumentUpdatedMessage.CollectionIdKey] = typeof (AvContent).Name;
 
-				UpdateNetworkActivityIndicator (true);
+				NetworkIndicator.ToggleVisibility (true);
 
 				await blockBlob.UploadFromFileAsync (avContent.LocalInboxPath);
 
@@ -39,21 +39,12 @@ namespace Producer.Shared
 			catch (Exception ex)
 			{
 				Log.Error (ex);
-
 				return false;
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
-		}
-
-
-		void UpdateNetworkActivityIndicator (bool visible)
-		{
-#if __IOS__
-			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
-#endif
 		}
 	}
 }

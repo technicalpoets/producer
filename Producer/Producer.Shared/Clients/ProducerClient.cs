@@ -112,7 +112,7 @@ namespace Producer.Shared
 
 					Log.Debug (updateMessage.NotificationTags);
 
-					UpdateNetworkActivityIndicator (true);
+					NetworkIndicator.ToggleVisibility (true);
 
 					var response = await HttpClient.PostAsync (Routes.PublishContent, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, Routes.Json));
 
@@ -128,7 +128,7 @@ namespace Producer.Shared
 				}
 				finally
 				{
-					UpdateNetworkActivityIndicator (false);
+					NetworkIndicator.ToggleVisibility (false);
 				}
 			}
 		}
@@ -143,7 +143,7 @@ namespace Producer.Shared
 			{
 				try
 				{
-					UpdateNetworkActivityIndicator (true);
+					NetworkIndicator.ToggleVisibility (true);
 
 					var response = await HttpClient.GetAsync (Routes.StorageToken (collectionId, content.Id));
 
@@ -163,7 +163,7 @@ namespace Producer.Shared
 				}
 				finally
 				{
-					UpdateNetworkActivityIndicator (false);
+					NetworkIndicator.ToggleVisibility (false);
 				}
 			}
 
@@ -186,7 +186,7 @@ namespace Producer.Shared
 				{
 					Log.Info ($"Getting new content token from server for {collectionId}");
 
-					UpdateNetworkActivityIndicator (true);
+					NetworkIndicator.ToggleVisibility (true);
 
 					var response = await HttpClient.GetAsync (Routes.ContentToken (collectionId));
 
@@ -215,7 +215,7 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
 
@@ -249,7 +249,7 @@ namespace Producer.Shared
 
 				var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
 
-				UpdateNetworkActivityIndicator (true);
+				NetworkIndicator.ToggleVisibility (true);
 
 				var authResponse = await HttpClient.PostAsync (Routes.LoginGoogle, new StringContent (auth, Encoding.UTF8, Routes.Json));
 
@@ -276,7 +276,7 @@ namespace Producer.Shared
 				else
 				{
 					Log.Error (auth);
-					Log.Error (authResponse.ToString ());
+					Log.Error (authResponse?.ToString ());
 				}
 			}
 			catch (Exception ex)
@@ -286,16 +286,8 @@ namespace Producer.Shared
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
-		}
-
-
-		void UpdateNetworkActivityIndicator (bool visible)
-		{
-#if __IOS__
-			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
-#endif
 		}
 	}
 }
