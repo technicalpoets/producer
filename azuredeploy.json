@@ -48,13 +48,20 @@
             "location": "[resourceGroup().location]",
             "properties": {
                 "clientAffinityEnabled": false,
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        { "name": "FUNCTIONS_EXTENSION_VERSION", "value": "~1" },
+                        { "name": "PROJECT", "value": "Producer/Producer.Functions" }
+                    ]
+                }
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
-                "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]"
+                "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
+                "[resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName'))]"
             ],
             "resources": [
                 {
@@ -67,7 +74,6 @@
                     "properties": {
                         "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-                        "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
                         "WEBSITE_CONTENTSHARE": "[concat(toLower(parameters('siteName')), 'a644')]",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
@@ -82,7 +88,6 @@
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "EmbeddedSocialKey": "",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
-                        "PROJECT": "Producer\\Producer.Functions",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "AppAdminEmails": "",
                         "AppProducerEmails": "",
