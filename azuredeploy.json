@@ -16,15 +16,8 @@
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
         "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
-        "notificationHubsConnection": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('namespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), providers('Microsoft.NotificationHubs', 'namespaces/notificationHubs').apiVersions[0]).primaryConnectionString]",
-        "storageAccountKey": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-        "appInsightsInstrumentationKey": "[reference(resourceId('microsoft.insights/components/', variables('functionAppName')), '2015-05-01').InstrumentationKey]",
-        "documentDbConnection": "[concat('AccountEndpoint=', variables('documentDbUrl'), ';AccountKey=', variables('documentDbKey'))]",
         "documentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
-        "documentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
         "functionAppUrl": "[concat(variables('functionAppName'),'.azurewebsites.net')]",
-        "mediaServiceKey": "[listKeys(resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName')), providers('Microsoft.Media', 'mediaservices').apiVersions[0]).primaryKey]"
-
     },
     "resources": [
         {
@@ -56,6 +49,9 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('functionAppName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                "[resourceId('Microsoft.NotificationHubs/namespaces', variables('namespaceName'))]"
+                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubName'))]",
+                "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))"
             ],
             "resources": [
                 {
@@ -66,23 +62,22 @@
                         "[resourceId('Microsoft.Web/Sites', variables('functionAppName'))]"
                     ],
                     "properties": {
-                        "AzureWebJobsDashboard": "[variables('storageAccountKey')]",
-                        "AzureWebJobsStorage": "[variables('storageAccountKey')]",
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[variables('storageAccountKey')]",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
                         "WEBSITE_CONTENTSHARE": "[concat(toLower(variables('functionAppName')), 'a644')]",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
-                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[variables('appInsightsInstrumentationKey')]",
-                        "AzureWebJobsDocumentDBConnectionString": "[variables('documentDbConnection')]",
+                        "AzureWebJobsDocumentDBConnectionString": "[concat('AccountEndpoint=', reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint, ';AccountKey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey)]",
                         "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
-                        "AzureWebJobsNotificationHubsConnectionString": "[variables('notificationHubsConnection')]",
+                        "AzureWebJobsNotificationHubsConnectionString": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('namespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), providers('Microsoft.NotificationHubs', 'namespaces/notificationHubs').apiVersions[0]).primaryConnectionString]",
                         "AzureMediaServicesAccount": "[variables('mediaServiceName')]",
-                        "AzureMediaServicesKey": "[variables('mediaServiceKey')]",
+                        "AzureMediaServicesKey": "[listKeys(resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName')), providers('Microsoft.Media', 'mediaservices').apiVersions[0]).primaryKey]",
                         "AzureWebJobsSecretStorageType": "Blob",
                         "FUNCTION_APP_EDIT_MODE": "readonly",
                         "RemoteFunctionsUrl": "[variables('functionAppUrl')]",
-                        "RemoteDocumentDbUrl": "[variables('documentDbUrl')]",
-                        "RemoteDocumentDbKey": "[variables('documentDbKey')]",
+                        "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
+                        "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "EmbeddedSocialKey": "",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
                         "PROJECT": "Producer/Producer.Functions",
