@@ -157,7 +157,7 @@
             "resources": [
                 {
                     "type": "notificationHubs",
-                    "name": "[concat(variables('namespaceName'), '/', variables('notificationHubName')]",
+                    "name": "[concat(variables('namespaceName'), '/', variables('notificationHubName'))]",
                     "apiVersion": "2017-04-01",
                     "location": "[resourceGroup().location]",
                     "properties": {
