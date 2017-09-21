@@ -63,7 +63,6 @@
                     "name": "web",
                     "apiVersion": "2016-08-01",
                     "properties": {
-                        "scmType": "GitHub",
                         "siteAuthEnabled": true
                     },
                     "dependsOn": [
