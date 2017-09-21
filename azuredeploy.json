@@ -43,11 +43,6 @@
         }
     },
     "variables": {
-        // "functionAppName": "[concat('functions', uniqueString(resourceGroup().id))]",
-        // "documentDbName": "[concat('documentDb', uniqueString(resourceGroup().id))]",
-        // "mediaServiceName": "[concat('media', uniqueString(resourceGroup().id))]",
-        // "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
-        // "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubsConnection": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', parameters('namespaceName'), parameters('notificationHubName'), 'DefaultFullSharedAccessSignature'), providers('Microsoft.NotificationHubs', 'namespaces/notificationHubs').apiVersions[0]).primaryConnectionString]",
         "storageAccountKey": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-05-01-preview').key1)]",
         "appInsightsInstrumentationKey": "[reference(resourceId('microsoft.insights/components/', parameters('functionAppName')), '2015-05-01').InstrumentationKey]",
@@ -59,7 +54,7 @@
 
     },
     "resources": [
-        {// Microsoft.Web/serverfarms
+        {
             "type": "Microsoft.Web/serverfarms",
             "kind": "functionapp",
             "name": "[parameters('functionAppName')]",
@@ -75,7 +70,7 @@
                 "capacity": 0
             }
         },
-        {// Microsoft.Web/sites
+        {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
             "name": "[parameters('functionAppName')]",
@@ -87,8 +82,7 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
-                "[resourceId('microsoft.insights/components/', parameters('functionAppName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
             ],
             "resources": [
                 {
@@ -127,20 +121,7 @@
 
             ]
         },
-        // {// microsoft.insights/components
-        //     "type": "microsoft.insights/components",
-        //     "name": "[parameters('functionAppName')]",
-        //     "apiVersion": "2015-05-01",
-        //     "location": "[resourceGroup().location]",
-        //     "tags": {
-        //         "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('functionAppName'))]": "Resource"
-        //     },
-        //     "properties": {
-        //         "ApplicationId": "[parameters('functionAppName')]",
-        //         "Request_Source": "IbizaWebAppExtensionCreate"
-        //     }
-        // },
-        {// Microsoft.DocumentDb/databaseAccounts
+        {
             "type": "Microsoft.DocumentDb/databaseAccounts",
             "kind": "GlobalDocumentDB",
             "name": "[parameters('documentDbName')]",
@@ -166,7 +147,7 @@
             },
             "dependsOn": []
         },
-        {// microsoft.media/mediaservices
+        {
             "type": "microsoft.media/mediaservices",
             "name": "[parameters('mediaServiceName')]",
             "apiVersion": "2015-10-01",
@@ -183,7 +164,7 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
             ]
         },
-        {// Microsoft.Storage/storageAccounts
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "sku": {
                 "name": "Standard_GRS",
@@ -196,7 +177,7 @@
             "properties": {},
             "dependsOn": []
         },
-        {// Microsoft.NotificationHubs/namespaces
+        {
             "type": "Microsoft.NotificationHubs/namespaces",
             "sku": {
                 "name": "Free"
