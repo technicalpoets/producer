@@ -48,7 +48,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('functionAppName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubName'))]",
+                "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
                 "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))"
             ],
             "resources": [
