@@ -1,10 +1,10 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.0.0.1",
     "parameters": {
     },
     "variables": {
-        "functionAppName":  "[concat('functions', uniqueString(resourceGroup().name))]",
+        "functionAppName":  "[concat('functions', uniqueString(resourceGroup().id))]",
         "documentDbName":  "[concat('documentDb', uniqueString(resourceGroup().id))]",
         "mediaServiceName":  "[concat('media', uniqueString(resourceGroup().id))]",
         "storageAccountName":  "[concat('storage', uniqueString(resourceGroup().id))]",
