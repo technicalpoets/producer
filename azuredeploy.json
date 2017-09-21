@@ -3,10 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "functionAppName": {
-            "defaultValue": "[concat('functions', uniqueString(resourceGroup().id))]",
-            "type": "String"
-        },
-        "subscriptionId": {
+            "defaultValue": "[concat('functions', uniqueString(resourceGroup().name))]",
             "type": "String"
         },
         "documentDbName": {
