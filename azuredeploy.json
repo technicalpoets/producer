@@ -1,0 +1,227 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "functionAppName": {
+            "defaultValue": "[concat('functions', uniqueString(resourceGroup().id))]",
+            "type": "String"
+        },
+        "subscriptionId": {
+            "type": "String"
+        },
+        "documentDbName": {
+            "defaultValue": "[concat('documentDb', uniqueString(resourceGroup().id))]",
+            "type": "String"
+        },
+        "mediaServiceName": {
+            "defaultValue": "[concat('media', uniqueString(resourceGroup().id))]",
+            "type": "String",
+            "metadata": {
+                "description": "Media Services Account Name"
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('storage', uniqueString(resourceGroup().id))]",
+            "type": "String",
+            "metadata": {
+                "description": "Storage Account Name"
+            }
+        },
+        "namespaceName": {
+            "defaultValue": "[concat('namespace', uniqueString(resourceGroup().id))]",
+            "type": "String",
+            "metadata": {
+                "description": "NotificationHub Namespace Name"
+            }
+        },
+        "notificationHubName": {
+            "defaultValue": "[concat('hub', uniqueString(resourceGroup().id))]",
+            "type": "String",
+            "metadata": {
+                "description": "NotificationHub Hub Name"
+            }
+        }
+    },
+    "variables": {
+        // "functionAppName": "[concat('functions', uniqueString(resourceGroup().id))]",
+        // "documentDbName": "[concat('documentDb', uniqueString(resourceGroup().id))]",
+        // "mediaServiceName": "[concat('media', uniqueString(resourceGroup().id))]",
+        // "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
+        // "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
+        "notificationHubsConnection": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', parameters('namespaceName'), parameters('notificationHubName'), 'DefaultFullSharedAccessSignature'), providers('Microsoft.NotificationHubs', 'namespaces/notificationHubs').apiVersions[0]).primaryConnectionString]",
+        "storageAccountKey": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-05-01-preview').key1)]",
+        "appInsightsInstrumentationKey": "[reference(resourceId('microsoft.insights/components/', parameters('functionAppName')), '2015-05-01').InstrumentationKey]",
+        "documentDbConnection": "[concat('AccountEndpoint=', variables('documentDbUrl'), ';AccountKey=', variables('documentDbKey'))]",
+        "documentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', parameters('documentDbName'))).documentEndpoint]",
+        "documentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('documentDbName')), '2015-04-08').primaryMasterKey]",
+        "functionAppUrl": "[concat(parameters('functionAppName'),'.azurewebsites.net')]",
+        "mediaServiceKey": "[listKeys(resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName')), providers('Microsoft.Media', 'mediaservices').apiVersions[0]).primaryKey]"
+
+    },
+    "resources": [
+        {// Microsoft.Web/serverfarms
+            "type": "Microsoft.Web/serverfarms",
+            "kind": "functionapp",
+            "name": "[parameters('functionAppName')]",
+            "apiVersion": "2016-09-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+            },
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            }
+        },
+        {// Microsoft.Web/sites
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[parameters('functionAppName')]",
+            "apiVersion": "2016-03-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "clientAffinityEnabled": false,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+                "[resourceId('microsoft.insights/components/', parameters('functionAppName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('functionAppName'))]"
+                    ],
+                    "properties": {
+                        "AzureWebJobsDashboard": "[variables('storageAccountKey')]",
+                        "AzureWebJobsStorage": "[variables('storageAccountKey')]",
+                        "FUNCTIONS_EXTENSION_VERSION": "~1",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[variables('storageAccountKey')]",
+                        "WEBSITE_CONTENTSHARE": "[concat(toLower(parameters('functionAppName')), 'a644')]",
+                        "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[variables('appInsightsInstrumentationKey')]",
+                        "AzureWebJobsDocumentDBConnectionString": "[variables('documentDbConnection')]",
+                        "AzureWebJobsNotificationHubName": "[variables('notificationHubName')]",
+                        "AzureWebJobsNotificationHubsConnectionString": "[variables('notificationHubsConnection')]",
+                        "AzureMediaServicesAccount": "[parameters('mediaServiceName')]",
+                        "AzureMediaServicesKey": "[variables('mediaServiceKey')]",
+                        "AzureWebJobsSecretStorageType": "Blob",
+                        "FUNCTION_APP_EDIT_MODE": "readonly",
+                        "RemoteFunctionsUrl": "[variables('functionAppUrl')]",
+                        "RemoteDocumentDbUrl": "[variables('documentDbUrl')]",
+                        "RemoteDocumentDbKey": "[variables('documentDbKey')]",
+                        "EmbeddedSocialKey": "",
+                        "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
+                        "PROJECT": "Producer/Producer.Functions",
+                        "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
+                        "AppAdminEmails": "",
+                        "AppProducerEmails": "",
+                    }
+                },
+
+            ]
+        },
+        // {// microsoft.insights/components
+        //     "type": "microsoft.insights/components",
+        //     "name": "[parameters('functionAppName')]",
+        //     "apiVersion": "2015-05-01",
+        //     "location": "[resourceGroup().location]",
+        //     "tags": {
+        //         "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('functionAppName'))]": "Resource"
+        //     },
+        //     "properties": {
+        //         "ApplicationId": "[parameters('functionAppName')]",
+        //         "Request_Source": "IbizaWebAppExtensionCreate"
+        //     }
+        // },
+        {// Microsoft.DocumentDb/databaseAccounts
+            "type": "Microsoft.DocumentDb/databaseAccounts",
+            "kind": "GlobalDocumentDB",
+            "name": "[parameters('documentDbName')]",
+            "apiVersion": "2015-04-08",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "defaultExperience": "DocumentDB"
+            },
+            "properties": {
+                "name": "[parameters('documentDbName')]",
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "[resourceGroup().location]",
+                        "failoverPriority": 0
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {// microsoft.media/mediaservices
+            "type": "microsoft.media/mediaservices",
+            "name": "[parameters('mediaServiceName')]",
+            "apiVersion": "2015-10-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "storageAccounts": [
+                    {
+                        "isPrimary": true,
+                        "id": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ]
+        },
+        {// Microsoft.Storage/storageAccounts
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_GRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccountName')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {},
+            "dependsOn": []
+        },
+        {// Microsoft.NotificationHubs/namespaces
+            "type": "Microsoft.NotificationHubs/namespaces",
+            "sku": {
+                "name": "Free"
+            },
+            "name": "[parameters('namespaceName')]",
+            "apiVersion": "2017-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "namespaceType": "NotificationHub"
+            },
+            "resources": [
+                {
+                    "type": "notificationHubs",
+                    "name": "[concat(parameters('namespaceName'), '/', parameters('notificationHubName')]",
+                    "apiVersion": "2017-04-01",
+                    "location": "[resourceGroup().location]",
+                    "properties": {
+                        "name": "[parameters('notificationHubName')]",
+                        "authorizationRules": []
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.NotificationHubs/namespaces', parameters('namespaceName'))]"
+                    ]
+                }
+            ]
+        }
+    ]
+}
