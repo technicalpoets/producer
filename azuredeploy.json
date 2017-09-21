@@ -98,9 +98,9 @@
                         "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
                     ],
                     "properties": {
-                        "RepoUrl": "[parameters('repoURL')]",
+                        "repoUrl": "[parameters('repoURL')]",
                         "branch": "[parameters('branch')]",
-                        "IsManualIntegration": true
+                        "isManualIntegration": true
                     }
                 }
             ]
