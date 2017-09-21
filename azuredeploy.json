@@ -59,19 +59,6 @@
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
-                    "name": "web",
-                    "type": "config",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
-                    ],
-                    "properties": {
-                        "siteProperties": {
-                            "webSocketsEnabled": true
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "2015-08-01",
                     "name": "appsettings",
                     "type": "config",
                     "dependsOn": [
@@ -95,7 +82,7 @@
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "EmbeddedSocialKey": "",
                         "WEBSITE_AUTH_HIDE_DEPRECATED_SID": true,
-                        "PROJECT": "Producer/Producer.Functions",
+                        "PROJECT": "Producer\\Producer.Functions",
                         "WEBSITE_HTTPLOGGING_RETENTION_DAYS": "2",
                         "AppAdminEmails": "",
                         "AppProducerEmails": "",
@@ -107,7 +94,7 @@
                     "type": "sourcecontrols",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
-                        "[concat('Microsoft.Web/Sites/', parameters('siteName'), '/config/web')]"
+                        "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
                     ],
                     "properties": {
                         "RepoUrl": "[parameters('repoURL')]",
@@ -144,7 +131,7 @@
             "dependsOn": []
         },
         {
-            "type": "microsoft.media/mediaservices",
+            "type": "Microsoft.Media/mediaservices",
             "name": "[variables('mediaServiceName')]",
             "apiVersion": "2015-10-01",
             "location": "[resourceGroup().location]",
