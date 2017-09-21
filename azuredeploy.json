@@ -157,11 +157,10 @@
             "resources": [
                 {
                     "type": "notificationHubs",
-                    "name": "[concat(variables('namespaceName'), '/', variables('notificationHubName'))]",
+                    "name": "[variables('notificationHubName')]",
                     "apiVersion": "2017-04-01",
                     "location": "[resourceGroup().location]",
                     "properties": {
-                        "name": "[variables('notificationHubName')]",
                         "authorizationRules": []
                     },
                     "dependsOn": [
