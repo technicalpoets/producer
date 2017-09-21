@@ -59,9 +59,21 @@
             ],
             "resources": [
                 {
-                    "apiVersion": "2015-08-01",
-                    "name": "appsettings",
                     "type": "config",
+                    "name": "web",
+                    "apiVersion": "2016-08-01",
+                    "properties": {
+                        "scmType": "GitHub",
+                        "siteAuthEnabled": true
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                    ]
+                },
+                {
+                    "type": "config",
+                    "name": "appsettings",
+                    "apiVersion": "2015-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
                     ],
@@ -90,11 +102,12 @@
                     }
                 },
                 {
-                    "apiVersion": "2015-08-01",
-                    "name": "web",
                     "type": "sourcecontrols",
+                    "name": "web",
+                    "apiVersion": "2015-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'web')]",
                         "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
                     ],
                     "properties": {
