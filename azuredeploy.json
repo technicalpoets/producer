@@ -8,16 +8,6 @@
                 "description": "The name of the function app that you wish to create."
             }
         },
-        "hostingPlanName": {
-            "type": "string"
-        },
-        "siteLocation": {
-            "type": "string",
-            "defaultValue": "East US",
-            "metadata": {
-                "description": "The location to use for creating the web app and hosting plan. It must be one of the Azure locations that support web apps."
-            }
-        },
         "repoURL": {
             "type": "string"
         },
@@ -37,7 +27,7 @@
         {
             "type": "Microsoft.Web/serverfarms",
             "kind": "functionapp",
-            "name": "[parameters('hostingPlanName')]",
+            "name": "[parameters('siteName')]",
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
