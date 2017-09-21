@@ -7,7 +7,7 @@ using UIKit;
 
 namespace Producer.iOS
 {
-	[Register ("CircularProgressView")]
+	[Register (nameof (CircularProgressView))]
 	public class CircularProgressView : UIView
 	{
 		bool isSetup;
@@ -17,9 +17,11 @@ namespace Producer.iOS
 
 
 		/// The color of the empty progress track (gets drawn over)
-		public UIColor TrackTintColor {
+		public UIColor TrackTintColor
+		{
 			get { return progressLayer.TrackTintColor; }
-			set {
+			set
+			{
 				progressLayer.TrackTintColor = value;
 				progressLayer.SetNeedsDisplay ();
 			}
@@ -27,9 +29,11 @@ namespace Producer.iOS
 
 
 		/// The color of the progress bar
-		public UIColor ProgressTintColor {
+		public UIColor ProgressTintColor
+		{
 			get { return progressLayer.ProgressTintColor; }
-			set {
+			set
+			{
 				progressLayer.ProgressTintColor = value;
 				progressLayer.SetNeedsDisplay ();
 			}
@@ -37,9 +41,11 @@ namespace Producer.iOS
 
 
 		/// The color the notched out circle within the progress area (if there is one)
-		public UIColor InnerTintColor {
+		public UIColor InnerTintColor
+		{
 			get { return progressLayer.InnerTintColor; }
-			set {
+			set
+			{
 				progressLayer.InnerTintColor = value;
 				progressLayer.SetNeedsDisplay ();
 			}
@@ -47,9 +53,11 @@ namespace Producer.iOS
 
 
 		/// Sets whether or not the corners of the progress bar should be rounded
-		public bool RoundedCorners {
+		public bool RoundedCorners
+		{
 			get { return progressLayer.RoundedCorners; }
-			set {
+			set
+			{
 				progressLayer.RoundedCorners = value;
 				progressLayer.SetNeedsDisplay ();
 			}
@@ -57,9 +65,11 @@ namespace Producer.iOS
 
 
 		/// Sets whether or not the animation should be clockwise
-		public bool ClockwiseProgress {
+		public bool ClockwiseProgress
+		{
 			get { return progressLayer.ClockwiseProgress; }
-			set {
+			set
+			{
 				progressLayer.ClockwiseProgress = value;
 				progressLayer.SetNeedsDisplay ();
 			}
@@ -67,9 +77,11 @@ namespace Producer.iOS
 
 
 		/// Sets how thick the progress bar should be (pinned between <c>0.01</c> and <c>1</c>)
-		public nfloat ThicknessRadio {
+		public nfloat ThicknessRadio
+		{
 			get { return progressLayer.ThicknessRadio; }
-			set {
+			set
+			{
 				progressLayer.ThicknessRadio = pin (value, 0.01f, 1.0f);
 				progressLayer.SetNeedsDisplay ();
 			}
@@ -85,7 +97,8 @@ namespace Producer.iOS
 
 
 		/// Sets how much of the progress bar should be filled during an indeterminate animation, pinned between <c>0.05</c> and <c>0.9</c> - This can be overriden / animated from by using updateProgress(...)
-		public nfloat IndeterminateProgress {
+		public nfloat IndeterminateProgress
+		{
 			get { return progressLayer.IndeterminateProgress; }
 			set { progressLayer.IndeterminateProgress = pin (value, 0.05f, 0.9f); }
 		}
@@ -111,7 +124,8 @@ namespace Producer.iOS
 		}
 
 
-		public override bool ClearsContextBeforeDrawing {
+		public override bool ClearsContextBeforeDrawing
+		{
 			get { return true; }
 			set { base.ClearsContextBeforeDrawing = value; }
 		}
@@ -266,7 +280,7 @@ namespace Producer.iOS
 			{
 				var completedValue = animation.GetToAs<NSNumber> ().DoubleValue;
 
-				progressLayer.Progress = (nfloat)completedValue;
+				progressLayer.Progress = (nfloat) completedValue;
 			}
 		}
 

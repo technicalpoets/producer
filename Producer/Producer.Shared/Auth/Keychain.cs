@@ -1,7 +1,4 @@
-﻿#if __IOS__ || __ANDROID__
-
-
-#if __IOS__
+﻿#if __IOS__
 
 using Foundation;
 using Security;
@@ -23,7 +20,6 @@ namespace Producer.Auth
 {
 	public class Keychain
 	{
-
 #if __IOS__
 
 		SecRecord genericRecord (string service) => new SecRecord (SecKind.GenericPassword)
@@ -199,10 +195,13 @@ namespace Producer.Auth
 		public bool RemoveItemFromKeychain (string service)
 		{
 			var context = Android.App.Application.Context;
+
 			var serviceId = $"{context.PackageName}.nomadcode.auth-{service}";
 
 			var item = GetItemFromKeychain (service);
+
 			var keystore = getKeystore (service);
+
 			using (var stream = context.OpenFileOutput (serviceId, FileCreationMode.Private))
 			{
 				if (!string.IsNullOrWhiteSpace (item.Account) && !string.IsNullOrWhiteSpace (item.PrivateKey))
@@ -211,10 +210,7 @@ namespace Producer.Auth
 				}
 			}
 
-
-
 			return true;
-			//throw new NotImplementedException ();
 		}
 
 
@@ -240,5 +236,3 @@ namespace Producer.Auth
 #endif
 	}
 }
-
-#endif

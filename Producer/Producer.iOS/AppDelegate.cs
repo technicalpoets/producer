@@ -14,7 +14,7 @@ using Producer.Shared;
 
 namespace Producer.iOS
 {
-	[Register ("AppDelegate")]
+	[Register (nameof (AppDelegate))]
 	public class AppDelegate : UIApplicationDelegate, IUNUserNotificationCenterDelegate
 	{
 

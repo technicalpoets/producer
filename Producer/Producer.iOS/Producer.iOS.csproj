@@ -407,6 +407,7 @@
     <Folder Include="Assets.xcassets\nc_clientauth_i_twitter.imageset\" />
     <Folder Include="Assets.xcassets\nc_clientauth_i_microsoft.imageset\" />
     <Folder Include="View\Login\" />
+    <Folder Include="View\Base\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -478,6 +479,8 @@
     <Compile Include="View\Login\LoginVc.designer.cs">
       <DependentUpon>LoginVc.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\Login\SignInButton.cs" />
+    <Compile Include="View\Base\BaseNc.cs" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Settings.bundle\Root.plist" />

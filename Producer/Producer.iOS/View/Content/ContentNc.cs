@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using Foundation;
 using UIKit;
-using UserNotifications;
 
 using Producer.Auth;
 using Producer.Domain;
@@ -11,7 +10,7 @@ using Producer.Shared;
 
 namespace Producer.iOS
 {
-	public partial class ContentNc : UINavigationController
+	public partial class ContentNc : BaseNc
 	{
 
 		public ContentNc (IntPtr handle) : base (handle) { }
@@ -20,8 +19,6 @@ namespace Producer.iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-
-			this.AddStatusBarView (Colors.ThemeDark);
 
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 		}
@@ -48,7 +45,7 @@ namespace Producer.iOS
 			}
 			else
 			{
-				Log.Debug ($"{error}");
+				Log.Error (error.LocalizedDescription);
 			}
 		}
 
@@ -101,15 +98,6 @@ namespace Producer.iOS
 			}
 
 			return canCompose;
-		}
-
-
-		public override UIStatusBarStyle PreferredStatusBarStyle () => UIStatusBarStyle.LightContent;
-
-
-		public override void WillTransitionToTraitCollection (UITraitCollection traitCollection, IUIViewControllerTransitionCoordinator coordinator)
-		{
-			this.UpdateStatusBarView (traitCollection);
 		}
 	}
 }

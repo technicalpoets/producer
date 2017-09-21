@@ -1,5 +1,5 @@
-﻿using System;
-using UIKit;
+﻿using UIKit;
+
 namespace Producer.iOS
 {
 	public static class Colors
