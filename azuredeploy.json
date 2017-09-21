@@ -16,7 +16,6 @@
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
         "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
         "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
-        "documentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
         "functionAppUrl": "[concat(variables('functionAppName'),'.azurewebsites.net')]",
     },
     "resources": [
@@ -49,7 +48,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('functionAppName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.NotificationHubs/namespaces', variables('namespaceName'))]",
                 "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('notificationHubName'))]",
                 "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))"
             ],
