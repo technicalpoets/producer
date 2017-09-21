@@ -1,15 +1,21 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.1",
+    "contentVersion": "1.0.0.0",
     "parameters": {
+        "appName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the function app that you wish to create."
+            }
+        }
     },
     "variables": {
-        "functionAppName":  "[concat('functions', uniqueString(resourceGroup().id))]",
-        "documentDbName":  "[concat('documentDb', uniqueString(resourceGroup().id))]",
-        "mediaServiceName":  "[concat('media', uniqueString(resourceGroup().id))]",
-        "storageAccountName":  "[concat('storage', uniqueString(resourceGroup().id))]",
-        "namespaceName":  "[concat('namespace', uniqueString(resourceGroup().id))]",
-        "notificationHubName":  "[concat('hub', uniqueString(resourceGroup().id))]",
+        "functionAppName": "[parameters('appName')]",
+        "documentDbName": "[concat('documentDb', uniqueString(resourceGroup().id))]",
+        "mediaServiceName": "[concat('media', uniqueString(resourceGroup().id))]",
+        "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
+        "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
+        "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
         "notificationHubsConnection": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('namespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), providers('Microsoft.NotificationHubs', 'namespaces/notificationHubs').apiVersions[0]).primaryConnectionString]",
         "storageAccountKey": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
         "appInsightsInstrumentationKey": "[reference(resourceId('microsoft.insights/components/', variables('functionAppName')), '2015-05-01').InstrumentationKey]",
