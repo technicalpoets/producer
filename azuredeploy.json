@@ -11,7 +11,7 @@
     },
     "variables": {
         "functionAppName": "[parameters('appName')]",
-        "documentDbName": "[concat('documentDb', uniqueString(resourceGroup().id))]",
+        "documentDbName": "[concat('documentdb', uniqueString(resourceGroup().id))]",
         "mediaServiceName": "[concat('media', uniqueString(resourceGroup().id))]",
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
         "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
