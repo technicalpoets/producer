@@ -13,6 +13,7 @@ namespace Producer.Droid
 	{
 		TabFragmentPagerAdapter PagerAdapter;
 
+
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);

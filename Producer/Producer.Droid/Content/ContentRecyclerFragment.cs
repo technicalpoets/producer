@@ -5,10 +5,16 @@ using Android.Views;
 using Android.OS;
 using Android.Content;
 using Producer.Domain;
+using Producer.Shared;
+using Producer.Droid.Providers;
+using System;
+using System.Linq;
+using Com.Google.Android.Exoplayer2;
+using Plugin.MediaManager.Abstractions;
 
 namespace Producer.Droid
 {
-	public class ContentRecyclerFragment : RecyclerViewListFragment<AvContent, ContentViewHolder>, ITabFragment//, SearchView.IOnQueryTextListener
+	public class ContentRecyclerFragment : RecyclerViewListFragment<MusicAsset, ContentViewHolder>, ITabFragment  //, SearchView.IOnQueryTextListener
 	{
 		#region ITabFragment Members
 
@@ -22,7 +28,14 @@ namespace Producer.Droid
 		#endregion
 
 
-		List<AvContent> DisplayContent = new List<AvContent> ();
+		List<MusicAsset> allAssets = new List<MusicAsset> ();
+
+		//List<MusicAsset> savedAssets = new List<MusicAsset> ();
+
+
+		//List<AvContent> DisplayContent = new List<AvContent> ();
+
+		ContentRecyclerAdapter adapter;
 
 
 		public override void OnCreate (Bundle savedInstanceState)
@@ -30,6 +43,16 @@ namespace Producer.Droid
 			ShowDividers = false;
 
 			base.OnCreate (savedInstanceState);
+
+			_ = RefreshContent ();
+
+			AssetPersistenceManager.Shared.DidRestore += handlePersistanceManagerDidRestore;
+
+			AssetPersistenceManager.Shared.AssetDownloadStateChanged += handlePersistanceManagerAssetDownloadStateChanged;
+
+			AssetPersistenceManager.Shared.AssetDownloadProgressChanged += handlePersistanceManagerAssetDownloadProgressChanged;
+
+			AssetPlaybackManager.Shared.CurrentItemChanged += handlePlaybackManagerCurrentItemChanged;
 		}
 
 
@@ -75,16 +98,16 @@ namespace Producer.Droid
 		#region implemented abstract members of RecyclerViewFragment
 
 
-		protected override RecyclerViewAdapter<AvContent, ContentViewHolder> GetAdapter ()
+		protected override RecyclerViewAdapter<MusicAsset, ContentViewHolder> GetAdapter ()
 		{
-			var adapter = new ContentRecyclerAdapter (DisplayContent);
+			adapter = new ContentRecyclerAdapter (allAssets);
 			//adapter.Filter = new PartnerFilter (adapter);
 
 			return adapter;
 		}
 
 
-		protected override void OnItemClick (View view, AvContent item)
+		protected override void OnItemClick (View view, MusicAsset item)
 		{
 			//var partner = item;//DisplayPartners [position];
 			//var partnerLogoImageView = view.FindViewById<AppCompatImageView> (Resource.Id.partner_logo);
@@ -120,5 +143,113 @@ namespace Producer.Droid
 
 
 		//#endregion
+
+
+		async Task RefreshContent ()
+		{
+			await ContentClient.Shared.GetAllAvContent ();
+
+			await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+		}
+
+
+		void handleAvContentChanged (object sender, UserRoles e) => updateMusicAssets ();
+
+
+		#region PersistanceManager Handlers
+
+
+		void updateMusicAssets ()
+		{
+			if (allAssets?.Count == 0 && ContentClient.Shared.AvContent.Count > 0)
+			{
+				var content = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri)
+																			  .Select (s => AssetPersistenceManager.Shared.GetMusicAsset (s))
+																			  .ToList ();
+
+				adapter.SetItems (content);
+			}
+			else
+			{
+				//var newAssets = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri && !allAssets.Any (ma => ma.Id == m.Id))
+				//																  .Select (s => AssetPersistenceManager.Shared.GetMusicAsset (s));
+
+
+
+				//allAssets.AddRange (newAssets);
+
+				//allAssets.RemoveAll (ma => !ContentClient.Shared.AvContent [UserRoles.General].Any (a => a.Id == ma.Id));
+
+				//allAssets.Sort ((x, y) => y.Music.Timestamp.CompareTo (x.Music.Timestamp));
+
+
+				var content = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri)
+																			  .Select (s => AssetPersistenceManager.Shared.GetMusicAsset (s))
+																			  .ToList ();
+
+				adapter.SetItems (content);
+			}
+
+			Log.Debug ("Load Content");
+		}
+
+
+		void handlePersistanceManagerDidRestore (object sender, EventArgs e)
+		{
+			updateMusicAssets ();
+
+			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
+		}
+
+
+		void handlePersistanceManagerAssetDownloadStateChanged (object sender, MusicAssetDownloadStateChangeArgs e)
+		{
+			Log.Debug ($"handlePersistanceManagerAssetDownloadStateChanged: {e.Music.DisplayName} | {e.State}");
+
+			Activity.RunOnUiThread(() =>
+			{
+				//var cell = TableView.VisibleCells.FirstOrDefault (c => c.TextLabel.Text == e.Music.DisplayName);
+
+				//if (cell != null)
+				//{
+				//	TableView.ReloadRows (new NSIndexPath [] { TableView.IndexPathForCell (cell) }, UITableViewRowAnimation.Automatic);
+				//}
+			});
+		}
+
+
+		void handlePersistanceManagerAssetDownloadProgressChanged (object sender, MusicAssetDownloadProgressChangeArgs e)
+		{
+			Log.Debug ($"handlePersistanceManagerAssetDownloadProgressChanged: {e.Music.DisplayName} | {e.Progress}");
+
+			Activity.RunOnUiThread (() =>
+			{
+				//var cell = TableView.VisibleCells.FirstOrDefault (c => c.TextLabel.Text == e.Music.DisplayName) as ContentMusicTvCell;
+
+				//cell?.UpdateDownloadProgress ((nfloat) e.Progress);
+			});
+		}
+
+
+		#endregion
+
+
+		#region PlaybackManager Handlers
+
+
+		void handlePlaybackManagerCurrentItemChanged (object sender, IMediaManager player)
+		{
+			Log.Debug ($"handlePlaybackManagerCurrentItemChanged {sender}");
+
+			//var playbackManager = sender as AssetPlaybackManager;
+
+			//if (playerViewController != null && player.CurrentItem != null && playbackManager?.CurrentAsset.Music.ContentType == AvContentTypes.Video)
+			//{
+			//	playerViewController.Player = player;
+			//}
+		}
+
+
+		#endregion
 	}
 }

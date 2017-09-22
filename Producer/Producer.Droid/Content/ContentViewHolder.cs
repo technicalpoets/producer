@@ -7,11 +7,11 @@ using Producer.Domain;
 
 namespace Producer.Droid
 {
-	public class ContentViewHolder : ViewHolder<AvContent>
+	public class ContentViewHolder : ViewHolder<MusicAsset>
 	{
-		ImageView logo;
-		TextView name;
-		TextView location;
+		ImageView image;
+		TextView title;
+		TextView artist;
 
 		static UpdatableForegroundColorSpan locationColorSpan;
 		static RelativeSizeSpan locationSizeSpan;
@@ -33,16 +33,17 @@ namespace Producer.Droid
 
 		public override void FindViews (View rootView)
 		{
-			//logo = (ImageView) rootView.FindViewById (Resource.Id.partner_logo);
-			//name = (TextView) rootView.FindViewById (Resource.Id.partner_name);
-			//location = (TextView) rootView.FindViewById (Resource.Id.partner_location);
+			image = rootView.FindViewById<ImageView> (Resource.Id.contentTypeImage);
+			title = rootView.FindViewById<TextView> (Resource.Id.contentTitle);
+			artist = rootView.FindViewById<TextView> (Resource.Id.contentArtist);
 		}
 
 
-		public override void SetData (AvContent data)
+		public override void SetData (MusicAsset data)
 		{
 			//logo.SetImageDrawable (null);
-			name.SetText (data.Name, TextView.BufferType.Normal);
+			title.SetText (data.Music.DisplayName, TextView.BufferType.Normal);
+			artist.SetText (data.Music.Description, TextView.BufferType.Normal);
 
 
 			//var primaryLocation = data.GetPrimaryLocationName ();

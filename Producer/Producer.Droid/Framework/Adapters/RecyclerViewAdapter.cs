@@ -12,9 +12,9 @@ namespace Producer.Droid
 		public event EventHandler<TData> ItemClick;
 		public event EventHandler ItemsFiltered;
 
-		IList<TData> originalDataSet;
+		List<TData> originalDataSet;
 
-		readonly IList<TData> dataSet;
+		readonly List<TData> dataSet;
 
 
 		#region IFilterableDataProvider Members
@@ -33,9 +33,15 @@ namespace Producer.Droid
 
 
 		// Initialize the dataset of the Adapter
-		protected RecyclerViewAdapter (IList<TData> dataSet)
+		protected RecyclerViewAdapter (List<TData> dataSet)
 		{
 			this.dataSet = dataSet;
+		}
+
+
+		protected RecyclerViewAdapter (IEnumerable<TData> dataSet)
+		{
+			this.dataSet = new List<TData>(dataSet);
 		}
 
 
@@ -76,6 +82,19 @@ namespace Producer.Droid
 		}
 
 
+		/// <summary>
+		/// Sets the items - use for situations where list is loaded async and isn't populated when the constructor is called.
+		/// </summary>
+		/// <param name="items">Items.</param>
+		public void SetItems (IEnumerable<TData> items)
+		{
+			dataSet.Clear ();
+			dataSet.AddRange (items);
+
+			NotifyDataSetChanged ();
+		}
+
+
 		public TData RemoveItem (int position)
 		{
 			var item = dataSet [position];
@@ -89,6 +108,14 @@ namespace Producer.Droid
 		{
 			dataSet.Insert (position, item);
 			NotifyItemInserted (position);
+		}
+
+
+		public void AddItems (IEnumerable<TData> items)
+		{
+			var initialCount = dataSet.Count;
+			dataSet.AddRange (items);
+			NotifyItemRangeInserted (initialCount - 1, dataSet.Count - initialCount);
 		}
 
 
