@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Producer.Shared
+namespace Producer
 {
 	public static class TaskExtensions
 	{
@@ -14,9 +13,6 @@ namespace Producer.Shared
          * RanToCompletion, = 5
          * Canceled, = 6
          * Faulted = 7  */
-		public static bool IsNullFinishCanceledOrFaulted (this Task task)
-		{
-			return task == null || (int)task.Status >= 5;
-		}
+		public static bool IsNullFinishCanceledOrFaulted (this Task task) => task == null || (int) task.Status >= 5;
 	}
 }

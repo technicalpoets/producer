@@ -69,7 +69,7 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log.Error (ex.Message);
+				log.Error (ex.Message, ex);
 				throw;
 			}
 		}

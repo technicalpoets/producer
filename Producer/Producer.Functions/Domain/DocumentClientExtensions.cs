@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.Azure.Documents;
@@ -32,6 +33,8 @@ namespace Producer.Functions
 
 			try
 			{
+				await client.EnsureCollection (UserStore.Collection);
+
 				log?.Info ($"Attempting to create new UserStore document with Id: {userId}");
 
 				var response = await client.CreateDocumentAsync (UsersCollectionLink, userStore);
@@ -76,6 +79,8 @@ namespace Producer.Functions
 					return null;
 				}
 
+				await client.EnsureCollection (UserStore.Collection);
+
 				log?.Info ($"Attempting to get UserStore document with Id: {userId}");
 
 				var response = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (UserStore.DatabaseId, UserStore.CollectionId, userId));
@@ -111,11 +116,13 @@ namespace Producer.Functions
 					return null;
 				}
 
+				await client.EnsureCollection (UserStore.Collection);
+
 				log?.Info ($"Attempting to replace UserStore document with Id: {userStore.Id}");
 
 				userStore.Token = permission.Token;
-				userStore.TokenTimestamp = DateTime.UtcNow;
 
+				userStore.TokenTimestamp = DateTime.UtcNow;
 
 				var response = await client.ReplaceDocumentAsync (userStore.SelfLink, userStore);
 
@@ -148,35 +155,37 @@ namespace Producer.Functions
 		}
 
 
-		public static async Task<Permission> GetOrCreatePermission (this DocumentClient client, string dbId, string userId, string collectionId, PermissionMode permissionMode, TraceWriter log = null)
+		public static async Task<Permission> GetOrCreatePermission (this DocumentClient client, (string DatabaseId, string CollectionId) collection, string userId, PermissionMode permissionMode, TraceWriter log = null)
 		{
 			var permissionId = string.Empty;
 
 			try
 			{
-				log?.Info ($"Attempting to get Document Collection with Id: {collectionId}");
+				await client.EnsureCollection (collection);
 
-				var collectionResponse = await client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (dbId, collectionId));
+				log?.Info ($"Attempting to get Document Collection in Database {collection.DatabaseId} with CollectionId: {collection.CollectionId}");
 
-				var collection = collectionResponse?.Resource ?? throw new Exception ($"Could not find Document Collection in Database {dbId} with CollectionId: {collectionId}");
+				var collectionResponse = await client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (collection.DatabaseId, collection.CollectionId));
+
+				var documentCollection = collectionResponse?.Resource ?? throw new Exception ($"Could not find Document Collection in Database {collection.DatabaseId} with CollectionId: {collection.CollectionId}");
 
 
-				var userTup = await client.GetOrCreateUser (dbId, userId, log);
+				var userTup = await client.GetOrCreateUser (collection.DatabaseId, userId, log);
 
 				var user = userTup.user;
 
 				Permission permission;
 
-				permissionId = GetUserPermissionId (dbId, user.Id, permissionMode);
+				permissionId = GetUserPermissionId (collection.DatabaseId, user.Id, permissionMode);
 
 				// if the user was newly created, go ahead and create the permission
 				if (userTup.created && !string.IsNullOrEmpty (user?.Id))
 				{
-					permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
+					permission = await client.CreateNewPermission (documentCollection, user, permissionId, permissionMode, log);
 				}
 				else // else look for an existing permission with the id
 				{
-					var permissionUri = UriFactory.CreatePermissionUri (dbId, user.Id, permissionId);
+					var permissionUri = UriFactory.CreatePermissionUri (collection.DatabaseId, user.Id, permissionId);
 
 					try
 					{
@@ -233,9 +242,10 @@ namespace Producer.Functions
 
 								log?.Info ($"Did not find Permission with Id: {permissionId}  at Uri: {permissionUri} - creating...");
 
-								permission = await client.CreateNewPermission (collection, user, permissionId, permissionMode, log);
+								permission = await client.CreateNewPermission (documentCollection, user, permissionId, permissionMode, log);
 
 								break;
+
 							default: throw;
 						}
 					}
@@ -245,13 +255,14 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission [Database: {dbId} Collection: {collectionId}  User: {userId}  Permission: {permissionId}", ex);
+				log?.Error ($"Error creating new new {permissionMode.ToString ().ToUpper ()} Permission [Database: {collection.DatabaseId} Collection: {collection.CollectionId}  User: {userId}  Permission: {permissionId}", ex);
 				throw;
 			}
 		}
 
 
-		public static async Task<Permission> CreateNewPermission (this DocumentClient client, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
+
+		static async Task<Permission> CreateNewPermission (this DocumentClient client, DocumentCollection collection, User user, string permissionId, PermissionMode permissionMode, TraceWriter log = null)
 		{
 			log?.Info ($"Creating new Permission with Id: {permissionId}  for Collection: {collection?.Id}");
 
@@ -308,7 +319,7 @@ namespace Producer.Functions
 		}
 
 
-		public static async Task<(User user, bool created)> GetOrCreateUser (this DocumentClient client, string dbId, string userId, TraceWriter log = null)
+		static async Task<(User user, bool created)> GetOrCreateUser (this DocumentClient client, string dbId, string userId, TraceWriter log = null)
 		{
 			User user = null;
 
@@ -359,6 +370,176 @@ namespace Producer.Functions
 		}
 
 
-		public static string PermissionLink (this User user, string permissionId) => $"{user?.PermissionsLink}{permissionId}";
+		#region Initialization (database & collections)
+
+		static readonly Dictionary<string, ClientStatus> _databaseStatuses = new Dictionary<string, ClientStatus> ();
+
+		static readonly Dictionary<string, Task<ResourceResponse<Database>>> _databaseCreationTasks = new Dictionary<string, Task<ResourceResponse<Database>>> ();
+
+
+		static readonly Dictionary<(string DatabaseId, string CollectionId), ClientStatus> _collectionStatuses = new Dictionary<(string DatabaseId, string CollectionId), ClientStatus> ();
+
+		static readonly Dictionary<(string DatabaseId, string CollectionId), Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<(string DatabaseId, string CollectionId), Task<ResourceResponse<DocumentCollection>>> ();
+
+
+		static bool IsInitialized ((string DatabaseId, string CollectionId) collection) => _collectionStatuses.TryGetValue (collection, out ClientStatus status) && status == ClientStatus.Initialized;
+
+
+		static async Task EnsureCollection (this DocumentClient client, (string DatabaseId, string CollectionId) collection)
+		{
+			if (!(IsInitialized (collection) || await client.InitializeCollection (collection)))
+			{
+				throw new Exception ($"Could not find Document Collection in Database {collection.DatabaseId} with CollectionId: {collection.CollectionId}");
+			}
+		}
+
+
+		static async Task<bool> InitializeCollection (this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log = null)
+		{
+			if (!(_databaseStatuses.TryGetValue (collection.DatabaseId, out ClientStatus databaseStatus) && databaseStatus == ClientStatus.Initialized))
+			{
+				await client.CreateDatabaseIfNotExistsAsync (collection.DatabaseId, log);
+			}
+
+			if (!IsInitialized (collection))
+			{
+				await client.CreateCollectionIfNotExistsAsync (collection, log);
+			}
+
+			return IsInitialized (collection);
+		}
+
+
+		static async Task CreateDatabaseIfNotExistsAsync (this DocumentClient client, string databaseId, TraceWriter log = null)
+		{
+			if (_databaseCreationTasks.TryGetValue (databaseId, out Task<ResourceResponse<Database>> task) && !task.IsNullFinishCanceledOrFaulted ())
+			{
+				log?.Info ("Database is already being created, returning existing task...");
+
+				await task;
+			}
+			else
+			{
+				try
+				{
+					log?.Info ("Checking for Database...");
+
+					_databaseCreationTasks [databaseId] = client.ReadDatabaseAsync (UriFactory.CreateDatabaseUri (databaseId));
+
+					var database = await _databaseCreationTasks [databaseId];
+
+					if (database?.Resource != null)
+					{
+						_databaseStatuses [databaseId] = ClientStatus.Initialized;
+
+						log?.Info ($"Found existing Database");
+					}
+				}
+				catch (DocumentClientException dex)
+				{
+					switch (dex.StatusCode)
+					{
+						case HttpStatusCode.NotFound:
+
+							_databaseCreationTasks [databaseId] = client.CreateDatabaseAsync (new Database { Id = databaseId });
+
+							var database = await _databaseCreationTasks [databaseId];
+
+							if (database?.Resource != null)
+							{
+								_databaseStatuses [databaseId] = ClientStatus.Initialized;
+
+								log?.Info ($"Created new Database");
+							}
+
+							break;
+
+						default: throw;
+					}
+				}
+				catch (Exception ex)
+				{
+					_databaseStatuses [databaseId] = ClientStatus.NotInitialized;
+
+					log?.Error (ex.Message, ex);
+
+					throw;
+				}
+			}
+		}
+
+
+		static async Task CreateCollectionIfNotExistsAsync<T> (this DocumentClient client, string databaseId, TraceWriter log = null)
+		{
+			await client.CreateCollectionIfNotExistsAsync ((databaseId, typeof (T).Name), log);
+		}
+
+
+		static async Task CreateCollectionIfNotExistsAsync (this DocumentClient client, (string DatabaseId, string CollectionId) collection, TraceWriter log = null)
+		{
+			if (_collectionCreationTasks.TryGetValue (collection, out Task<ResourceResponse<DocumentCollection>> task) && !task.IsNullFinishCanceledOrFaulted ())
+			{
+				log?.Info ($"Collection: {collection.CollectionId} in Database: {collection.DatabaseId} is already being created, returning existing task...");
+
+				await task;
+			}
+			else
+			{
+				try
+				{
+					log?.Info ($"Checking for Collection: {collection.CollectionId} in Database: {collection.DatabaseId}...");
+
+					_collectionCreationTasks [collection] = client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (collection.DatabaseId, collection.CollectionId));
+
+					var collectionResponse = await _collectionCreationTasks [collection];
+
+					if (collectionResponse?.Resource != null)
+					{
+						_collectionStatuses [collection] = ClientStatus.Initialized;
+
+						log?.Info ($"Found existing Collection: {collection.CollectionId} in Database: {collection.DatabaseId}");
+					}
+				}
+				catch (DocumentClientException dex)
+				{
+					switch (dex.StatusCode)
+					{
+						case HttpStatusCode.NotFound:
+
+							_collectionCreationTasks [collection] = client.CreateDocumentCollectionAsync (UriFactory.CreateDatabaseUri (collection.DatabaseId), new DocumentCollection { Id = collection.CollectionId }, new RequestOptions { OfferThroughput = 1000 });
+
+							var collectionResponse = await _collectionCreationTasks [collection];
+
+							if (collectionResponse?.Resource != null)
+							{
+								_collectionStatuses [collection] = ClientStatus.Initialized;
+
+								log?.Info ($"Created new Collection: {collection.CollectionId} in Database: {collection.DatabaseId}");
+							}
+
+							break;
+
+						default: throw;
+					}
+				}
+				catch (Exception ex)
+				{
+					_collectionStatuses [collection] = ClientStatus.NotInitialized;
+
+					log?.Error (ex.Message, ex);
+
+					throw;
+				}
+			}
+		}
+
+		#endregion
+	}
+
+	public enum ClientStatus
+	{
+		NotInitialized,
+		Initializing,
+		Initialized
 	}
 }
