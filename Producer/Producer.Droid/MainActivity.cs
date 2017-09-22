@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
@@ -109,13 +110,7 @@ namespace Producer.Droid
 			switch (item.ItemId)
 			{
 				case Resource.Id.action_settings:
-
-					//Toast.MakeText (this, "Settings selected", ToastLength.Short).Show ();
-
-					FragmentManager.BeginTransaction ()
-					.Add (Resource.Id.fragment_container, new SettingsFragment ())
-					.AddToBackStack (null)
-					.Commit ();
+					StartActivity (typeof (SettingsActivity));
 					break;
 				case Resource.Id.action_compose:
 					return true;
