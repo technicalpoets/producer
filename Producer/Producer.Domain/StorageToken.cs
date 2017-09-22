@@ -13,5 +13,15 @@ namespace Producer.Domain
 			DocumentName = documentName ?? throw new ArgumentNullException (nameof (documentName));
 			SasUri = sasUri ?? throw new ArgumentNullException (nameof (sasUri));
 		}
+
+		public override string ToString ()
+		{
+			var sb = new System.Text.StringBuilder ("\n\nStorageToken\n");
+			sb.Append ("  DocumentName".PadRight (13));
+			sb.Append ($"{DocumentName}\n");
+			sb.Append ("  SasUri".PadRight (13));
+			sb.Append ($"{SasUri}\n");
+			return sb.ToString ();
+		}
 	}
 }

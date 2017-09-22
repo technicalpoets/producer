@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Producer.Domain;
-
 namespace Producer
 {
 	public static partial class Settings
@@ -40,17 +38,6 @@ namespace Producer
 		public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
 
 
-		public static bool TestProducer
-		{
-#if DEBUG
-			get => BoolForKey (SettingsKeys.TestProducer);
-#else
-			get => false;
-#endif
-			set => SetSetting (SettingsKeys.TestProducer, value);
-		}
-
-
 		public static string RemoteFunctionsUrl
 		{
 			get => StringForKey (SettingsKeys.RemoteFunctionsUrl);
@@ -64,17 +51,13 @@ namespace Producer
 		{
 			get
 			{
-				if (_functionsUrl == null)
+				if (_functionsUrl == null && !string.IsNullOrEmpty (RemoteFunctionsUrl))
 				{
-					var urlString = !string.IsNullOrEmpty (RemoteFunctionsUrl) ? RemoteFunctionsUrl : throw new Exception ("No Functions Url");
+					var url = RemoteFunctionsUrl.Replace ("https://", string.Empty).Replace ("http://", string.Empty).TrimEnd ('/');
 
-					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && urlString.EndsWith (".azurewebsites.net", StringComparison.Ordinal))
-					{
-						var uriBuilder = new UriBuilder ("https", urlString);
-
-						_functionsUrl = uriBuilder.Uri;
-					}
+					_functionsUrl = string.IsNullOrEmpty (url) ? null : new UriBuilder ("https", url, 443).Uri;
 				}
+
 				return _functionsUrl;
 			}
 		}
@@ -93,20 +76,19 @@ namespace Producer
 		{
 			get
 			{
-				if (_documentDbUrl == null)
+				if (_documentDbUrl == null && !string.IsNullOrEmpty (RemoteDocumentDbUrl))
 				{
-					var urlString = !string.IsNullOrEmpty (RemoteDocumentDbUrl) ? RemoteDocumentDbUrl : throw new Exception ("No DocumentDB Url");
+					var url = RemoteDocumentDbUrl.Replace ("https://", string.Empty).Replace ("http://", string.Empty).TrimEnd ('/');
 
-					if (!urlString.StartsWith ("http", StringComparison.Ordinal) && urlString.EndsWith (".documents.azure.com", StringComparison.Ordinal))
-					{
-						var uriBuilder = new UriBuilder ("https", urlString, 443);
-
-						_documentDbUrl = uriBuilder.Uri;
-					}
+					_documentDbUrl = string.IsNullOrEmpty (url) ? null : new UriBuilder ("https", url, 443).Uri;
 				}
+
 				return _documentDbUrl;
 			}
 		}
+
+
+		public static bool HasUrls => DocumentDbUrl != null && FunctionsUrl != null;
 
 
 		public static string NotificationsName
@@ -144,21 +126,6 @@ namespace Producer
 		}
 
 
-		public static void ConfigureSettings (ProducerSettings producerSettings)
-		{
-			RemoteFunctionsUrl = producerSettings.RemoteFunctionsUrl;
-			RemoteDocumentDbUrl = producerSettings.RemoteDocumentDbUrl;
-			EmbeddedSocialKey = producerSettings.EmbeddedSocialKey;
-			NotificationsName = producerSettings.NotificationsName;
-			NotificationsConnectionString = producerSettings.NotificationsConnectionString;
-#if __IOS__
-			MobileCenterKey = producerSettings.MobileCenterKeyiOS;
-#else
-			MobileCenterKey = producerSettings.MobileCenterKeyAndroid;
-#endif
-		}
-
-
 		#endregion
 
 
@@ -185,6 +152,12 @@ namespace Producer
 			set => SetSetting (SettingsKeys.LastAvContentDescription, value);
 		}
 
+
+		public static string ContentDataCache
+		{
+			get => StringForKey (SettingsKeys.ContentDataCache);
+			set => SetSetting (SettingsKeys.ContentDataCache, value);
+		}
 
 		public static string GetContentToken<T> () => StringForKey ($"{SettingsKeys.ContentTokenBase}{typeof (T).Name}");
 

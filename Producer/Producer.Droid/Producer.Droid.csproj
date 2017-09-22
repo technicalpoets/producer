@@ -198,6 +198,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\SettingUtilities.cs" />
     <Compile Include="ProducerApp.cs" />
+    <Compile Include="View\User\UserActivity.cs" />
     <Compile Include="Framework\Adapters\BaseFragmentPagerAdapter.cs" />
     <Compile Include="Framework\Adapters\RecyclerViewAdapter.cs" />
     <Compile Include="Framework\Adapters\TabFragmentPagerAdapter.cs" />
@@ -229,6 +230,9 @@
     <Compile Include="Providers\AssetPersistenceManager.cs" />
     <Compile Include="Providers\MusicAsset.cs" />
     <Compile Include="Providers\AssetPlaybackManager.cs" />
+    <Compile Include="Settings\SettingsFragment.cs" />
+    <Compile Include="View\Login\LoginActivity.cs" />
+    <Compile Include="Settings\SettingsActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -255,12 +259,28 @@
     <AndroidResource Include="Resources\drawable\vd_resources.xml" />
     <AndroidResource Include="Resources\layout\Main.axml" />
     <AndroidResource Include="Resources\layout\ContentCell.axml" />
+    <AndroidResource Include="Resources\layout\Login.axml" />
+    <AndroidResource Include="Resources\layout\User.axml" />
+    <AndroidResource Include="Resources\menu\menu_logout.axml" />
+    <AndroidResource Include="Resources\menu\menu_compose.axml" />
+    <AndroidResource Include="Resources\drawable\i_settings.xml" />
+    <AndroidResource Include="Resources\menu\menu_settings.xml" />
+    <AndroidResource Include="Resources\xml\preferences.xml" />
+    <AndroidResource Include="Resources\layout\Settings.axml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
     <Folder Include="Resources\color\" />
     <Folder Include="Content\" />
     <Folder Include="Providers\" />
+    <Folder Include="View\" />
+    <Folder Include="View\User\" />
+    <Folder Include="Resources\menu\" />
+    <Folder Include="Resources\xml\" />
+    <Folder Include="View\Login\" />
+  </ItemGroup>
+  <ItemGroup>
+    <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
   <Import Project="..\Producer.Domain\Producer.Domain.projitems" Label="Shared" Condition="Exists('..\Producer.Domain\Producer.Domain.projitems')" />
   <Import Project="..\Producer.Shared\Producer.Shared.projitems" Label="Shared" Condition="Exists('..\Producer.Shared\Producer.Shared.projitems')" />

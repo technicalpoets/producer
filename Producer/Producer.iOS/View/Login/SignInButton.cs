@@ -1,11 +1,11 @@
-﻿#if __IOS__
-
-using System;
+﻿using System;
 
 using CoreGraphics;
 using UIKit;
 
-namespace Producer.Auth
+using Producer.Auth;
+
+namespace Producer.iOS
 {
 	public class SignInButton : UIButton
 	{
@@ -61,19 +61,6 @@ namespace Producer.Auth
 		}
 
 
-		public override void AwakeFromNib ()
-		{
-			base.AwakeFromNib ();
-
-			//var authProvider = ClientAuthProvider.FromTag (Tag);
-
-			//SetImage (authProvider.Icon, UIControlState.Normal);
-			//SetTitle (authProvider.SignInLabel, UIControlState.Normal);
-			//BackgroundColor = authProvider.ButtonBackgroundColor;
-			//SetTitleColor (authProvider.ButtonTextColor, UIControlState.Normal);
-		}
-
-
 		public override void LayoutSubviews ()
 		{
 			var authProvider = ClientAuthProviderExtensions.FromTag (Tag);
@@ -95,5 +82,3 @@ namespace Producer.Auth
 		}
 	}
 }
-
-#endif

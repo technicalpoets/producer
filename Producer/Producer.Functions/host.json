@@ -1,3 +1,6 @@
 {
-  "watchDirectories": [ "domain" ]
+	"http": {
+		"routePrefix": ""
+	},
+	"watchDirectories": [ "Domain" ]
 }

@@ -14,30 +14,36 @@
     <Compile Include="$(MSBuildThisFileDirectory)Content\Product.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StorageToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\AvContentTypes.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UnixDateTimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User\UserRoles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User\UserFavorite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\ContentEncodedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\DocumentUpdatedMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ApsPayload.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProducerSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\BaseAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthUserConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AzureAppServiceUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\GoogleAuthUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\SecurityExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\UserStore.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Content\ContentState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\TagExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\UnixDateTimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\Routes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notifications\ApsPayload.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
     <Folder Include="$(MSBuildThisFileDirectory)User\" />
     <Folder Include="$(MSBuildThisFileDirectory)Messages\" />
     <Folder Include="$(MSBuildThisFileDirectory)Auth\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Converters\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Constants\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Notifications\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
   </ItemGroup>
 </Project>

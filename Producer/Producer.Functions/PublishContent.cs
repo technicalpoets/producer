@@ -2,40 +2,35 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
+
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.NotificationHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 
-using Producer.Domain;
 using Producer.Auth;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.NotificationHubs;
-using Newtonsoft.Json;
+using Producer.Domain;
 
 namespace Producer.Functions
 {
-	public static class ContentPublisher
+	public static class PublishContent
 	{
 
-		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
-		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
-
 		static DocumentClient _documentClient;
-		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (EnvironmentVariables.DocumentDbUri, EnvironmentVariables.DocumentDbKey));
 
 
 		[Authorize]
-		[FunctionName ("ContentPublisher")]
+		[FunctionName (nameof (PublishContent))]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "post", Route = "publish")] DocumentUpdatedMessage updateMessage,
-			[NotificationHub (ConnectionStringSetting = "AzureNotificationHubConnection", HubName = "producer", Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
+			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Post, Route = Routes.PublishContent)] DocumentUpdatedMessage updateMessage,
+			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString, Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
-			log.Info ("new DocumentUpdatedMessage");
-
-			log.Info (updateMessage.NotificationTags);
+			log.Info (updateMessage?.ToString ());
 
 			UserStore userStore = null;
 
@@ -58,11 +53,7 @@ namespace Producer.Functions
 
 			try
 			{
-				if (string.IsNullOrEmpty (updateMessage?.CollectionId))
-				{
-					throw new ArgumentException ("Must have value set for CollectionId", nameof (updateMessage));
-				}
-
+				FunctionExtensions.HasValueOrThrow (updateMessage?.CollectionId, "CollectionId");
 
 				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();
 
@@ -78,7 +69,7 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log.Error (ex.Message);
+				log.Error (ex.Message, ex);
 				throw;
 			}
 		}

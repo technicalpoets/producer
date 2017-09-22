@@ -16,8 +16,6 @@ namespace Producer
 
 		public const string GitCommitHash = nameof (GitCommitHash);
 
-		public const string TestProducer = nameof (TestProducer);
-
 		public const string RemoteFunctionsUrl = nameof (RemoteFunctionsUrl);
 
 		public const string RemoteDocumentDbUrl = nameof (RemoteDocumentDbUrl);
@@ -34,7 +32,6 @@ namespace Producer
 
 		public static List<string> VisibleSettings = new List<string>
 		{
-			TestProducer,
 			RemoteFunctionsUrl,
 			RemoteDocumentDbUrl,
 			EmbeddedSocialKey,
@@ -58,6 +55,8 @@ namespace Producer
 		public const string LastAvContentDescription = nameof (LastAvContentDescription);
 
 		public const string ContentTokenBase = nameof (ContentTokenBase);
+
+		public const string ContentDataCache = nameof (ContentDataCache);
 
 
 		#endregion

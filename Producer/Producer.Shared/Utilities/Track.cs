@@ -58,7 +58,6 @@ namespace Producer
 			{
 				System.Diagnostics.Debug.WriteLine ($"[Analytics] {message}");
 			}
-
 		}
 
 		#endregion

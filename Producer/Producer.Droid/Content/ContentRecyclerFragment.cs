@@ -4,6 +4,7 @@ using Android.Support.V7.Widget;
 using Android.Views;
 using Android.OS;
 using Android.Content;
+using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
 using Producer.Droid.Providers;
@@ -72,28 +73,6 @@ namespace Producer.Droid
 
 			return view;
 		}
-
-
-		public override void OnStart ()
-		{
-			base.OnStart ();
-
-			//if (DisplayContent.Count == 0)
-			//{
-			//	Task.Run (async () =>
-			//	{
-			//		await DataClient.Shared.LoadPartnerList ();
-			//		DisplayPartners.AddRange (DataClient.Shared.FilteredPartners);
-			//	}).ContinueWith (t =>
-			//	{
-			//		if (!t.IsFaulted)
-			//		{
-			//			Activity.RunOnUiThread (Adapter.NotifyDataSetChanged);
-			//		}
-			//	});
-			//}
-		}
-
 
 		#region implemented abstract members of RecyclerViewFragment
 

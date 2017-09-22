@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using Foundation;
 using UIKit;
-using UserNotifications;
 
 using Producer.Auth;
 using Producer.Domain;
@@ -11,7 +10,7 @@ using Producer.Shared;
 
 namespace Producer.iOS
 {
-	public partial class ContentNc : UINavigationController
+	public partial class ContentNc : BaseNc
 	{
 
 		public ContentNc (IntPtr handle) : base (handle) { }
@@ -21,20 +20,18 @@ namespace Producer.iOS
 		{
 			base.ViewDidLoad ();
 
-			this.AddStatusBarView (Colors.ThemeDark);
+			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
+		}
 
-			ClientAuthManager.Shared.AthorizationChanged += handleClientAuthChanged;
 
-			Task.Run (async () =>
+		public override void ViewDidAppear (bool animated)
+		{
+			base.ViewDidAppear (animated);
+
+			if (!Settings.HasUrls)
 			{
-				Log.Debug (ProducerClient.Shared.User?.ToString ());
-
-				await ContentClient.Shared.GetAllAvContent ();
-
-				await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
-
-				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-			});
+				this.ShowSettinsAlert ();
+			}
 		}
 
 
@@ -48,15 +45,13 @@ namespace Producer.iOS
 			}
 			else
 			{
-				Log.Debug ($"{error}");
+				Log.Error (error.LocalizedDescription);
 			}
 		}
 
 
 		void handleClientAuthChanged (object s, ClientAuthDetails e)
 		{
-			Log.Debug ($"Authenticated: {e}");
-
 			Task.Run (async () =>
 			{
 				if (e == null)
@@ -68,8 +63,6 @@ namespace Producer.iOS
 					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
 				}
 
-				BeginInvokeOnMainThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
-
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}
@@ -79,7 +72,7 @@ namespace Producer.iOS
 		{
 			// TODO: Display some type of message for non-producers or figure out how to kill the document type registration
 
-			var canCompose = Settings.TestProducer && (url?.IsFileUrl ?? false);
+			var canCompose = ProducerClient.Shared.UserRole.CanWrite () && (url?.IsFileUrl ?? false);
 
 			if (canCompose)
 			{
@@ -105,15 +98,6 @@ namespace Producer.iOS
 			}
 
 			return canCompose;
-		}
-
-
-		public override UIStatusBarStyle PreferredStatusBarStyle () => UIStatusBarStyle.LightContent;
-
-
-		public override void WillTransitionToTraitCollection (UITraitCollection traitCollection, IUIViewControllerTransitionCoordinator coordinator)
-		{
-			this.UpdateStatusBarView (traitCollection);
 		}
 	}
 }

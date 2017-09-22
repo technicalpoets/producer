@@ -7,7 +7,7 @@ using UIKit;
 
 namespace Producer.iOS
 {
-	[Register ("CircularProgressLayer")]
+	[Register (nameof (CircularProgressLayer))]
 	public class CircularProgressLayer : CALayer
 	{
 

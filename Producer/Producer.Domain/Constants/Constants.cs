@@ -1,5 +1,4 @@
-﻿using System;
-namespace Producer
+﻿namespace Producer
 {
 	public static class ConstantStrings
 	{

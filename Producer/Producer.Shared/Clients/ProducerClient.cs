@@ -20,7 +20,23 @@ namespace Producer.Shared
 
 		static AuthUserConfig authUser;
 
+
+		static Keychain _keychain;
+
+		Keychain Keychain
+		{
+			get
+			{
+				lock (_object)
+				{
+					return _keychain ?? (_keychain = new Keychain ());
+				}
+			}
+		}
+
+
 		static User _user;
+
 		public User User
 		{
 			get
@@ -29,11 +45,9 @@ namespace Producer.Shared
 				{
 					if (_user == null)
 					{
-						var clientAuth = ClientAuthManager.Shared.ClientAuthDetails;
-
-						if (clientAuth != null)
+						if (ClientAuthManager.Shared.ClientAuthDetails != null)
 						{
-							authUser = AuthUserConfig.FromKeychain ();
+							authUser = AuthUserConfig.FromKeychain (Keychain);
 
 							if (authUser != null)
 							{
@@ -41,11 +55,13 @@ namespace Producer.Shared
 							}
 						}
 					}
-
 					return _user;
 				}
 			}
 		}
+
+
+		public bool Initialized => _httpClient != null;
 
 
 		public UserRoles UserRole => User?.UserRole ?? UserRoles.General;
@@ -54,7 +70,7 @@ namespace Producer.Shared
 
 
 		HttpClient _httpClient;
-		HttpClient httpClient
+		HttpClient HttpClient
 		{
 			get
 			{
@@ -62,7 +78,7 @@ namespace Producer.Shared
 				{
 					_httpClient = new HttpClient { BaseAddress = Settings.FunctionsUrl };
 
-					var storedKeys = new Keychain ().GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+					var storedKeys = Keychain.GetItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
 					if (!string.IsNullOrEmpty (storedKeys.Account) && !string.IsNullOrEmpty (storedKeys.PrivateKey))
 					{
@@ -86,11 +102,9 @@ namespace Producer.Shared
 		{
 			if (content?.HasId ?? false)
 			{
-				var url = $"api/publish";
-
 				try
 				{
-					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, publishTo.HasValue ? publishTo.Value : content.PublishedTo)
+					var updateMessage = new DocumentUpdatedMessage (content.Id, typeof (T).Name, publishTo ?? content.PublishedTo)
 					{
 						Title = notificationTitle,
 						Message = notificationMessage
@@ -98,20 +112,23 @@ namespace Producer.Shared
 
 					Log.Debug (updateMessage.NotificationTags);
 
-					updateNetworkActivityIndicator (true);
+					NetworkIndicator.ToggleVisibility (true);
 
-					var response = await httpClient.PostAsync (url, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, "application/json"));
+					var response = await HttpClient.PostAsync (Routes.PublishContent, new StringContent (JsonConvert.SerializeObject (updateMessage), Encoding.UTF8, Routes.Json));
 
-					Log.Debug (response.ToString ());
+					if (!response.IsSuccessStatusCode)
+					{
+						throw new Exception ($"Error posting document update message: {updateMessage}");
+					}
 				}
 				catch (Exception ex)
 				{
-					Log.Debug (ex.Message);
+					Log.Error (ex);
 					throw;
 				}
 				finally
 				{
-					updateNetworkActivityIndicator (false);
+					NetworkIndicator.ToggleVisibility (false);
 				}
 			}
 		}
@@ -120,28 +137,33 @@ namespace Producer.Shared
 		public async Task<StorageToken> GetStorageToken<T> (T content)
 			where T : Content
 		{
+			var collectionId = typeof (T).Name;
+
 			if (content?.HasId ?? false)
 			{
-				var url = $"api/tokens/storage/{typeof (T).Name}/{content.Id}";
-
 				try
 				{
-					updateNetworkActivityIndicator (true);
+					NetworkIndicator.ToggleVisibility (true);
 
-					var response = await httpClient.GetAsync (url);
+					var response = await HttpClient.GetAsync (Routes.StorageToken (collectionId, content.Id));
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
+
+					if (!response.IsSuccessStatusCode || string.IsNullOrEmpty (stringContent))
+					{
+						throw new Exception ($"Error getting new storage token from server for {collectionId} with Id: {content.Id}");
+					}
 
 					return JsonConvert.DeserializeObject<StorageToken> (stringContent);
 				}
 				catch (Exception ex)
 				{
-					Log.Debug (ex.Message);
+					Log.Error (ex);
 					throw;
 				}
 				finally
 				{
-					updateNetworkActivityIndicator (false);
+					NetworkIndicator.ToggleVisibility (false);
 				}
 			}
 
@@ -152,41 +174,48 @@ namespace Producer.Shared
 		public async Task<string> GetContentToken<T> (bool refresh = false)
 			where T : Entity
 		{
-			var url = $"api/tokens/content/{typeof (T).Name}";
+			const string errorToken = "{\"Message\":\"An error has occurred.\"}";
+
+			var collectionId = typeof (T).Name;
 
 			try
 			{
 				var resourceToken = Settings.GetContentToken<T> ();
 
-				if (refresh || string.IsNullOrEmpty (resourceToken))
+				if (refresh || string.IsNullOrEmpty (resourceToken) || resourceToken == errorToken)
 				{
-					Log.Info ($"Getting new content token from server for {typeof (T).Name}");
+					Log.Info ($"Getting new content token from server for {collectionId}");
 
-					updateNetworkActivityIndicator (true);
+					NetworkIndicator.ToggleVisibility (true);
 
-					var response = await httpClient.GetAsync (url);
+					var response = await HttpClient.GetAsync (Routes.ContentToken (collectionId));
 
 					var stringContent = await response.Content.ReadAsStringAsync ();
 
 					resourceToken = stringContent.Trim ('"');
 
+					if (!response.IsSuccessStatusCode || resourceToken == errorToken)
+					{
+						throw new Exception ($"Error getting new content token from server for {collectionId}");
+					}
+
 					Settings.SetContentToken<T> (resourceToken);
 				}
 				else
 				{
-					Log.Info ($"Found existing content token {typeof (T).Name}");
+					Log.Info ($"Found existing content token for {collectionId}");
 				}
 
 				return resourceToken;
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
 
@@ -195,9 +224,9 @@ namespace Producer.Shared
 		{
 			_user = null;
 
-			new Keychain ().RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
+			Keychain.RemoveItemFromKeychain (AzureAppServiceUser.AuthenticationHeader);
 
-			AuthUserConfig.RemoveFromKeychain ();
+			AuthUserConfig.RemoveFromKeychain (Keychain);
 
 			Settings.SetContentToken<AvContent> (string.Empty);
 
@@ -220,55 +249,45 @@ namespace Producer.Shared
 
 				var auth = JObject.Parse ($"{{'id_token':'{providerToken}','authorization_code':'{providerAuthCode}'}}").ToString ();
 
-				updateNetworkActivityIndicator (true);
+				NetworkIndicator.ToggleVisibility (true);
 
-				var authResponse = await httpClient.PostAsync (".auth/login/google?access_type=offline", new StringContent (auth, Encoding.UTF8, "application/json"));
+				var authResponse = await HttpClient.PostAsync (Routes.LoginGoogle, new StringContent (auth, Encoding.UTF8, Routes.Json));
 
 				if (authResponse.IsSuccessStatusCode)
 				{
-					var azureUserJson = await authResponse.Content.ReadAsStringAsync ();
+					var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (await authResponse.Content.ReadAsStringAsync ());
 
-					Log.Debug ($"azureUserJson: {azureUserJson}");
-
-					var azureUser = JsonConvert.DeserializeObject<AzureAppServiceUser> (azureUserJson);
-
-					new Keychain ().SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
+					Keychain.SaveItemToKeychain (AzureAppServiceUser.AuthenticationHeader, "azure", azureUser.AuthenticationToken);
 
 					_httpClient = null;
 
-					var userConfigJson = await httpClient.GetStringAsync ("api/user/config");
+					var userConfigJson = await HttpClient.GetStringAsync (Routes.AuthenticateUser);
 
 					authUser = JsonConvert.DeserializeObject<AuthUserConfig> (userConfigJson);
 
-					authUser.SaveToKeychain ();
+					authUser.SaveToKeychain (Keychain);
 
 					Log.Debug (authUser.ToString ());
+
+					_user = null;
 
 					CurrentUserChanged?.Invoke (this, User);
 				}
 				else
 				{
 					Log.Error (auth);
-					Log.Error (authResponse.ToString ());
+					Log.Error (authResponse?.ToString ());
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Error (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 			finally
 			{
-				updateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
-		}
-
-
-		public void updateNetworkActivityIndicator (bool visible)
-		{
-#if __IOS__
-			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
-#endif
 		}
 	}
 }

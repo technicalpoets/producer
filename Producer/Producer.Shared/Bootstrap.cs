@@ -16,11 +16,10 @@ namespace Producer
 		{
 			CrossVersionTracking.Current.Track ();
 
-			Log.Debug ($"\n{CrossVersionTracking.Current}");
+			Log.Debug (CrossVersionTracking.Current.ToString ());
+
 
 			Settings.RegisterDefaultSettings ();
-
-			//configureProducerSettings ();
 
 			// Send installed version history with crash reports
 			Crashes.GetErrorAttachments = (report) => new List<ErrorAttachmentLog>
@@ -43,7 +42,7 @@ namespace Producer
 			{
 				var installId = await MobileCenter.GetInstallIdAsync ();
 
-				Settings.UserReferenceKey = installId?.ToString ("N") ?? "anonymous";
+				Settings.UserReferenceKey = installId?.ToString ("N");
 			});
 
 #if __IOS__
@@ -57,39 +56,6 @@ namespace Producer
 			Settings.BuildNumber = CrossVersionTracking.Current.CurrentBuild;
 
 			Settings.VersionDescription = $"{CrossVersionTracking.Current.CurrentVersion} ({CrossVersionTracking.Current.CurrentBuild})";
-#endif
-		}
-
-
-		static void configureProducerSettings ()
-		{
-			var name = typeof (Domain.ProducerSettings).Name;
-#if __IOS__
-			var path = Foundation.NSBundle.MainBundle.PathForResource (name, "json");
-
-			if (!string.IsNullOrEmpty (path))
-			{
-				using (var data = Foundation.NSData.FromFile (path))
-				{
-					var json = Foundation.NSString.FromData (data, Foundation.NSStringEncoding.ASCIIStringEncoding).ToString ();
-					//#elif __ANDROID__
-					//var path = $"{name}.json";
-
-					//if (assetList.Contains(path))
-					//{
-					//using (var sr = new System.IO.StreamReader (context.Assets.Open (path)))
-					//{
-					//var json = sr.ReadToEnd ();
-					//#endif
-					var producerSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<Domain.ProducerSettings> (json);
-
-					Log.Debug ($"\n{producerSettings}");
-
-					Settings.ConfigureSettings (producerSettings);
-					Settings.Synchronize ();
-					throw new System.Exception ();
-				}
-			}
 #endif
 		}
 	}

@@ -13,7 +13,7 @@ using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 
 using Producer.Domain;
-using Producer.Auth;
+
 
 namespace Producer.Shared
 {
@@ -21,21 +21,26 @@ namespace Producer.Shared
 	{
 
 		static ContentClient _shared;
-		public static ContentClient Shared => _shared ?? (_shared = new ContentClient ("Content"));
+		public static ContentClient Shared => _shared ?? (_shared = new ContentClient (nameof (Content)));
 
 
 		readonly string databaseId;
 
 		DocumentClient client;
 
+		bool initialDataLoad;
+
+		public bool Initialized => client != null && initialDataLoad;
+
 
 		public UserRoles UserRole => ProducerClient.Shared.UserRole;
 
 		public Dictionary<UserRoles, List<AvContent>> AvContent = new Dictionary<UserRoles, List<AvContent>> {
-			{ UserRoles.General, new List<AvContent>() },
-			{ UserRoles.Insider, new List<AvContent>() },
+			{ UserRoles.General,  new List<AvContent>() },
+			{ UserRoles.Insider,  new List<AvContent>() },
 			{ UserRoles.Producer, new List<AvContent>() }
 		};
+
 
 		public event EventHandler<UserRoles> AvContentChanged;
 
@@ -44,6 +49,7 @@ namespace Producer.Shared
 		{
 			databaseId = dbId;
 		}
+
 
 		public void ResetClient ()
 		{
@@ -58,31 +64,28 @@ namespace Producer.Shared
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (forceTokenRefresh);
 
-				await ResetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 			catch (FormatException)
 			{
 				var resourceToken = await ProducerClient.Shared.GetContentToken<T> (true);
 
-				await ResetClient (resourceToken);
+				ResetClient (resourceToken);
 			}
 		}
 
 
-		async Task ResetClient (string resourceToken)
+		void ResetClient (string resourceToken)
 		{
-			Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
-
 			try
 			{
+				Log.Debug ($"Creating DocumentClient\n\tUrl: {Settings.DocumentDbUrl}\n\tKey: {resourceToken}");
+
 				client = new DocumentClient (Settings.DocumentDbUrl, resourceToken);
-
-				await client.OpenAsync ();
-
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 		}
@@ -90,6 +93,13 @@ namespace Producer.Shared
 
 		public async Task GetAllAvContent ()
 		{
+			if (!Initialized && !string.IsNullOrEmpty (Settings.ContentDataCache))
+			{
+				AvContent = JsonConvert.DeserializeObject<Dictionary<UserRoles, List<AvContent>>> (Settings.ContentDataCache);
+
+				AvContentChanged?.Invoke (this, UserRole);
+			}
+
 			await RefreshAvContentAsync ();
 		}
 
@@ -122,9 +132,6 @@ namespace Producer.Shared
 
 			AvContent [newItem.PublishedTo].Add (newItem);
 
-			//TODO: Sort
-			//AvContent[newItem.PublishedTo].Sort(x, y)
-
 			AvContentChanged?.Invoke (this, newItem.PublishedTo);
 
 			if (publish)
@@ -145,9 +152,9 @@ namespace Producer.Shared
 				}
 				else if (oldRole.Value > newItem.PublishedTo && newItem.PublishedTo < UserRoles.Producer) // published to more users
 				{
-					var groupNam = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
+					var groupName = newItem.PublishedTo != UserRoles.General ? $" ({newItem.PublishedTo})" : string.Empty;
 
-					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupNam}");
+					await ProducerClient.Shared.Publish (newItem, newItem.DisplayName, $"New {newItem.ContentType}!{groupName}");
 				}
 			}
 			else // not adding to or removing from any group, silently update
@@ -196,11 +203,16 @@ namespace Producer.Shared
 				if (!AvContent.ContainsKey (UserRoles.Insider)) AvContent [UserRoles.Insider] = new List<AvContent> ();
 				if (!AvContent.ContainsKey (UserRoles.Producer)) AvContent [UserRoles.Producer] = new List<AvContent> ();
 
+
+				initialDataLoad = true;
+
 				AvContentChanged?.Invoke (this, UserRole);
+
+				Settings.ContentDataCache = JsonConvert.SerializeObject (AvContent);
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 		}
@@ -208,75 +220,52 @@ namespace Producer.Shared
 
 		#region CRUD
 
-		#region Get
 
-		public async Task<T> Get<T> (string id, string collectionId = null)
+		public Task<T> Get<T> (string id, string collectionId = null)
 			where T : Entity
 		{
-			if (string.IsNullOrEmpty (collectionId))
-			{
-				collectionId = typeof (T).Name;
-			}
-
-			try
-			{
-				if (client == null) await RefreshResourceToken<T> (false);
-				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
-
-				UpdateNetworkActivityIndicator (true);
-
-				var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
-
-				return result.Resource as T;
-			}
-			catch (DocumentClientException dex)
-			{
-				Log.Debug (dex.Print ());
-
-				switch (dex.StatusCode)
-				{
-					case HttpStatusCode.NotFound: return null;
-					case HttpStatusCode.Forbidden:
-
-						await RefreshResourceToken<T> ();
-
-						var result = await client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId, id));
-
-						return result.Resource as T;
-
-					default: throw;
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Debug (ex.Message);
-				throw;
-			}
-			finally
-			{
-				UpdateNetworkActivityIndicator (false);
-			}
+			return ExecuteWithRetry<T> (() => client.ReadDocumentAsync (UriFactory.CreateDocumentUri (databaseId, collectionId ?? typeof (T).Name, id)));
 		}
 
 
-		public async Task<List<T>> Get<T> (Expression<Func<T, bool>> predicate, string collectionId = null)
+		public Task<List<T>> Get<T> (Expression<Func<T, bool>> predicate, string collectionId = null)
 			where T : Entity
 		{
-			if (string.IsNullOrEmpty (collectionId))
-			{
-				collectionId = typeof (T).Name;
-			}
+			return ExecuteWithRetry (() => GetList (predicate, collectionId));
+		}
 
-			var results = new List<T> ();
 
+		public Task<T> Create<T> (T item, string collectionId = null)
+			where T : Entity
+		{
+			return ExecuteWithRetry<T> (() => client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId ?? typeof (T).Name), item));
+		}
+
+
+		public Task<T> Replace<T> (T item)
+			where T : Entity
+		{
+			return ExecuteWithRetry<T> (() => client.ReplaceDocumentAsync (item.SelfLink, item));
+		}
+
+
+		public Task<T> Delete<T> (T item)
+			where T : Entity
+		{
+			return ExecuteWithRetry<T> (() => client.DeleteDocumentAsync (item.SelfLink));
+		}
+
+
+		async Task<List<T>> GetList<T> (Expression<Func<T, bool>> predicate, string collectionId = null)
+			where T : Entity
+		{
 			try
 			{
-				if (client == null) await RefreshResourceToken<T> (false);
-				// if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
+				var results = new List<T> ();
 
-				UpdateNetworkActivityIndicator (true);
-
-				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
+				var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId ?? typeof (T).Name), new FeedOptions { MaxItemCount = -1 })
+					  .Where (predicate)
+					  .AsDocumentQuery ();
 
 				while (query.HasMoreResults)
 				{
@@ -285,6 +274,25 @@ namespace Producer.Shared
 
 				return results;
 			}
+			catch (Exception ex)
+			{
+				Log.Error (ex);
+				throw;
+			}
+		}
+
+
+		async Task<T> ExecuteWithRetry<T> (Func<Task<ResourceResponse<Document>>> task)
+			where T : Entity
+		{
+			try
+			{
+				if (client == null) await RefreshResourceToken<T> (false);
+
+				NetworkIndicator.ToggleVisibility (true);
+
+				return Deserialize<T> (await task ());
+			}
 			catch (DocumentClientException dex)
 			{
 				Log.Debug (dex.Print ());
@@ -296,50 +304,33 @@ namespace Producer.Shared
 
 						await RefreshResourceToken<T> ();
 
-						var query = client.CreateDocumentQuery<T> (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), new FeedOptions { MaxItemCount = -1 }).Where (predicate).AsDocumentQuery ();
-
-						while (query.HasMoreResults)
-						{
-							results.AddRange (await query.ExecuteNextAsync<T> ());
-						}
-
-						return results;
+						return Deserialize<T> (await task ());
 
 					default: throw;
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
 
-		#endregion
 
-
-		public async Task<T> Create<T> (T item, string collectionId = null)
+		async Task<List<T>> ExecuteWithRetry<T> (Func<Task<List<T>>> task)
 			where T : Entity
 		{
-			if (string.IsNullOrEmpty (collectionId))
-			{
-				collectionId = typeof (T).Name;
-			}
-
 			try
 			{
 				if (client == null) await RefreshResourceToken<T> (false);
-				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
 
-				UpdateNetworkActivityIndicator (true);
+				NetworkIndicator.ToggleVisibility (true);
 
-				var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
-
-				return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+				return await task ();
 			}
 			catch (DocumentClientException dex)
 			{
@@ -347,348 +338,36 @@ namespace Producer.Shared
 
 				switch (dex.StatusCode)
 				{
+					case HttpStatusCode.NotFound: return null;
 					case HttpStatusCode.Forbidden:
 
 						await RefreshResourceToken<T> ();
 
-						var result = await client.CreateDocumentAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId), item);
-
-						return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
+						return await task ();
 
 					default: throw;
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.Debug (ex.Message);
+				Log.Error (ex);
 				throw;
 			}
 			finally
 			{
-				UpdateNetworkActivityIndicator (false);
+				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
 
 
-		public async Task<T> Replace<T> (T item, string collectionId = null)
+		T Deserialize<T> (ResourceResponse<Document> result)
 			where T : Entity
 		{
-			if (string.IsNullOrEmpty (collectionId))
-			{
-				collectionId = typeof (T).Name;
-			}
+			var json = result?.Resource?.ToString ();
 
-			try
-			{
-				if (client == null) await RefreshResourceToken<T> (false);
-				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
-
-				UpdateNetworkActivityIndicator (true);
-
-				var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
-
-				return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
-			}
-			catch (DocumentClientException dex)
-			{
-				Log.Debug (dex.Print ());
-
-				switch (dex.StatusCode)
-				{
-					case HttpStatusCode.Forbidden:
-
-						await RefreshResourceToken<T> ();
-
-						var result = await client.ReplaceDocumentAsync (item.SelfLink, item);
-
-						return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
-
-					default: throw;
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Debug (ex.Message);
-				throw;
-			}
-			finally
-			{
-				UpdateNetworkActivityIndicator (false);
-			}
+			return string.IsNullOrEmpty (json) ? null : JsonConvert.DeserializeObject<T> (json);
 		}
 
-
-		public async Task<T> Delete<T> (T item, string collectionId = null)
-			where T : Entity
-		{
-			if (string.IsNullOrEmpty (collectionId))
-			{
-				collectionId = typeof (T).Name;
-			}
-
-			try
-			{
-				if (client == null) await RefreshResourceToken<T> (false);
-				//if (!IsInitialized (collectionId)) await InitializeCollection (collectionId);
-
-				UpdateNetworkActivityIndicator (true);
-
-				var result = await client.DeleteDocumentAsync (item.SelfLink);
-
-				if (!string.IsNullOrEmpty (result?.Resource?.ToString ()))
-				{
-					return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
-				}
-
-				return null;
-			}
-			catch (DocumentClientException dex)
-			{
-				Log.Debug (dex.Print ());
-
-				switch (dex.StatusCode)
-				{
-					case HttpStatusCode.Forbidden:
-
-						await RefreshResourceToken<T> ();
-
-						var result = await client.DeleteDocumentAsync (item.SelfLink);
-
-						if (!string.IsNullOrEmpty (result?.Resource?.ToString ()))
-						{
-							return JsonConvert.DeserializeObject<T> (result.Resource.ToString ());
-						}
-
-						return null;
-
-					default: throw;
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Debug (ex.Message);
-				throw;
-			}
-			finally
-			{
-				UpdateNetworkActivityIndicator (false);
-			}
-		}
-
-		#endregion
-
-
-		void UpdateNetworkActivityIndicator (bool visible)
-		{
-#if __IOS__
-			UIKit.UIApplication.SharedApplication.BeginInvokeOnMainThread (() => UIKit.UIApplication.SharedApplication.NetworkActivityIndicatorVisible = visible);
-#endif
-		}
-
-
-		#region Initialization (database & collections)
-
-		ClientStatus _databaseStatus;
-
-		Task<ResourceResponse<Database>> _databaseTask;
-
-		readonly Dictionary<string, ClientStatus> _collectionStatuses = new Dictionary<string, ClientStatus> ();
-
-		readonly Dictionary<string, Task<ResourceResponse<DocumentCollection>>> _collectionCreationTasks = new Dictionary<string, Task<ResourceResponse<DocumentCollection>>> ();
-
-
-		public bool IsInitialized (string collectionId) => _collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized;
-
-
-		public async Task InitializeCollection (string collectionId)
-		{
-			if (_databaseStatus != ClientStatus.Initialized)
-			{
-				await CreateDatabaseIfNotExistsAsync ();
-			}
-
-			if (!(_collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.Initialized))
-			{
-				await CreateCollectionIfNotExistsAsync (collectionId);
-			}
-		}
-
-
-		async Task CreateDatabaseIfNotExistsAsync ()
-		{
-			if (!_databaseTask.IsNullFinishCanceledOrFaulted ())
-			{
-				Log.Debug ("Database is already being created, returning existing task...");
-
-				await _databaseTask;
-			}
-			else
-			{
-				try
-				{
-					UpdateNetworkActivityIndicator (true);
-
-					Log.Debug ("Checking for Database...");
-
-					_databaseTask = client.ReadDatabaseAsync (UriFactory.CreateDatabaseUri (databaseId));
-
-					var database = await _databaseTask;
-
-					if (database?.Resource != null)
-					{
-						_databaseStatus = ClientStatus.Initialized;
-
-						Log.Debug ($"Found existing Database");
-					}
-				}
-				catch (DocumentClientException dex)
-				{
-					switch (dex.StatusCode)
-					{
-						case HttpStatusCode.NotFound:
-
-							_databaseTask = client.CreateDatabaseAsync (new Database { Id = databaseId });
-
-							var database = await _databaseTask;
-
-							if (database?.Resource != null)
-							{
-								_databaseStatus = ClientStatus.Initialized;
-
-								Log.Debug ($"Created new Database");
-							}
-
-							break;
-
-						case HttpStatusCode.Forbidden:
-
-							if (_databaseStatus == ClientStatus.NotInitialized)
-							{
-								_databaseStatus = ClientStatus.Initializing;
-
-								//await RefreshResourceToken<T><> ();
-
-								_databaseTask = null;
-
-								await CreateDatabaseIfNotExistsAsync ();
-							}
-							else
-							{
-								_databaseStatus = ClientStatus.NotInitialized;
-								throw;
-							}
-
-							break;
-
-						default:
-							Log.Debug (dex.Message);
-							_databaseStatus = ClientStatus.NotInitialized;
-							throw;
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Debug (ex.Message);
-					_databaseStatus = ClientStatus.NotInitialized;
-					throw;
-				}
-				finally
-				{
-					UpdateNetworkActivityIndicator (false);
-				}
-			}
-		}
-
-
-		async Task CreateCollectionIfNotExistsAsync<T> ()
-		{
-			await CreateCollectionIfNotExistsAsync (typeof (T).Name);
-		}
-
-
-		async Task CreateCollectionIfNotExistsAsync (string collectionId)
-		{
-			if (_collectionCreationTasks.TryGetValue (collectionId, out Task<ResourceResponse<DocumentCollection>> task) && !task.IsNullFinishCanceledOrFaulted ())
-			{
-				Log.Debug ($"Collection: {collectionId} is already being created, returning existing task...");
-
-				await task;
-			}
-			else
-			{
-				try
-				{
-					UpdateNetworkActivityIndicator (true);
-
-					Log.Debug ($"Checking for Collection: {collectionId}...");
-
-					_collectionCreationTasks [collectionId] = client.ReadDocumentCollectionAsync (UriFactory.CreateDocumentCollectionUri (databaseId, collectionId));
-
-					var collection = await _collectionCreationTasks [collectionId];
-
-					if (collection?.Resource != null)
-					{
-						_collectionStatuses [collectionId] = ClientStatus.Initialized;
-
-						Log.Debug ($"Found existing Collection: {collectionId}");
-					}
-				}
-				catch (DocumentClientException dex)
-				{
-					switch (dex.StatusCode)
-					{
-						case HttpStatusCode.NotFound:
-
-							_collectionCreationTasks [collectionId] = client.CreateDocumentCollectionAsync (UriFactory.CreateDatabaseUri (databaseId), new DocumentCollection { Id = collectionId }, new RequestOptions { OfferThroughput = 1000 });
-
-							var collection = await _collectionCreationTasks [collectionId];
-
-							if (collection?.Resource != null)
-							{
-								_collectionStatuses [collectionId] = ClientStatus.Initialized;
-								Log.Debug ($"Created new Collection: {collectionId}");
-							}
-
-							break;
-						case HttpStatusCode.Forbidden:
-
-							if (_collectionStatuses.TryGetValue (collectionId, out ClientStatus status) && status == ClientStatus.NotInitialized)
-							{
-								// set to initializing so we don't recurse more than once
-								_collectionStatuses [collectionId] = ClientStatus.Initializing;
-
-								//await RefreshResourceToken<T> ();
-
-								_collectionCreationTasks [collectionId] = null;
-
-								await CreateCollectionIfNotExistsAsync (collectionId);
-							}
-							else
-							{
-								_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
-								throw;
-							}
-
-							break;
-
-						default:
-							Log.Debug (dex.Message);
-							_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
-							throw;
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Debug (ex.Message);
-					_collectionStatuses [collectionId] = ClientStatus.NotInitialized;
-					throw;
-				}
-				finally
-				{
-					UpdateNetworkActivityIndicator (false);
-				}
-			}
-		}
 
 		#endregion
 	}

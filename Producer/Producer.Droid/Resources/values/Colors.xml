@@ -27,5 +27,5 @@
 	<color name="xamarin_A100">#f0f7fc</color>
 	<color name="xamarin_A200">#b1d6ee</color>
 	<color name="xamarin_A400">#3091d1</color>
-	<color name="xamarin_A700">#1e5d87</color>
+	<color name="xamarin_A700">#1e5d87</color> 
 </resources>

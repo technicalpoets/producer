@@ -13,31 +13,25 @@ using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
-using Producer.Domain;
 using Producer.Auth;
+using Producer.Domain;
 
 namespace Producer.Functions
 {
-	public static class StorageTokenGenerator
+	public static class GenerateStorageToken
 	{
-
-		static readonly string _documentDbUri = Environment.GetEnvironmentVariable ("RemoteDocumentDbUrl");
-		static readonly string _documentDbKey = Environment.GetEnvironmentVariable ("RemoteDocumentDbKey");
-
-		static readonly string _storageAccountConnection = Environment.GetEnvironmentVariable ("AzureWebJobsStorage");
-
 		static CloudBlobClient _blobClient;
-		static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (_storageAccountConnection).CreateCloudBlobClient ());
+		static CloudBlobClient BlobClient => _blobClient ?? (_blobClient = CloudStorageAccount.Parse (EnvironmentVariables.StorageAccountConnection).CreateCloudBlobClient ());
 
 		static DocumentClient _documentClient;
-		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (new Uri ($"https://{_documentDbUri}/"), _documentDbKey));
+		static DocumentClient DocumentClient => _documentClient ?? (_documentClient = new DocumentClient (EnvironmentVariables.DocumentDbUri, EnvironmentVariables.DocumentDbKey));
 
 
 		[Authorize]
-		[FunctionName ("GetStorageToken")]
+		[FunctionName (nameof (GenerateStorageToken))]
 		public static async Task<HttpResponseMessage> Run (
-			[HttpTrigger (AuthorizationLevel.Anonymous, "get", Route = "tokens/storage/{collectionId}/{documentId}")] HttpRequestMessage req,
-			[DocumentDB ("Content", "{collectionId}", Id = "{documentId}")] Content content, string collectionId, string documentId, TraceWriter log)
+			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Get, Route = Routes.GenerateStorageToken)] HttpRequestMessage req,
+			[DocumentDB (nameof (Content), "{collectionId}", Id = "{documentId}")] Content content, string collectionId, string documentId, TraceWriter log)
 		{
 			UserStore userStore = null;
 

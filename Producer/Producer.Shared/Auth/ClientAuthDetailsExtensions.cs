@@ -4,8 +4,8 @@ namespace Producer.Auth
 {
 	public static class ClientAuthDetailsExtensions
 	{
-#if __IOS__ && NC_AUTH_GOOGLE
-
+#if NC_AUTH_GOOGLE
+#if __IOS__
 		public static ClientAuthDetails GetAuthDetails (this Google.SignIn.GoogleUser user, int avatarSize = 24)
 		{
 			return new ClientAuthDetails
@@ -22,6 +22,21 @@ namespace Producer.Auth
 			};
 		}
 
+
+#elif __ANDROID__
+		public static ClientAuthDetails GetAuthDetails (this Android.Gms.Auth.Api.SignIn.GoogleSignInAccount user)
+		{
+			return new ClientAuthDetails
+			{
+				ClientAuthProvider = ClientAuthProviders.Google,
+				Username = user.DisplayName,
+				Email = user.Email,
+				Token = user.IdToken,
+				AuthCode = user.ServerAuthCode,
+				AvatarUrl = user.PhotoUrl.ToString ()
+			};
+		}
+#endif
 #endif
 	}
 }

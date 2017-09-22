@@ -12,14 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bootstrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingAccessors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\SettingKeys.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\AzureStorageClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\ProducerClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Log.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Track.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Clients\ContentClient.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Clients\ClientStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\Keychain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetailTypes.cs" />
@@ -31,12 +28,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Google.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Microsoft.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthManager\ClientAuthManager_Twitter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Auth\UI iOS\SignInButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Auth\UI Android\AuthActivity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\ClientAuthDetailsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\NetworkIndicator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Clients\" />
     <Folder Include="$(MSBuildThisFileDirectory)Utilities\" />
     <Folder Include="$(MSBuildThisFileDirectory)Auth\" />
