@@ -106,6 +106,7 @@
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'web')]",
                         "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
                     ],
                     "properties": {
