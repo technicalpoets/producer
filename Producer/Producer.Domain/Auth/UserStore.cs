@@ -20,6 +20,9 @@ namespace Producer.Domain
 		[JsonIgnore]
 		public const string AnonymousId = "anonymous_user";
 
+		[JsonIgnore]
+		public static readonly (string DatabaseId, string CollectionId) Collection = (DatabaseId, CollectionId);
+
 
 		public string Email { get; set; }
 
