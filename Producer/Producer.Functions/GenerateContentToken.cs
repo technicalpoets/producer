@@ -54,7 +54,7 @@ namespace Producer.Functions
 
 
 				// simply getting the user permission will refresh the token
-				var userPermission = await DocumentClient.GetOrCreatePermission (nameof (Content), userId, collectionId, permissionMode, log);
+				var userPermission = await DocumentClient.GetOrCreatePermission ((nameof (Content), collectionId), userId, permissionMode, log);
 
 
 				if (!string.IsNullOrEmpty (userPermission?.Token))
@@ -71,7 +71,8 @@ namespace Producer.Functions
 			}
 			catch (Exception ex)
 			{
-				log.Error (ex.Message);
+				log.Error (ex.Message, ex);
+
 				return req.CreateErrorResponse (HttpStatusCode.InternalServerError, ex);
 			}
 		}
