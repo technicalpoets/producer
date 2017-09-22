@@ -22,10 +22,6 @@ namespace Producer.Droid
 			base.OnCreate (savedInstanceState);
 
 			SetContentView (Resource.Layout.Settings);
-
-			FragmentManager.BeginTransaction ()
-			.Add (Resource.Id.fragment_container, new SettingsFragment ())
-			.Commit ();
 		}
 	}
 }
