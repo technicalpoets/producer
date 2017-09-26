@@ -41,7 +41,7 @@ namespace Producer.Droid
 
 		public override void SetData (MusicAsset data)
 		{
-			//logo.SetImageDrawable (null);
+			//image.SetImageDrawable (null);
 			title.SetText (data.Music.DisplayName, TextView.BufferType.Normal);
 			artist.SetText (data.Music.Description, TextView.BufferType.Normal);
 

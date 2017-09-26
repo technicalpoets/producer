@@ -1,9 +1,9 @@
 ﻿using System;
 using Android.App;
 using Android.Runtime;
-using Plugin.MediaManager;
+//using Plugin.MediaManager;
 //using Plugin.MediaManager.ExoPlayer;
-using Plugin.MediaManager.MediaSession;
+//using Plugin.MediaManager.MediaSession;
 using Producer.Droid.Providers;
 
 namespace Producer.Droid

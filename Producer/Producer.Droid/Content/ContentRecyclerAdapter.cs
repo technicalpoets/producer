@@ -15,7 +15,7 @@ namespace Producer.Droid
 		{
 			var rootView = inflater.Inflate (Resource.Layout.ContentCell, parent, false);
 
-			return new ContentViewHolder (new View (parent.Context));
+			return new ContentViewHolder (rootView);
 		}
 
 

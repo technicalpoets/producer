@@ -1,8 +1,8 @@
 ﻿using System;
 using Com.Google.Android.Exoplayer2;
-using Plugin.MediaManager;
-using Plugin.MediaManager.Abstractions;
-using Plugin.MediaManager.Abstractions.Enums;
+//using Plugin.MediaManager;
+//using Plugin.MediaManager.Abstractions;
+//using Plugin.MediaManager.Abstractions.Enums;
 
 namespace Producer.Droid.Providers
 {
@@ -16,17 +16,17 @@ namespace Producer.Droid.Providers
 		//readonly static NSString AVUrlAsset_Playable = new NSString ("playable");
 		//readonly static NSString AVPlayer_CurrentItem = new NSString ("currentItem");
 
-		readonly IMediaManager mediaPlayer;
-		public IMediaManager Player => mediaPlayer;
+		//readonly IMediaManager mediaPlayer;
+		//public IMediaManager Player => mediaPlayer;
 
 
 		//public event EventHandler<AVPlayer> ReadyToPlay;
-		public event EventHandler<IMediaManager> CurrentItemChanged;
+		//public event EventHandler<IMediaManager> CurrentItemChanged;
 
 
 		//public bool IsPlaying => Player?.Rate == 1;
 
-		public bool IsPlaying => mediaPlayer.Status == MediaPlayerStatus.Playing || mediaPlayer.Status == MediaPlayerStatus.Buffering;
+		//public bool IsPlaying => mediaPlayer.Status == MediaPlayerStatus.Playing || mediaPlayer.Status == MediaPlayerStatus.Buffering;
 
 		//NSObject timeObservationToken;
 
@@ -37,15 +37,15 @@ namespace Producer.Droid.Providers
 		//readonly IPlayer Player = new AVPlayer ();
 
 
-		IMediaFile _playerItem;
-		IMediaFile PlayerItem
-		{
-			get { return _playerItem; }
-			set
-			{
-				_playerItem = value;
-			}
-		}
+		//IMediaFile _playerItem;
+		//IMediaFile PlayerItem
+		//{
+		//	get { return _playerItem; }
+		//	set
+		//	{
+		//		_playerItem = value;
+		//	}
+		//}
 
 
 		public MusicAsset CurrentAsset => Asset;
@@ -69,11 +69,11 @@ namespace Producer.Droid.Providers
 				}
 				else
 				{
-					PlayerItem = null;
+					//PlayerItem = null;
 
-					//clear the current item?
-					//Player.ReplaceCurrentItemWithPlayerItem (null);
-					Player.Stop ();
+					////clear the current item?
+					////Player.ReplaceCurrentItemWithPlayerItem (null);
+					//Player.Stop ();
 
 
 					//removeRemoteTransportControls ();
@@ -82,7 +82,7 @@ namespace Producer.Droid.Providers
 					//readyForPlayback = false;
 				}
 
-				CurrentItemChanged?.Invoke (this, Player);
+				//CurrentItemChanged?.Invoke (this, Player);
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace Producer.Droid.Providers
 		{
 			//Player.AddObserver (this, AVPlayer_CurrentItem, NSKeyValueObservingOptions.New, observerContext);
 
-			mediaPlayer = CrossMediaManager.Current;
+			//mediaPlayer = CrossMediaManager.Current;
 
 			//mediaPlayer.StatusChanged -= OnStatusChanged;
 			//mediaPlayer.StatusChanged += OnStatusChanged;
@@ -126,24 +126,24 @@ namespace Producer.Droid.Providers
 			if (Asset == asset && readyForPlayback)
 			{
 				//if (Player?.Rate == 0)
-				if (!IsPlaying)
-				{
-					Player.Play ();
+				//if (!IsPlaying)
+				//{
+				//	Player.Play ();
 
-					//updateCommandCenterNowPlayingInfo ();
+				//	//updateCommandCenterNowPlayingInfo ();
 
-					return true;
-				}
+				//	return true;
+				//}
 
-				//if (Player?.Rate == 1)
-				if (IsPlaying)
-				{
-					Player.Pause ();
+				////if (Player?.Rate == 1)
+				//if (IsPlaying)
+				//{
+				//	Player.Pause ();
 
-					//updateCommandCenterNowPlayingInfo ();
+				//	//updateCommandCenterNowPlayingInfo ();
 
-					return false;
-				}
+				//	return false;
+				//}
 			}
 
 			return false;
