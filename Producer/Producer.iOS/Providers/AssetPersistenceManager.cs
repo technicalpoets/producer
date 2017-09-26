@@ -240,35 +240,30 @@ namespace Producer.iOS
 		/// </summary>
 		/// <returns>The media selection.</returns>
 		/// <param name="asset">Asset.</param>
-		Tuple<AVMediaSelectionGroup, AVMediaSelectionOption> nextMediaSelection (AVUrlAsset asset)
+		(AVMediaSelectionGroup Group, AVMediaSelectionOption Option) nextMediaSelection (AVUrlAsset asset)
 		{
-			//guard let assetCache = asset.assetCache else { return (nil, nil) }
-			var assetCache = asset.Cache;
-
-			if (assetCache == null)
+			if (asset.Cache != null)
 			{
-				return new Tuple<AVMediaSelectionGroup, AVMediaSelectionOption> (null, null);
-			}
+				var mediaCharacteristics = new [] { AVMediaCharacteristic.Audible, AVMediaCharacteristic.Legible };
 
-			var mediaCharacteristics = new [] { AVMediaCharacteristic.Audible, AVMediaCharacteristic.Legible };
-
-			foreach (var mediaCharacteristic in mediaCharacteristics)
-			{
-				var mediaSelectionGroup = asset.MediaSelectionGroupForMediaCharacteristic (mediaCharacteristic);
-
-				if (mediaSelectionGroup != null)
+				foreach (var mediaCharacteristic in mediaCharacteristics)
 				{
-					var savedOptions = assetCache.GetMediaSelectionOptions (mediaSelectionGroup);
+					var mediaSelectionGroup = asset.MediaSelectionGroupForMediaCharacteristic (mediaCharacteristic);
 
-					if (savedOptions.Length < mediaSelectionGroup.Options.Length)
+					if (mediaSelectionGroup != null)
 					{
-						// There are still media options left to download.
-						foreach (var option in mediaSelectionGroup.Options)
+						var savedOptions = asset.Cache.GetMediaSelectionOptions (mediaSelectionGroup);
+
+						if (savedOptions.Length < mediaSelectionGroup.Options.Length)
 						{
-							if (!savedOptions.Contains (option))
+							// There are still media options left to download.
+							foreach (var option in mediaSelectionGroup.Options)
 							{
-								// This option has not been download.
-								return new Tuple<AVMediaSelectionGroup, AVMediaSelectionOption> (mediaSelectionGroup, option);
+								if (!savedOptions.Contains (option))
+								{
+									// This option has not been download.
+									return (mediaSelectionGroup, option);
+								}
 							}
 						}
 					}
@@ -276,7 +271,7 @@ namespace Producer.iOS
 			}
 
 			// At this point all media options have been downloaded.
-			return new Tuple<AVMediaSelectionGroup, AVMediaSelectionOption> (null, null);
+			return (null, null);
 		}
 
 
@@ -298,7 +293,7 @@ namespace Producer.iOS
 
 			if (error != null)
 			{
-				Log.Debug ($"DidCompleteWithError: {task?.TaskDescription} | {error.Domain} :: {error.LocalizedDescription}");
+				Log.Debug ($"{task?.TaskDescription} | {error.Domain} :: {error.LocalizedDescription}");
 
 				if (error.Domain == NSError.NSUrlErrorDomain)
 				{
@@ -308,16 +303,15 @@ namespace Producer.iOS
 						// URL saved from AVAssetDownloadDelegate.urlSession(_:assetDownloadTask:didFinishDownloadingTo:).
 
 						DeleteAsset (asset);
-
 					}
 					else if (error.Code == (int) NSUrlError.Unknown)
 					{
-						Log.Debug ($"FATAL: Downloading HLS streams is not supported in the simulator.");
+						Log.Error ($"FATAL: Downloading HLS streams is not supported in the simulator.");
 						//fatalError ("Downloading HLS streams is not supported in the simulator.")
 					}
 				}
 
-				Log.Debug ($"FATAL: An unexpected error occured {error.Domain}");
+				Log.Error ($"FATAL: An unexpected error occured {error.Domain}");
 				//fatalError ("An unexpected error occured \(error.domain)")
 			}
 			else
@@ -326,7 +320,7 @@ namespace Producer.iOS
 
 				var mediaSelectionPair = nextMediaSelection (assetTask.UrlAsset);
 
-				if (mediaSelectionPair.Item1 != null)
+				if (mediaSelectionPair.Group != null)
 				{
 					// This task did complete sucessfully. At this point the application
 					// can download additional media selections if needed.
@@ -347,7 +341,7 @@ namespace Producer.iOS
 					var mediaSelection = originalMediaSelection.MutableCopy () as AVMutableMediaSelection;
 
 					// Select the AVMediaSelectionOption in the AVMediaSelectionGroup we found earlier.
-					mediaSelection.SelectMediaOption (mediaSelectionPair.Item2, mediaSelectionPair.Item1);
+					mediaSelection.SelectMediaOption (mediaSelectionPair.Option, mediaSelectionPair.Group);
 
 					// Ask the `URLSession` to vend a new `AVAssetDownloadTask` using
 					// the same `AVURLAsset` and assetTitle as before.
@@ -355,12 +349,7 @@ namespace Producer.iOS
 					// This time, the application includes the specific `AVMediaSelection`
 					// to download as well as a higher bitrate.
 
-
-					// TODO: workaround for bug https://bugzilla.xamarin.com/show_bug.cgi?id=44201 to get it to build in Mobile Center
-					var taskOptions = new NSDictionary (new NSString ("AVAssetDownloadTaskMinimumRequiredMediaBitrateKey"), new NSNumber (2000000), new NSString ("AVAssetDownloadTaskMediaSelectionKey"), mediaSelection);
-
-					// should be this
-					// var taskOptions = new AVAssetDownloadOptions { MinimumRequiredMediaBitrate = 2000000, MediaSelection = mediaSelection };
+					var taskOptions = new AVAssetDownloadOptions { MinimumRequiredMediaBitrate = 2000000, MediaSelection = mediaSelection };
 
 					var newTask = assetDownloadURLSession.GetAssetDownloadTask (assetTask.UrlAsset, asset.Id, null, taskOptions);
 
@@ -375,7 +364,7 @@ namespace Producer.iOS
 
 					change.State = MusicAssetDownloadState.Downloading;
 
-					Log.Debug ($"????????? ?????????? ??????????? {mediaSelectionPair.Item2.DisplayName}");
+					Log.Debug ($"????????? ?????????? ??????????? {mediaSelectionPair.Option.DisplayName}");
 
 					//change.DisplayName = mediaSelectionPair.Item2.DisplayName;
 				}
@@ -432,7 +421,7 @@ namespace Producer.iOS
 
 		public override void DidResolveMediaSelection (NSUrlSession session, AVAssetDownloadTask assetDownloadTask, AVMediaSelection resolvedMediaSelection)
 		{
-			Log.Debug ($"DidResolveMediaSelection: {assetDownloadTask?.TaskDescription} | {resolvedMediaSelection.Asset}");
+			Log.Debug ($"{assetDownloadTask?.TaskDescription} | {resolvedMediaSelection.Asset}");
 
 			// You should be sure to use this delegate callback to keep a reference
 			// to `resolvedMediaSelection` so that in the future you can use it to
