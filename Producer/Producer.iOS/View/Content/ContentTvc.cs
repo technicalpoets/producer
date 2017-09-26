@@ -150,61 +150,60 @@ namespace Producer.iOS
 
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
-			var cell = tableView.CellAt (indexPath) as ContentMusicTvCell;
-
-			tableView.DeselectRow (indexPath, true);
-
-
-			var asset = saved ? savedAssets [indexPath.Row] : allAssets [indexPath.Row];
-
-			if (asset != null && (ContentClient.Shared.Initialized || AssetPersistenceManager.Shared.DownloadState (asset) == MusicAssetDownloadState.Downloaded))
+			if (tableView.CellAt (indexPath) is ContentMusicTvCell cell)
 			{
-				if (asset.Music.ContentType == AvContentTypes.Video)
-				{
-					playerViewController = new AVPlayerViewController ();
+				tableView.DeselectRow (indexPath, true);
 
-					PresentViewController (playerViewController, true, null);
+				var asset = saved ? savedAssets [indexPath.Row] : allAssets [indexPath.Row];
+
+				if (asset != null && (ContentClient.Shared.Initialized || AssetPersistenceManager.Shared.DownloadState (asset) == MusicAssetDownloadState.Downloaded))
+				{
+					if (asset.Music.ContentType == AvContentTypes.Video)
+					{
+						playerViewController = new AVPlayerViewController ();
+
+						PresentViewController (playerViewController, true, null);
+					}
+
+					// we're already on the main tread, this prevents hanging while playback starts
+					BeginInvokeOnMainThread (() =>
+					{
+						var playing = AssetPlaybackManager.Shared.TogglePlayback (asset);
+
+						if (playing && indexPathCache != indexPath) Track.Play (asset.Music);
+
+						if (indexPathCache != null && indexPathCache != indexPath && tableView.IndexPathsForVisibleRows.Contains (indexPathCache)
+							&& tableView.CellAt (indexPathCache) is ContentMusicTvCell oldCell)
+						{
+							oldCell.SetPlaying (false);
+						}
+
+						indexPathCache = indexPath;
+
+						if (asset.Music.ContentType == AvContentTypes.Audio)
+						{
+							if (NavigationController.ToolbarHidden)
+							{
+								NavigationController.SetToolbarHidden (false, true);
+							}
+
+							cell.SetPlaying (playing);
+
+							var items = ToolbarItems;
+
+							items [0] = playing ? pauseButton : playButton;
+
+							//items [2].Title = asset.Music.DisplayName;
+							titleButton.Title = asset.Music.DisplayName;
+
+							SetToolbarItems (items, true);
+						}
+						else if (!NavigationController.ToolbarHidden)
+						{
+							NavigationController.SetToolbarHidden (true, false);
+						}
+					});
 				}
-
-				BeginInvokeOnMainThread (() =>
-				{
-					var playing = AssetPlaybackManager.Shared.TogglePlayback (asset);
-
-					if (indexPathCache != null && indexPathCache != indexPath)
-					{
-						if (tableView.IndexPathsForVisibleRows.Contains (indexPathCache))
-						{
-							var oldCell = tableView.CellAt (indexPathCache) as ContentMusicTvCell;
-
-							oldCell?.SetPlaying (false);
-						}
-					}
-
-					indexPathCache = indexPath;
-
-					if (asset.Music.ContentType == AvContentTypes.Audio)
-					{
-						if (NavigationController.ToolbarHidden)
-						{
-							NavigationController.SetToolbarHidden (false, true);
-						}
-
-						cell?.SetPlaying (playing);
-
-						var items = ToolbarItems;
-
-						items [0] = playing ? pauseButton : playButton;
-
-						//items [2].Title = asset.Music.DisplayName;
-						titleButton.Title = asset.Music.DisplayName;
-
-						SetToolbarItems (items, true);
-					}
-					else if (!NavigationController.ToolbarHidden)
-					{
-						NavigationController.SetToolbarHidden (true, false);
-					}
-				});
 			}
 		}
 
@@ -333,7 +332,7 @@ namespace Producer.iOS
 		void handleAlertControllerActionDismiss (UIAlertAction obj) => DismissViewController (true, null);
 
 
-		void handleAlertControllerActionShare (UIAlertAction obj) { }
+		void handleAlertControllerActionShare (UIAlertAction obj) => throw new NotImplementedException ();
 
 
 		void handleAlertControllerActionDownload (UIAlertAction obj)

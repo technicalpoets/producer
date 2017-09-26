@@ -85,9 +85,7 @@ namespace Producer.iOS
 			// For each task, restore the state in the app by recreating Asset structs and reusing existing AVURLAsset objects.
 			foreach (var task in tasks)
 			{
-				var assetDownloadTask = task as AVAssetDownloadTask;
-
-				if (assetDownloadTask != null)
+				if (task is AVAssetDownloadTask assetDownloadTask)
 				{
 					var song = music.FirstOrDefault (s => s.Id == assetDownloadTask.TaskDescription);
 
@@ -107,15 +105,11 @@ namespace Producer.iOS
 		/// Triggers the initial AVAssetDownloadTask for a given Asset.
 		public void DownloadAsset (MusicAsset asset)
 		{
+			Track.Download (asset.Music);
+
 			// For the initial download, we ask the URLSession for an AVAssetDownloadTask
-			// with a minimum bitrate corresponding with one of the lower bitrate variants
-			// in the asset.
-
-			// TODO: workaround for bug https://bugzilla.xamarin.com/show_bug.cgi?id=44201 to get it to build in Mobile Center
-			var taskOptions = new NSDictionary (new NSString ("AVAssetDownloadTaskMinimumRequiredMediaBitrateKey"), new NSNumber (265000));
-
-			// should be this
-			// var taskOptions = new AVAssetDownloadOptions { MinimumRequiredMediaBitrate = 265000 };
+			// with a minimum bitrate corresponding with one of the lower bitrate variants in the asset.
+			var taskOptions = new AVAssetDownloadOptions { MinimumRequiredMediaBitrate = 265000 };
 
 			var task = assetDownloadURLSession.GetAssetDownloadTask (asset.UrlAsset, asset.Id, null, taskOptions);
 
@@ -211,9 +205,7 @@ namespace Producer.iOS
 			// Check if there is a file URL stored for this asset.
 			if (localPath != null)
 			{
-				NSError error;
-
-				NSFileManager.DefaultManager.Remove (localPath, out error);
+				NSFileManager.DefaultManager.Remove (localPath, out NSError error);
 
 				if (error != null)
 				{
@@ -293,11 +285,9 @@ namespace Producer.iOS
 			// This is the ideal place to begin downloading additional media selections
 			// once the asset itself has finished downloading.
 
-			MusicAsset asset;
-
 			var assetTask = task as AVAssetDownloadTask;
 
-			if (assetTask == null || !activeDownloadsMap.TryGetValue (assetTask, out asset))
+			if (assetTask == null || !activeDownloadsMap.TryGetValue (assetTask, out MusicAsset asset))
 			{
 				return;
 			}
@@ -344,9 +334,7 @@ namespace Producer.iOS
 					// To download additional `AVMediaSelection`s, you should use the
 					// `AVMediaSelection` reference saved in `AVAssetDownloadDelegate.urlSession(_:assetDownloadTask:didResolve:)`.
 
-					AVMediaSelection originalMediaSelection;
-
-					if (!mediaSelectionMap.TryGetValue (assetTask, out originalMediaSelection))
+					if (!mediaSelectionMap.TryGetValue (assetTask, out AVMediaSelection originalMediaSelection))
 					{
 						return;
 					}
@@ -410,9 +398,7 @@ namespace Producer.iOS
 			// somewhere in your application. Any additional work should be done in
 			// `URLSessionTaskDelegate.urlSession(_:task:didCompleteWithError:)`.
 
-			MusicAsset asset;
-
-			if (activeDownloadsMap.TryGetValue (assetDownloadTask, out asset))
+			if (activeDownloadsMap.TryGetValue (assetDownloadTask, out MusicAsset asset))
 			{
 				Settings.SetSetting (asset.Id, location.RelativePath);
 			}

@@ -38,9 +38,11 @@ namespace Producer.iOS
 
 
 		AVPlayerItem _playerItem;
-		AVPlayerItem PlayerItem {
+		AVPlayerItem PlayerItem
+		{
 			get { return _playerItem; }
-			set {
+			set
+			{
 				_playerItem?.RemoveObserver (this, AVPlayerItem_Status, observerContext);
 
 				_playerItem = value;
@@ -53,9 +55,11 @@ namespace Producer.iOS
 		public MusicAsset CurrentAsset => Asset;
 
 		MusicAsset _asset;
-		MusicAsset Asset {
+		MusicAsset Asset
+		{
 			get { return _asset; }
-			set {
+			set
+			{
 				_asset?.UrlAsset?.RemoveObserver (this, AVUrlAsset_Playable, observerContext);
 
 				_asset = value;
