@@ -150,7 +150,7 @@ namespace Producer.iOS
 
 			if (keyPath == AVUrlAsset_Playable)
 			{
-				Log.Debug ($"ObserveValue: {keyPath} | {Asset?.UrlAsset?.Playable}");
+				Log.Debug ($"{keyPath} | {Asset?.UrlAsset?.Playable}");
 
 				if ((Asset?.UrlAsset?.Cache?.IsPlayableOffline ?? false) || (Asset?.UrlAsset?.Playable ?? false))
 				{
@@ -202,13 +202,13 @@ namespace Producer.iOS
 			}
 			else if (keyPath == AVPlayer_CurrentItem)
 			{
-				Log.Debug ($"ObserveValue: {keyPath} | ");
+				Log.Debug ($"{keyPath}");
 
 				CurrentItemChanged?.Invoke (this, Player);
 			}
 			else
 			{
-				Log.Debug ($"ObserveValue: {keyPath} | ");
+				Log.Debug ($"{keyPath}");
 
 				base.ObserveValue (keyPath, ofObject, change, context);
 			}
@@ -234,7 +234,7 @@ namespace Producer.iOS
 
 		void handlePeriodicTimeObserver (CMTime obj)
 		{
-			Log.Debug ($"handlePeriodicTimeObserver: {obj}");
+			Log.Debug ($"{obj}");
 
 			//MPNowPlayingInfoCenter.DefaultCenter.NowPlaying.PlaybackProgress = obj.Value;
 		}
