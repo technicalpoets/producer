@@ -10,8 +10,10 @@ namespace Producer.Droid
 	public class ContentViewHolder : ViewHolder<AvContent>
 	{
 		ImageView logo;
+		ImageView download;
 		TextView name;
-		TextView location;
+		TextView desc;
+		ProgressBar downloadProgressBar;
 
 		static UpdatableForegroundColorSpan locationColorSpan;
 		static RelativeSizeSpan locationSizeSpan;
@@ -31,19 +33,26 @@ namespace Producer.Droid
 		}
 
 
-		public override void FindViews (View rootView)
+		public override void FindViews (View v)
 		{
 			//logo = (ImageView) rootView.FindViewById (Resource.Id.partner_logo);
 			//name = (TextView) rootView.FindViewById (Resource.Id.partner_name);
 			//location = (TextView) rootView.FindViewById (Resource.Id.partner_location);
+
+			logo = v.FindViewById<ImageView> (Resource.Id.logoImageView);
+			download = v.FindViewById<ImageView> (Resource.Id.downloadImageView);
+			name = v.FindViewById<TextView> (Resource.Id.nameTextView);
+			desc = v.FindViewById<TextView> (Resource.Id.descTextView);
+			downloadProgressBar = v.FindViewById<ProgressBar> (Resource.Id.downloadProgressBar);
+
 		}
 
 
 		public override void SetData (AvContent data)
 		{
 			//logo.SetImageDrawable (null);
-			name.SetText (data.Name, TextView.BufferType.Normal);
-
+			name.SetText (data.DisplayName, TextView.BufferType.Normal);
+			desc.SetText (data.Description, TextView.BufferType.Normal);
 
 			//var primaryLocation = data.GetPrimaryLocationName ();
 			//var locationDetails = data.GetLocationDetails ();

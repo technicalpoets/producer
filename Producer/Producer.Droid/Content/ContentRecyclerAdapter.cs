@@ -6,16 +6,15 @@ namespace Producer.Droid
 {
 	public class ContentRecyclerAdapter : RecyclerViewAdapter<AvContent, ContentViewHolder>//, FastScrollRecyclerView.ISectionedAdapter
 	{
-		public ContentRecyclerAdapter (IList<AvContent> dataSet) : base (dataSet)
+		public ContentRecyclerAdapter (List<AvContent> dataSet) : base (dataSet)
 		{
 		}
 
-
 		protected override ContentViewHolder CreateViewHolder (LayoutInflater inflater, ViewGroup parent)
 		{
-			//var rootView = inflater.Inflate (Resource.Layout.PartnerCardView, parent, false);
+			var rootView = inflater.Inflate (Resource.Layout.ContentMusicCardView, parent, false);
 
-			return new ContentViewHolder (new View (parent.Context));
+			return new ContentViewHolder (rootView);
 		}
 
 

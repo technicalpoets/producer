@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 using Android.App;
@@ -43,8 +44,25 @@ namespace Producer.Droid
 
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
+			InitializeContent ();
 		}
 
+		void InitializeContent ()
+		{
+			if (Settings.HasUrls && !ContentClient.Shared.Initialized)
+			{
+				Task.Run (async () =>
+				{
+					Log.Debug (ProducerClient.Shared.User?.ToString ());
+
+					//await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+
+					await ContentClient.Shared.GetAllAvContent ();
+
+					//RegisterForNotifications ();
+				});
+			}
+		}
 
 		protected override void OnResume ()
 		{

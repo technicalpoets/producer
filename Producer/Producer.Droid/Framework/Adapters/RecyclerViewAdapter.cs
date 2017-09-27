@@ -76,6 +76,11 @@ namespace Producer.Droid
 		}
 
 
+		public void SetItems (List<TData> dataSet)
+		{
+			this.dataSet = dataSet;
+		}
+
 		public TData RemoveItem (int position)
 		{
 			var item = dataSet [position];

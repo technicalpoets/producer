@@ -8,6 +8,7 @@ using Producer.Domain;
 using Producer.Auth;
 using System;
 using Producer.Shared;
+using System.Linq;
 
 namespace Producer.Droid
 {
@@ -21,9 +22,10 @@ namespace Producer.Droid
 
 		public int Icon => Resource.Drawable.ic_tabbar_resources;
 
+		ContentRecyclerAdapter CRAdapter;
+
 
 		#endregion
-
 
 		List<AvContent> DisplayContent = new List<AvContent> ();
 
@@ -50,19 +52,60 @@ namespace Producer.Droid
 			//recycler.SetPopupBackgroundColor (color);
 			//}
 
+			updateMusicAssets ();
+			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
 			return view;
 		}
+
+
+		void handleAvContentChanged (object sender, UserRoles e) => updateMusicAssets ();
+
+
+		void updateMusicAssets ()
+		{
+			Log.Debug ("Load Content");
+
+			if (DisplayContent?.Count == 0 && ContentClient.Shared.AvContent.Count > 0)
+			{
+				DisplayContent = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri)
+																			  .ToList ();
+			}
+			else
+			{
+				var newAssets = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri && !DisplayContent.Any (ma => ma.Id == m.Id));
+
+				DisplayContent.AddRange (newAssets);
+
+				DisplayContent.RemoveAll (ma => !ContentClient.Shared.AvContent [UserRoles.General].Any (a => a.Id == ma.Id));
+			}
+
+
+			//DisplayContent?.Sort ((x, y) => y.Music.Timestamp.CompareTo (x.Music.Timestamp));
+			if (CRAdapter != null)
+			{
+				//CRAdapter.SetFilterResults (DisplayContent);
+				CRAdapter.SetItems (DisplayContent);
+				//CRAdapter = new ContentRecyclerAdapter (DisplayContent);
+				//RecyclerView.SwapAdapter (CRAdapter, false);
+
+				//CRAdapter.SetItems (DisplayContent);
+				Activity.RunOnUiThread (() => CRAdapter?.NotifyDataSetChanged ());
+			}
+		}
+
+
 
 		#region implemented abstract members of RecyclerViewFragment
 
 
 		protected override RecyclerViewAdapter<AvContent, ContentViewHolder> GetAdapter ()
 		{
-			var adapter = new ContentRecyclerAdapter (DisplayContent);
+			CRAdapter = new ContentRecyclerAdapter (DisplayContent);
 			//adapter.Filter = new PartnerFilter (adapter);
 
-			return adapter;
+			return CRAdapter;
 		}
+
 
 
 		protected override void OnItemClick (View view, AvContent item)
@@ -77,6 +120,8 @@ namespace Producer.Droid
 
 			//TransitionToActivity (detailIntent, partnerLogoImageView);
 		}
+
+
 
 
 		#endregion
