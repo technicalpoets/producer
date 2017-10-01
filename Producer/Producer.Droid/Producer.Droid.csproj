@@ -233,6 +233,8 @@
 		<Compile Include="Settings\SettingsActivity.cs" />
 		<Compile Include="Content\FavoritesRecyclerFragment.cs" />
 		<Compile Include="Content\ContentRecyclerFragmentBase.cs" />
+		<Compile Include="Framework\Widgets\FlipAnimator.cs" />
+		<Compile Include="Framework\Utilities\Extensions\ViewExtensions.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="Resources\AboutResources.txt" />
@@ -267,6 +269,18 @@
 		<AndroidResource Include="Resources\menu\menu_settings.xml" />
 		<AndroidResource Include="Resources\xml\preferences.xml" />
 		<AndroidResource Include="Resources\layout\Settings.axml" />
+		<AndroidResource Include="Resources\menu\menu_action_content.xml" />
+		<AndroidResource Include="Resources\drawable\ic_cloud_download.xml" />
+		<AndroidResource Include="Resources\drawable\ic_favorite_border.xml" />
+		<AndroidResource Include="Resources\drawable\ic_album.xml" />
+		<AndroidResource Include="Resources\values\Integer.xml" />
+		<AndroidResource Include="Resources\animator\flip_left_in.xml" />
+		<AndroidResource Include="Resources\animator\flip_left_out.xml" />
+		<AndroidResource Include="Resources\animator\flip_right_in.xml" />
+		<AndroidResource Include="Resources\animator\flip_right_out.xml" />
+		<AndroidResource Include="Resources\drawable\bg_list_row.xml" />
+		<AndroidResource Include="Resources\drawable\bg_circle.xml" />
+		<AndroidResource Include="Resources\drawable\ic_done.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
@@ -278,6 +292,7 @@
 		<Folder Include="Resources\menu\" />
 		<Folder Include="Resources\xml\" />
 		<Folder Include="View\Login\" />
+		<Folder Include="Resources\animator\" />
 	</ItemGroup>
 	<ItemGroup>
 		<GoogleServicesJson Include="google-services.json" />

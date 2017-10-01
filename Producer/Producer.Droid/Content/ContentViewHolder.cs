@@ -1,55 +1,88 @@
 ﻿using Android.Widget;
 using Android.Views;
-using System.Threading.Tasks;
 //using Com.Bumptech.Glide;
 using Android.Text.Style;
 using Producer.Domain;
+using Producer.Droid.Framework.Utilities.Extensions;
+using Producer.Droid.Framework.Widgets;
 
 namespace Producer.Droid
 {
 	public class ContentViewHolder : ViewHolder<MusicAsset>
 	{
-		ImageView image;
 		TextView title;
 		TextView artist;
+		RelativeLayout iconContainer, iconBack, iconFront;
 
-		static UpdatableForegroundColorSpan locationColorSpan;
-		static RelativeSizeSpan locationSizeSpan;
+		//static UpdatableForegroundColorSpan locationColorSpan;
+		//static RelativeSizeSpan locationSizeSpan;
 
 
 		public ContentViewHolder (View v) : base (v)
 		{
-			if (locationColorSpan == null)
-			{
-				locationColorSpan = new UpdatableForegroundColorSpan (ItemView.Context.GetColorFromResource (Resource.Color.elite_orange));
-			}
+			//if (locationColorSpan == null)
+			//{
+			//	locationColorSpan = new UpdatableForegroundColorSpan (ItemView.Context.GetColorFromResource (Resource.Color.elite_orange));
+			//}
 
-			if (locationSizeSpan == null)
-			{
-				locationSizeSpan = new RelativeSizeSpan (.8f);
-			}
+			//if (locationSizeSpan == null)
+			//{
+			//	locationSizeSpan = new RelativeSizeSpan (.8f);
+			//}
 		}
 
 
 		public override void FindViews (View rootView)
 		{
-			image = rootView.FindViewById<ImageView> (Resource.Id.contentTypeImage);
 			title = rootView.FindViewById<TextView> (Resource.Id.contentTitle);
 			artist = rootView.FindViewById<TextView> (Resource.Id.contentArtist);
+			iconContainer = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_container);
+			iconBack = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_back);
+			iconFront = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_front);
 		}
 
 
-		public override void SetData (MusicAsset data)
+		void ApplyIconAnimation (bool selected, bool animateSelection)
 		{
-			//image.SetImageDrawable (null);
+			if (animateSelection)
+			{
+				//we need to restore the initial state of the row, since this VH will have re-inflated the layout
+				setIconState (!selected);
+
+				FlipAnimator.FlipView (iconBack, iconFront, selected);
+			}
+			else
+			{
+				setIconState (selected);
+			}
+		}
+
+
+		void setIconState (bool selected)
+		{
+			if (selected)
+			{
+				iconFront.Alpha = 0;
+				iconBack.ResetYRotation ();
+				iconBack.Alpha = 1;
+			}
+			else
+			{
+				iconBack.Alpha = 0;
+				iconFront.ResetYRotation ();
+				iconFront.Alpha = 1;
+			}
+		}
+
+
+		public override void SetData (MusicAsset data, bool selected, bool animateSelection)
+		{
+			base.SetData (data, selected, animateSelection);
+
 			title.SetText (data.Music.DisplayName, TextView.BufferType.Normal);
 			artist.SetText (data.Music.Description, TextView.BufferType.Normal);
 
-
-			//var primaryLocation = data.GetPrimaryLocationName ();
-			//var locationDetails = data.GetLocationDetails ();
-
-			////location.Text = $"{primaryLocation} {locationDetails}";
+			ApplyIconAnimation (selected, animateSelection);
 
 			//location.TextFormatted =
 			//			new SimpleSpanBuilder ()

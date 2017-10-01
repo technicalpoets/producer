@@ -9,27 +9,24 @@ namespace Producer.Droid
 	public abstract class RecyclerViewAdapter<TData, TViewHolder> : RecyclerView.Adapter, IFilterable, IFilterableDataProvider<TData>
 		where TViewHolder : ViewHolder<TData>, IViewHolder<TData>
 	{
-		public event EventHandler<TData> ItemClick;
 		public event EventHandler ItemsFiltered;
+
+		Action<View, TData, int> ItemClick;
+		Action<View, TData, int> ItemLongClick;
+
+		bool LongClickEnabled => ItemLongClick != null;
+		bool clearingSelections;
 
 		List<TData> originalDataSet;
 
 		readonly List<TData> dataSet;
 
-
-		#region IFilterableDataProvider Members
-
-
-		public Filter Filter { get; set; }
+		// index is used to animate only the last selected/deselected row
+		int lastSelectionIndex = -1;
+		HashSet<int> selectedItemIndices = new HashSet<int> ();
 
 
-		public IList<TData> AllItems { get { return originalDataSet ?? dataSet; } }
-
-
-		public IList<TData> CurrentItems { get { return dataSet; } }
-
-
-		#endregion
+		public int SelectedItemCount => selectedItemIndices.Count;
 
 
 		// Initialize the dataset of the Adapter
@@ -41,7 +38,7 @@ namespace Producer.Droid
 
 		protected RecyclerViewAdapter (IEnumerable<TData> dataSet)
 		{
-			this.dataSet = new List<TData>(dataSet);
+			this.dataSet = new List<TData> (dataSet);
 		}
 
 
@@ -54,6 +51,11 @@ namespace Producer.Droid
 
 			holder.SetClickHandler (OnClick);
 
+			if (LongClickEnabled)
+			{
+				holder.SetLongClickHandler (OnLongClick);
+			}
+
 			return holder;
 		}
 
@@ -64,8 +66,26 @@ namespace Producer.Droid
 		// Replace the contents of a view (invoked by the layout manager)
 		public override void OnBindViewHolder (RecyclerView.ViewHolder holder, int position)
 		{
+			//want to see if a) this item is selected, and b) if this selection is 'new' and needs to be (optionally) animated
+			var selected = selectedItemIndices.Contains (position);
+			var animateSelection = lastSelectionIndex == position || clearingSelections && selected; //was it just selected or are we clearing all selections?
+
 			// Get element from your dataset at this position and replace the contents of the view with that element
-			holder.SetData (dataSet [position]);
+			holder.SetData (dataSet [position], selected && !clearingSelections, animateSelection);
+
+			//reset our selection tracking vars
+			if (animateSelection)
+			{
+				lastSelectionIndex = -1;
+
+				if (clearingSelections && selected)
+				{
+					selectedItemIndices.Remove (position);
+				}
+
+				//see if we're done clearing selections
+				clearingSelections &= selectedItemIndices.Count != 0;
+			}
 		}
 
 
@@ -76,10 +96,57 @@ namespace Producer.Droid
 		}
 
 
+		public void SetItemClickHandler (Action<View, TData, int> handler)
+		{
+			ItemClick = handler;
+		}
+
+
 		void OnClick (View view, int position)
 		{
-			ItemClick?.Invoke (view, dataSet [position]);
+			ItemClick?.Invoke (view, dataSet [position], position);
 		}
+
+
+		public void SetItemLongClickHandler (Action<View, TData, int> handler)
+		{
+			ItemLongClick = handler;
+		}
+
+
+		void OnLongClick (View view, int position)
+		{
+			ItemLongClick?.Invoke (view, dataSet [position], position);
+		}
+
+
+		public void ToggleSelection (int position)
+		{
+			lastSelectionIndex = position;
+
+			if (selectedItemIndices.Contains (position))
+			{
+				selectedItemIndices.Remove (position);
+			}
+			else
+			{
+				selectedItemIndices.Add (position);
+			}
+
+			NotifyItemChanged (position);
+		}
+
+
+		public void ClearSelectedItems ()
+		{
+			//not actually clearing anything here, just starting the clear operation here
+			//	then, when ViewHolders are rebinding above, each will be evaluated and removed if selected
+			clearingSelections = true;
+			NotifyDataSetChanged ();
+		}
+
+
+		#region Item Operations
 
 
 		/// <summary>
@@ -126,6 +193,21 @@ namespace Producer.Droid
 			dataSet.Insert (toPosition, item);
 			NotifyItemMoved (fromPosition, toPosition);
 		}
+
+
+		#endregion
+
+
+		#region IFilterableDataProvider Members & Helpers
+
+
+		public Filter Filter { get; set; }
+
+
+		public IList<TData> AllItems { get { return originalDataSet ?? dataSet; } }
+
+
+		public IList<TData> CurrentItems { get { return dataSet; } }
 
 
 		public void SetFilterResults (IList<TData> items)
@@ -194,5 +276,8 @@ namespace Producer.Droid
 				}
 			}
 		}
+
+
+		#endregion
 	}
 }

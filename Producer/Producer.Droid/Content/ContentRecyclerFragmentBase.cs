@@ -1,29 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Android.OS;
+using Android.Support.V7.App;
 using Android.Views;
 using Producer.Domain;
 using Producer.Droid.Providers;
 using Producer.Shared;
+using ActionMode = Android.Support.V7.View.ActionMode;
 
 namespace Producer.Droid
 {
-	public abstract class ContentRecyclerFragmentBase : RecyclerViewListFragment<MusicAsset, ContentViewHolder>
+	public abstract class ContentRecyclerFragmentBase : RecyclerViewListFragment<MusicAsset, ContentViewHolder>, ActionMode.ICallback
 	{
 		protected List<MusicAsset> Assets = new List<MusicAsset> ();
 
 		protected ContentRecyclerAdapter ContentAdapter;
 
-		protected static Task refreshTask;
+		/// <summary>
+		/// Shared Task used to synchronize data refresh
+		/// </summary>
+		protected static Task RefreshTask;
+
+		ActionMode actionMode;
 
 
 		public override void OnCreate (Bundle savedInstanceState)
 		{
 			ShowDividers = false;
+			EnableLongClick = true;
 
 			base.OnCreate (savedInstanceState);
-
-			loadContent ();
 
 			//AssetPersistenceManager.Shared.DidRestore += handlePersistanceManagerDidRestore;
 
@@ -53,10 +59,10 @@ namespace Producer.Droid
 		}
 
 
-		#region implemented abstract members of RecyclerViewFragment
+		#region implemented abstract/virtual members of RecyclerViewFragment
 
 
-		protected override RecyclerViewAdapter<MusicAsset, ContentViewHolder> GetAdapter ()
+		protected override RecyclerViewAdapter<MusicAsset, ContentViewHolder> CreateAdapter ()
 		{
 			ContentAdapter = new ContentRecyclerAdapter (Assets);
 			//adapter.Filter = new PartnerFilter (adapter);
@@ -65,7 +71,36 @@ namespace Producer.Droid
 		}
 
 
-		protected override void OnItemClick (View view, MusicAsset item)
+		protected override Task LoadData ()
+		{
+			//check if the shared RefreshTask has been set, since we're sharing data between fragments
+			if (RefreshTask == null)
+			{
+				//TODO: determine if we need to lock() or otherwise thread sync
+
+				RefreshTask = Task.Run (async () =>
+				{
+					await ContentClient.Shared.GetAllAvContent ();
+
+					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+				});
+			}
+
+			return RefreshTask;
+		}
+
+
+		protected override void OnDataLoaded ()
+		{
+			base.OnDataLoaded ();
+
+			UpdateContent ();
+
+			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
+		}
+
+
+		protected override void OnItemClick (View view, MusicAsset item, int position)
 		{
 			//var partner = item;//DisplayPartners [position];
 			//var partnerLogoImageView = view.FindViewById<AppCompatImageView> (Resource.Id.partner_logo);
@@ -76,54 +111,104 @@ namespace Producer.Droid
 			//detailIntent.PutIntentData (intentData);
 
 			//TransitionToActivity (detailIntent, partnerLogoImageView);
+
+			//TODO: play media
+		}
+
+
+		protected override void OnItemLongClick (View view, MusicAsset item, int position)
+		{
+			enableActionMode (position);
 		}
 
 
 		#endregion
 
 
-		void loadContent ()
-		{
-			//only start a content refresh if there isn't on running already
-			if (refreshTask == null || refreshTask.IsFaulted || refreshTask.IsCanceled)
-			{
-				Log.Debug ("Starting refreshTask");
-				refreshTask = refreshContent ();
-			}
-
-			if (refreshTask.IsCompleted)
-			{
-				Log.Debug ("refreshTask complete; updating adapter(s)");
-				onContentRefreshed ();
-			}
-			else //using Task continuation here rather than subscribing to AssetPersistenceManager.DidRestore
-			{
-				Log.Debug ("refreshTask in process, adding completion to update adapter(s)");
-				refreshTask.ContinueWith (t => onContentRefreshed ());
-			}
-		}
-
-
-		async Task refreshContent ()
-		{
-			await ContentClient.Shared.GetAllAvContent ();
-
-			await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
-		}
-
-
-		void onContentRefreshed ()
-		{
-			UpdateContent ();
-
-			ContentClient.Shared.AvContentChanged += handleAvContentChanged;
-		}
-
-
 		void handleAvContentChanged (object sender, UserRoles e) => UpdateContent ();
 
 
 		protected abstract void UpdateContent ();
+
+
+		void enableActionMode (int position)
+		{
+			if (actionMode == null)
+			{
+				actionMode = ((AppCompatActivity) Activity).StartSupportActionMode (this);
+			}
+
+			toggleSelection (position);
+		}
+
+
+		void toggleSelection (int position)
+		{
+			TypedAdapter.ToggleSelection (position);
+
+			int count = TypedAdapter.SelectedItemCount;
+
+			if (count == 0)
+			{
+				actionMode.Finish ();
+			}
+			else
+			{
+				actionMode.Title = $"{count} items";
+				actionMode.Invalidate ();
+			}
+		}
+
+
+		#region ActionMode.ICallback Members
+
+
+		public bool OnCreateActionMode (ActionMode mode, IMenu menu)
+		{
+			mode.MenuInflater.Inflate (Resource.Menu.menu_action_content, menu);
+
+			// disable swipe refresh if action mode is enabled
+			SwipeRefreshLayout.Enabled = false;
+
+			return true;
+		}
+
+
+		public bool OnPrepareActionMode (ActionMode mode, IMenu menu)
+		{
+			return false;
+		}
+
+
+		public bool OnActionItemClicked (ActionMode mode, IMenuItem item)
+		{
+			switch (item.ItemId)
+			{
+				case Resource.Id.action_download:
+					//download
+					mode.Finish ();
+					return true;
+
+				case Resource.Id.action_favorite:
+					//favorite
+					mode.Finish ();
+					return true;
+
+				default:
+					return false;
+			}
+		}
+
+
+		public void OnDestroyActionMode (ActionMode mode)
+		{
+			TypedAdapter.ClearSelectedItems ();
+			SwipeRefreshLayout.Enabled = true;
+			actionMode = null;
+		}
+
+
+		#endregion
 
 
 		#region PersistanceManager Handlers
