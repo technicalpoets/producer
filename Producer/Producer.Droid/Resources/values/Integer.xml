@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<integer
+		name="flip_time_full">500</integer>
+	<integer
+		name="flip_time_half">200</integer>
+</resources>

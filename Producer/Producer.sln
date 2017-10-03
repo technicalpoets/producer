@@ -148,12 +148,13 @@ Global
 		$7.inheritsSet = null
 		$7.scope = application/vnd.apple-xcode-storyboard
 		$0.TextStylePolicy = $8
-		$8.TabWidth = 2
-		$8.TabsToSpaces = True
-		$8.IndentWidth = 2
 		$8.scope = application/xml
+		$8.FileWidth = 140
 		$0.XmlFormattingPolicy = $9
 		$9.scope = application/xml
+		$9.DefaultFormat = $12
+		$12.AttributesInNewLine = True
+		$12.AlignAttributes = True
 		$0.TextStylePolicy = $10
 		$10.inheritsSet = null
 		$10.scope = application/config+xml

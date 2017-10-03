@@ -4,8 +4,12 @@ using System;
 
 namespace Producer.Droid
 {
-	public abstract class ViewHolder<TData> : RecyclerView.ViewHolder, IViewHolder<TData>
+	public abstract class ViewHolder<TData> : RecyclerView.ViewHolder, IViewHolder<TData>, View.IOnClickListener, View.IOnLongClickListener
 	{
+		Action<View, int> clickHandler;
+		Action<View, int> longClickHandler;
+
+
 		protected ViewHolder (View itemView) : base (itemView)
 		{
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
@@ -16,36 +20,51 @@ namespace Producer.Droid
 
 		public void SetClickHandler (Action<View, int> handler)
 		{
-			ItemView.Click += (sender, e) => handler ((View) sender, AdapterPosition);
+			ItemView.SetOnClickListener (this);
+
+			clickHandler = handler;
+		}
+
+
+		public void SetLongClickHandler (Action<View, int> handler)
+		{
+			ItemView.SetOnLongClickListener (this);
+
+			longClickHandler = handler;
+		}
+
+
+		public virtual void OnClick (View view)
+		{
+			clickHandler (view, AdapterPosition);
+		}
+
+
+		public bool OnLongClick (View view)
+		{
+			longClickHandler (view, AdapterPosition);
+
+			view.PerformHapticFeedback (FeedbackConstants.LongPress);
+
+			return true;
 		}
 
 
 		public abstract void FindViews (View rootView);
 
 
-		public abstract void SetData (TData data);
+		//base behavior is to change the row state to activated if it's selected
+		public virtual void SetData (TData data, bool selected, bool animateSelection) => ItemView.Activated = selected;
 	}
 
 
 	public static class ViewHolder
 	{
-		//		public static THolder Create<THolder, TData>(View rootView)
-		//			where THolder : ViewHolder<TData>, IViewHolder<TData>, new()
-		//		{
-		//			var holder = new THolder ();
-		//			holder.ItemView = rootView;
-		//			holder.FindViews (rootView);
-		//
-		//			return holder;
-		//		}
-
-		public static void SetData<TData> (this RecyclerView.ViewHolder holder, TData data)
+		public static void SetData<TData> (this RecyclerView.ViewHolder holder, TData data, bool selected, bool animateSelection = false)
 		{
-			var viewHolder = holder as ViewHolder<TData>;
-
-			if (viewHolder != null)
+			if (holder is ViewHolder<TData> viewHolder)
 			{
-				viewHolder.SetData (data);
+				viewHolder.SetData (data, selected, animateSelection);
 			}
 		}
 	}

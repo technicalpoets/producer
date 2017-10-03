@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contentCell"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="80dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:background="@drawable/bg_list_row">
+    <RelativeLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <RelativeLayout
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+            <ImageView
+                android:layout_width="@dimen/icon_width_height"
+                android:layout_height="@dimen/icon_width_height"
+                android:src="@drawable/bg_circle" />
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_done" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/icon_front"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+            <ImageView
+                android:id="@+id/icon_content"
+                android:layout_width="@dimen/icon_padded_width_height"
+                android:layout_height="@dimen/icon_padded_width_height"
+                android:src="@drawable/ic_album" />
+        </RelativeLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/icon_container"
+        android:layout_centerVertical="true"
+        android:paddingStart="14dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contentTitle"
+            android:layout_marginBottom="5dp"
+            android:textSize="22sp"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contentArtist"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

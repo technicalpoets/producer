@@ -1,22 +1,35 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Android.Views;
 using Producer.Domain;
 
 namespace Producer.Droid
 {
-	public class ContentRecyclerAdapter : RecyclerViewAdapter<AvContent, ContentViewHolder>//, FastScrollRecyclerView.ISectionedAdapter
+	public class ContentRecyclerAdapter : RecyclerViewAdapter<MusicAsset, ContentViewHolder>//, FastScrollRecyclerView.ISectionedAdapter
 	{
-		public ContentRecyclerAdapter (IList<AvContent> dataSet) : base (dataSet)
+		Action<View, MusicAsset, int> ItemIconClick;
+
+		public ContentRecyclerAdapter (IList<MusicAsset> dataSet) : base (dataSet)
 		{
 		}
 
 
 		protected override ContentViewHolder CreateViewHolder (LayoutInflater inflater, ViewGroup parent)
 		{
-			//var rootView = inflater.Inflate (Resource.Layout.PartnerCardView, parent, false);
+			var rootView = inflater.Inflate (Resource.Layout.ContentCell, parent, false);
 
-			return new ContentViewHolder (new View (parent.Context));
+			var viewHolder = new ContentViewHolder (rootView);
+
+			viewHolder.SetIconClickHandler (OnIconClick);
+
+			return viewHolder;
 		}
+
+
+		public void SetIconClickHandler (Action<View, MusicAsset, int> handler) => ItemIconClick = handler;
+
+
+		void OnIconClick (View view, int position) => ItemIconClick?.Invoke (view, GetItem (position), position);
 
 
 		//#region FastScrollRecyclerView.ISectionedAdapter Members

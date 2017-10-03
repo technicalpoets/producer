@@ -1,54 +1,60 @@
 ﻿using Android.Widget;
 using Android.Views;
-using System.Threading.Tasks;
 //using Com.Bumptech.Glide;
 using Android.Text.Style;
 using Producer.Domain;
+using Producer.Droid.Framework.Utilities.Extensions;
+using Producer.Droid.Framework.Widgets;
+using System;
 
 namespace Producer.Droid
 {
-	public class ContentViewHolder : ViewHolder<AvContent>
+	public class ContentViewHolder : ViewHolder<MusicAsset>
 	{
-		ImageView logo;
-		TextView name;
-		TextView location;
+		TextView title;
+		TextView artist;
+		RelativeLayout iconContainer, iconBack, iconFront;
 
-		static UpdatableForegroundColorSpan locationColorSpan;
-		static RelativeSizeSpan locationSizeSpan;
+		//static UpdatableForegroundColorSpan locationColorSpan;
+		//static RelativeSizeSpan locationSizeSpan;
+
+		Action<View, int> iconClickHandler;
 
 
 		public ContentViewHolder (View v) : base (v)
 		{
-			if (locationColorSpan == null)
-			{
-				locationColorSpan = new UpdatableForegroundColorSpan (ItemView.Context.GetColorFromResource (Resource.Color.elite_orange));
-			}
+			//if (locationColorSpan == null)
+			//{
+			//	locationColorSpan = new UpdatableForegroundColorSpan (ItemView.Context.GetColorFromResource (Resource.Color.elite_orange));
+			//}
 
-			if (locationSizeSpan == null)
-			{
-				locationSizeSpan = new RelativeSizeSpan (.8f);
-			}
+			//if (locationSizeSpan == null)
+			//{
+			//	locationSizeSpan = new RelativeSizeSpan (.8f);
+			//}
 		}
 
 
 		public override void FindViews (View rootView)
 		{
-			//logo = (ImageView) rootView.FindViewById (Resource.Id.partner_logo);
-			//name = (TextView) rootView.FindViewById (Resource.Id.partner_name);
-			//location = (TextView) rootView.FindViewById (Resource.Id.partner_location);
+			title = rootView.FindViewById<TextView> (Resource.Id.contentTitle);
+			artist = rootView.FindViewById<TextView> (Resource.Id.contentArtist);
+			iconContainer = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_container);
+			iconBack = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_back);
+			iconFront = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_front);
+
+			iconContainer.SetOnClickListener (this);
 		}
 
 
-		public override void SetData (AvContent data)
+		public override void SetData (MusicAsset data, bool selected, bool animateSelection)
 		{
-			//logo.SetImageDrawable (null);
-			name.SetText (data.Name, TextView.BufferType.Normal);
+			base.SetData (data, selected, animateSelection);
 
+			title.SetText (data.Music.DisplayName, TextView.BufferType.Normal);
+			artist.SetText (data.Music.Description, TextView.BufferType.Normal);
 
-			//var primaryLocation = data.GetPrimaryLocationName ();
-			//var locationDetails = data.GetLocationDetails ();
-
-			////location.Text = $"{primaryLocation} {locationDetails}";
+			ApplyIconAnimation (selected, animateSelection);
 
 			//location.TextFormatted =
 			//			new SimpleSpanBuilder ()
@@ -91,6 +97,53 @@ namespace Producer.Droid
 			//{
 			//	logo.SetImageDrawable (null);
 			//}
+		}
+
+
+		public void SetIconClickHandler (Action<View, int> handler)
+		{
+			iconClickHandler = handler;
+		}
+
+
+		void ApplyIconAnimation (bool selected, bool animateSelection)
+		{
+			if (animateSelection)
+			{
+				//we need to restore the initial state of the row, since this VH will have re-inflated the layout
+				setIconState (!selected);
+
+				FlipAnimator.FlipView (iconBack, iconFront, selected);
+			}
+			else
+			{
+				setIconState (selected);
+			}
+		}
+
+
+		void setIconState (bool selected)
+		{
+			var firstView = selected ? iconFront : iconBack;
+			var secondView = selected ? iconBack : iconFront;
+
+			firstView.Alpha = 0;
+			secondView.ResetYRotation ();
+			secondView.Alpha = 1;
+		}
+
+
+		public override void OnClick (View view)
+		{
+			//if the click was on our icon, then handle selection via click handler
+			if (view == iconContainer)
+			{
+				iconClickHandler (iconContainer, AdapterPosition);
+				return;
+			}
+
+			//call thru to base to handle row click
+			base.OnClick (view);
 		}
 	}
 }

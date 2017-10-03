@@ -7,7 +7,7 @@ namespace Producer.Droid
 	{
 		void FindViews (View rootView);
 
-		void SetData (TData data);
+		void SetData (TData data, bool selected, bool animateSelection);
 
 		void SetClickHandler (Action<View, int> handler);
 	}

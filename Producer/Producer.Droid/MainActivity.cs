@@ -22,6 +22,7 @@ namespace Producer.Droid
 		static IMenu _menu;
 
 
+
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
 			base.OnCreate (savedInstanceState);
@@ -39,6 +40,7 @@ namespace Producer.Droid
 			//final Drawable upArrow = getResources ().getDrawable (R.drawable.abc_ic_ab_back_mtrl_am_alpha);
 			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
 			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
+
 			setupViewPager ();
 
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
@@ -49,6 +51,7 @@ namespace Producer.Droid
 		protected override void OnResume ()
 		{
 			base.OnResume ();
+
 			checkCompose ();
 		}
 
@@ -60,6 +63,7 @@ namespace Producer.Droid
 				ClientAuthManager.Shared.AuthorizationChanged -= handleClientAuthChanged;
 				ProducerClient.Shared.CurrentUserChanged -= handleCurrentUserChanged;
 			}
+
 			base.Dispose (disposing);
 		}
 
@@ -67,6 +71,7 @@ namespace Producer.Droid
 		void handleClientAuthChanged (object sender, ClientAuthDetails e)
 		{
 			Log.Debug ($"Authenticated: {e}");
+
 			Task.Run (async () =>
 			{
 				if (e == null)
@@ -105,7 +110,7 @@ namespace Producer.Droid
 		}
 
 
-		public override bool OnOptionsItemSelected (Android.Views.IMenuItem item)
+		public override bool OnOptionsItemSelected (IMenuItem item)
 		{
 			switch (item.ItemId)
 			{
@@ -115,7 +120,6 @@ namespace Producer.Droid
 				case Resource.Id.action_compose:
 					return true;
 				case Android.Resource.Id.Home:
-					//Finish ();
 					profileButtonClicked ();
 					return true;
 			}
@@ -127,6 +131,7 @@ namespace Producer.Droid
 		public override bool OnPrepareOptionsMenu (IMenu menu)
 		{
 			checkCompose ();
+
 			return base.OnPrepareOptionsMenu (menu);
 		}
 
@@ -136,6 +141,7 @@ namespace Producer.Droid
 			_menu = menu;
 			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
 			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
+
 			return base.OnCreateOptionsMenu (menu);
 		}
 
@@ -144,8 +150,7 @@ namespace Producer.Droid
 		{
 			PagerAdapter = new TabFragmentPagerAdapter (this, SupportFragmentManager);
 			PagerAdapter.AddFragment (new ContentRecyclerFragment ());
-			PagerAdapter.AddFragment (new ContentRecyclerFragment ());
-			//PagerAdapter.AddFragment (new ResourcesFragment ());
+			PagerAdapter.AddFragment (new FavoritesRecyclerFragment ());
 
 			var viewPager = FindViewById<ViewPager> (Resource.Id.main_viewPager);
 			viewPager.Adapter = PagerAdapter;
@@ -192,7 +197,5 @@ namespace Producer.Droid
 				}
 			});
 		}
-
-
 	}
 }
