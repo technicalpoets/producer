@@ -1,8 +1,48 @@
+iOS: [![Build status][ios-build]][mobile-center]   
+Android: [![Build status][droid-build]][mobile-center]   
+
+[![Deploy to Azure][azure-deploy-button]][azure-deploy]
+
 # Producer
+ 
+Producer is a mobile content management system that allows audio and video artist to create and share content with fans.
 
-iOS: [![Build status](https://build.mobile.azure.com/v0.1/apps/507c64e8-f770-454e-b82e-88f53592d117/branches/master/badge)](https://mobile.azure.com)    
-Android: [![Build status](https://build.mobile.azure.com/v0.1/apps/8721f631-cf9b-4cc3-8d66-0d6ec10166bd/branches/master/badge)](https://mobile.azure.com)
-   
 
-[![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://azuredeploy.net/)
+// Screenshots
 
+
+
+# Getting Started
+
+## iOS Provisioning & Certificates
+
+### iOS Provisioning Profile
+
+### Apple Push Notificaiton Certificates
+
+
+## Firebase
+
+### Google Auth
+
+### Firebase Cloud Messaging
+
+
+## Azure
+
+### Authentication
+
+### Azure Notificaiton Hubs
+
+
+## Visual Studio Mobile Center
+
+
+
+
+[ios-build]:https://build.mobile.azure.com/v0.1/apps/507c64e8-f770-454e-b82e-88f53592d117/branches/master/badge
+[droid-build]:https://build.mobile.azure.com/v0.1/apps/8721f631-cf9b-4cc3-8d66-0d6ec10166bd/branches/master/badge
+[mobile-center]:https://mobile.azure.com
+
+[azure-deploy]:https://azuredeploy.net
+[azure-deploy-button]:https://azuredeploy.net/deploybutton.svg
