@@ -8,7 +8,7 @@ Android: [![Build status][droid-build]][mobile-center]
 Producer is a mobile content management system that allows audio and video artist to create and share content with fans.
 
 #### iOS
-![ios-login](/images/Screenshot%202017-10-03%2009.43.44.png?raw=true "ios-login") | ![ios-content](/images/Screenshot%202017-10-03%2009.42.47.png?raw=true "ios-content")
+![ios-login](https://github.com/technicalpoets/producer/raw/master/images/Screenshot%202017-10-03%2009.43.44.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/master/images/Screenshot%202017-10-03%2009.42.47.png "ios-content")
 :-------------------------:|:-------------------------:
 
 #### Android
