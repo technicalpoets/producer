@@ -93,6 +93,35 @@ namespace Producer.Shared
 		ProducerClient () { }
 
 
+		public async Task<AppSettings> GetAppSettings ()
+		{
+			try
+			{
+				NetworkIndicator.ToggleVisibility (true);
+
+				var response = await HttpClient.GetAsync (Routes.GetAppSettings);
+
+				var stringContent = await response.Content.ReadAsStringAsync ();
+
+				if (!response.IsSuccessStatusCode || string.IsNullOrEmpty (stringContent))
+				{
+					throw new Exception ($"Error getting app settings from server");
+				}
+
+				return JsonConvert.DeserializeObject<AppSettings> (stringContent);
+			}
+			catch (Exception ex)
+			{
+				Log.Error (ex);
+				throw;
+			}
+			finally
+			{
+				NetworkIndicator.ToggleVisibility (false);
+			}
+		}
+
+
 		public Task Publish<T> (T content, UserRoles? publishTo)
 			where T : Content => Publish (content, null, null, publishTo);
 

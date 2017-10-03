@@ -28,5 +28,7 @@
 		public const string PublishContent = "api/publish";
 
 		public const string UpdateAvContent = "";
+
+		public const string GetAppSettings = "api/settings";
 	}
 }
