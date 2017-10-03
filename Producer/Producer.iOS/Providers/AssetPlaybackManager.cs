@@ -38,9 +38,11 @@ namespace Producer.iOS
 
 
 		AVPlayerItem _playerItem;
-		AVPlayerItem PlayerItem {
+		AVPlayerItem PlayerItem
+		{
 			get { return _playerItem; }
-			set {
+			set
+			{
 				_playerItem?.RemoveObserver (this, AVPlayerItem_Status, observerContext);
 
 				_playerItem = value;
@@ -53,9 +55,11 @@ namespace Producer.iOS
 		public MusicAsset CurrentAsset => Asset;
 
 		MusicAsset _asset;
-		MusicAsset Asset {
+		MusicAsset Asset
+		{
 			get { return _asset; }
-			set {
+			set
+			{
 				_asset?.UrlAsset?.RemoveObserver (this, AVUrlAsset_Playable, observerContext);
 
 				_asset = value;
@@ -146,7 +150,7 @@ namespace Producer.iOS
 
 			if (keyPath == AVUrlAsset_Playable)
 			{
-				Log.Debug ($"ObserveValue: {keyPath} | {Asset?.UrlAsset?.Playable}");
+				Log.Debug ($"{keyPath} | {Asset?.UrlAsset?.Playable}");
 
 				if ((Asset?.UrlAsset?.Cache?.IsPlayableOffline ?? false) || (Asset?.UrlAsset?.Playable ?? false))
 				{
@@ -198,13 +202,13 @@ namespace Producer.iOS
 			}
 			else if (keyPath == AVPlayer_CurrentItem)
 			{
-				Log.Debug ($"ObserveValue: {keyPath} | ");
+				Log.Debug ($"{keyPath}");
 
 				CurrentItemChanged?.Invoke (this, Player);
 			}
 			else
 			{
-				Log.Debug ($"ObserveValue: {keyPath} | ");
+				Log.Debug ($"{keyPath}");
 
 				base.ObserveValue (keyPath, ofObject, change, context);
 			}
@@ -230,7 +234,7 @@ namespace Producer.iOS
 
 		void handlePeriodicTimeObserver (CMTime obj)
 		{
-			Log.Debug ($"handlePeriodicTimeObserver: {obj}");
+			Log.Debug ($"{obj}");
 
 			//MPNowPlayingInfoCenter.DefaultCenter.NowPlaying.PlaybackProgress = obj.Value;
 		}

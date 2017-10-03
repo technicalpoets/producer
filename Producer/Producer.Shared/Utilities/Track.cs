@@ -12,15 +12,34 @@ namespace Producer
 	public static class Track
 	{
 
-		public static void Download (AvContent content)
-		{
-			System.Diagnostics.Debug.WriteLine ($"Track Download: {content.Name}");
-		}
+		public static void Play (AvContent content) => avContentEvent ("Plays", content);
 
 
-		public static void Play (AvContent content)
+		public static void Download (AvContent content) => avContentEvent ("Downloads", content, false);
+
+
+		public static void Favorite (AvContent content) => avContentEvent ("Favorites", content);
+
+
+		static void avContentEvent (string eventName, AvContent content, bool includeDownloaded = true)
 		{
-			System.Diagnostics.Debug.WriteLine ($"Track Play: {content.Name}");
+			if (content != null)
+			{
+				var props = new Dictionary<string, string>
+				{
+					{ "Name", content.Name },
+					{ "Display Name", content.DisplayName },
+					{ "Media Type", content.ContentType.ToString() },
+					{ "Published To", content.PublishedTo.ToString() }
+				};
+
+				if (includeDownloaded)
+				{
+					props.Add ("Downloaded", content.HasLocalAssetUri ? "True" : "False");
+				}
+
+				Event (eventName, props);
+			}
 		}
 
 
@@ -32,9 +51,10 @@ namespace Producer
 			{
 				Task.Run (async () =>
 				{
-					var enabled = await Analytics.IsEnabledAsync ();
-
-					Analytics.TrackEvent (name, properties);
+					if (await Analytics.IsEnabledAsync ())
+					{
+						Analytics.TrackEvent (name, properties);
+					}
 				});
 			}
 			else
@@ -56,7 +76,7 @@ namespace Producer
 		{
 			if (!onlyVerbose || verboseLogging)
 			{
-				System.Diagnostics.Debug.WriteLine ($"[Analytics] {message}");
+				System.Diagnostics.Debug.WriteLine ($"[Track] {message}");
 			}
 		}
 
