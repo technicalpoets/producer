@@ -34,7 +34,7 @@ namespace Producer.Droid
 		}
 
 
-		public void OnClick (View view)
+		public virtual void OnClick (View view)
 		{
 			clickHandler (view, AdapterPosition);
 		}
@@ -53,7 +53,7 @@ namespace Producer.Droid
 		public abstract void FindViews (View rootView);
 
 
-		// change the row state to activated
+		//base behavior is to change the row state to activated if it's selected
 		public virtual void SetData (TData data, bool selected, bool animateSelection) => ItemView.Activated = selected;
 	}
 

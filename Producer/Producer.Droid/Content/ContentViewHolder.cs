@@ -5,6 +5,7 @@ using Android.Text.Style;
 using Producer.Domain;
 using Producer.Droid.Framework.Utilities.Extensions;
 using Producer.Droid.Framework.Widgets;
+using System;
 
 namespace Producer.Droid
 {
@@ -16,6 +17,8 @@ namespace Producer.Droid
 
 		//static UpdatableForegroundColorSpan locationColorSpan;
 		//static RelativeSizeSpan locationSizeSpan;
+
+		Action<View, int> iconClickHandler;
 
 
 		public ContentViewHolder (View v) : base (v)
@@ -39,39 +42,8 @@ namespace Producer.Droid
 			iconContainer = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_container);
 			iconBack = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_back);
 			iconFront = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_front);
-		}
 
-
-		void ApplyIconAnimation (bool selected, bool animateSelection)
-		{
-			if (animateSelection)
-			{
-				//we need to restore the initial state of the row, since this VH will have re-inflated the layout
-				setIconState (!selected);
-
-				FlipAnimator.FlipView (iconBack, iconFront, selected);
-			}
-			else
-			{
-				setIconState (selected);
-			}
-		}
-
-
-		void setIconState (bool selected)
-		{
-			if (selected)
-			{
-				iconFront.Alpha = 0;
-				iconBack.ResetYRotation ();
-				iconBack.Alpha = 1;
-			}
-			else
-			{
-				iconBack.Alpha = 0;
-				iconFront.ResetYRotation ();
-				iconFront.Alpha = 1;
-			}
+			iconContainer.SetOnClickListener (this);
 		}
 
 
@@ -125,6 +97,53 @@ namespace Producer.Droid
 			//{
 			//	logo.SetImageDrawable (null);
 			//}
+		}
+
+
+		public void SetIconClickHandler (Action<View, int> handler)
+		{
+			iconClickHandler = handler;
+		}
+
+
+		void ApplyIconAnimation (bool selected, bool animateSelection)
+		{
+			if (animateSelection)
+			{
+				//we need to restore the initial state of the row, since this VH will have re-inflated the layout
+				setIconState (!selected);
+
+				FlipAnimator.FlipView (iconBack, iconFront, selected);
+			}
+			else
+			{
+				setIconState (selected);
+			}
+		}
+
+
+		void setIconState (bool selected)
+		{
+			var firstView = selected ? iconFront : iconBack;
+			var secondView = selected ? iconBack : iconFront;
+
+			firstView.Alpha = 0;
+			secondView.ResetYRotation ();
+			secondView.Alpha = 1;
+		}
+
+
+		public override void OnClick (View view)
+		{
+			//if the click was on our icon, then handle selection via click handler
+			if (view == iconContainer)
+			{
+				iconClickHandler (iconContainer, AdapterPosition);
+				return;
+			}
+
+			//call thru to base to handle row click
+			base.OnClick (view);
 		}
 	}
 }

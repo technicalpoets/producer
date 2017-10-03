@@ -26,7 +26,7 @@ namespace Producer.Droid
 
 		public override void OnCreate (Bundle savedInstanceState)
 		{
-			ShowDividers = false;
+			//ShowDividers = false;
 			EnableLongClick = true;
 
 			base.OnCreate (savedInstanceState);
@@ -100,6 +100,16 @@ namespace Producer.Droid
 		}
 
 
+		protected override void AttachEvents ()
+		{
+			//call base to attach basic click handler(s), etc.
+			base.AttachEvents ();
+
+			//then add our icon click
+			ContentAdapter.SetIconClickHandler (OnItemIconClick);
+		}
+
+
 		protected override void OnItemClick (View view, MusicAsset item, int position)
 		{
 			//var partner = item;//DisplayPartners [position];
@@ -117,6 +127,12 @@ namespace Producer.Droid
 
 
 		protected override void OnItemLongClick (View view, MusicAsset item, int position)
+		{
+			enableActionMode (position);
+		}
+
+
+		protected void OnItemIconClick (View view, MusicAsset item, int position)
 		{
 			enableActionMode (position);
 		}
@@ -186,11 +202,13 @@ namespace Producer.Droid
 			{
 				case Resource.Id.action_download:
 					//download
+					//TODO: download
 					mode.Finish ();
 					return true;
 
 				case Resource.Id.action_favorite:
 					//favorite
+					//TODO: favorite
 					mode.Finish ();
 					return true;
 

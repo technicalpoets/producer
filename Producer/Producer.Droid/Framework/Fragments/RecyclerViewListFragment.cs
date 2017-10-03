@@ -72,6 +72,31 @@ namespace Producer.Droid
 		{
 			base.OnStart ();
 
+			AttachEvents ();
+		}
+
+
+		public override void OnStop ()
+		{
+			DetachEvents ();
+
+			base.OnStop ();
+		}
+
+
+		public override void OnDestroy ()
+		{
+			DetachEvents ();
+
+			base.OnDestroy ();
+		}
+
+
+		#endregion
+
+
+		protected virtual void AttachEvents ()
+		{
 			TypedAdapter.ItemsFiltered += Adapter_ItemsFiltered;
 
 			TypedAdapter.SetItemClickHandler (OnItemClick);
@@ -83,26 +108,7 @@ namespace Producer.Droid
 		}
 
 
-		public override void OnStop ()
-		{
-			detachEvents ();
-
-			base.OnStop ();
-		}
-
-
-		public override void OnDestroy ()
-		{
-			detachEvents ();
-
-			base.OnDestroy ();
-		}
-
-
-		#endregion
-
-
-		void detachEvents ()
+		void DetachEvents ()
 		{
 			if (Adapter != null)
 			{

@@ -149,6 +149,18 @@ namespace Producer.Droid
 		#region Item Operations
 
 
+		protected TData GetItem (int position)
+		{
+			return dataSet [position];
+		}
+
+
+		protected bool ItemExists (TData item)
+		{
+			return dataSet.Contains (item);
+		}
+
+
 		/// <summary>
 		/// Sets the items - use for situations where list is loaded async and isn't populated when the constructor is called.
 		/// </summary>
@@ -164,9 +176,10 @@ namespace Producer.Droid
 
 		public TData RemoveItem (int position)
 		{
-			var item = dataSet [position];
+			var item = GetItem (position);
 			dataSet.RemoveAt (position);
 			NotifyItemRemoved (position);
+
 			return item;
 		}
 
@@ -188,7 +201,7 @@ namespace Producer.Droid
 
 		public void MoveItem (int fromPosition, int toPosition)
 		{
-			var item = dataSet [fromPosition];
+			var item = GetItem (fromPosition);
 			dataSet.RemoveAt (fromPosition);
 			dataSet.Insert (toPosition, item);
 			NotifyItemMoved (fromPosition, toPosition);
@@ -239,7 +252,7 @@ namespace Producer.Droid
 		{
 			for (int i = dataSet.Count - 1; i >= 0; i--)
 			{
-				var item = dataSet [i];
+				var item = GetItem (i);
 
 				if (!newItems.Contains (item))
 				{
@@ -255,7 +268,7 @@ namespace Producer.Droid
 			{
 				var item = newItems [i];
 
-				if (!dataSet.Contains (item))
+				if (!ItemExists (item))
 				{
 					AddItem (i, item);
 				}
