@@ -47,7 +47,7 @@ After that, you'll need to navigate to the Notification Hub in Azure and upload 
 
 ## Azure
 
-Once you're Azure services are configured you should be able to see on your subscription the following resources:
+Once your Azure services are configured you should be able to see on your subscription the following resources:
 
 - Website
 - DocumentDB
@@ -55,9 +55,9 @@ Once you're Azure services are configured you should be able to see on your subs
 - Microsoft.Storage
 - Microsoft.NotificationHubs
 
-All resources should be grouped by the Resource group, e.g. Producer.
+All resources should be grouped by the Resource group you chose, e.g. "Producer."
 
-It's time to open Producer App and configure the settings properly.
+It's time to open Producer App and configure the settings properly.  If you've not previously configured settings, the app should prompt you to open the Settings app and input the Producer settings:
 
 ![ios-login](https://github.com/technicalpoets/producer/raw/docs-1/images/ios-dialog-settings-producer.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/docs-1/images/ios-configure-settings-producer.png?raw=true "ios-content")
 :-------------------------:|:-------------------------:
