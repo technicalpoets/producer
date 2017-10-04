@@ -90,9 +90,15 @@ Once we get the URI, then configure it in our mobile app settings in in AZURE DO
 
 ### **Notification Hub**
 
+In your Azure subscription you should be able to see a Notification Hub resource under our resource group.
+
+Select the Notification Hub resource and press Overview setting to get the name and the endpoint of the service.
+
+Once we get the name and the endpoint, then configure it in our mobile app settings in in AZURE NOTIFICATION HUB setting.
+
 ### **Authentication**
 
-
+TODO...
 
 
 
