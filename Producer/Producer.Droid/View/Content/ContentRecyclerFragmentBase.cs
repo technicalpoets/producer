@@ -41,24 +41,6 @@ namespace Producer.Droid
 		}
 
 
-		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-		{
-			var view = base.OnCreateView (inflater, container, savedInstanceState);
-
-			//color our scrollbar & popup according to the Tier
-			//if (RecyclerView is FastScrollRecyclerView)
-			//{
-			//var color = Tier.GetColor (Activity);
-			//var recycler = (FastScrollRecyclerView)RecyclerView;
-			//recycler.SetThumbActiveColor (color);
-			//recycler.SetTrackInactiveColor (color);
-			//recycler.SetPopupBackgroundColor (color);
-			//}
-
-			return view;
-		}
-
-
 		#region implemented abstract/virtual members of RecyclerViewFragment
 
 
@@ -183,7 +165,7 @@ namespace Producer.Droid
 		{
 			mode.MenuInflater.Inflate (Resource.Menu.menu_action_content, menu);
 
-			// disable swipe refresh if action mode is enabled
+			//disable pull to refresh if action mode is enabled
 			SwipeRefreshLayout.Enabled = false;
 
 			return true;
