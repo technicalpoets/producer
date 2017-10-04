@@ -222,19 +222,19 @@
 		<Compile Include="Framework\Utilities\Extensions\StringExtensions.cs" />
 		<Compile Include="Framework\Utilities\Extensions\TextViewExtensions.cs" />
 		<Compile Include="Framework\Utilities\Extensions\ToolbarExtensions.cs" />
-		<Compile Include="Content\ContentRecyclerFragment.cs" />
-		<Compile Include="Content\ContentViewHolder.cs" />
-		<Compile Include="Content\ContentRecyclerAdapter.cs" />
 		<Compile Include="Providers\AssetPersistenceManager.cs" />
 		<Compile Include="Providers\MusicAsset.cs" />
 		<Compile Include="Providers\AssetPlaybackManager.cs" />
 		<Compile Include="Settings\SettingsFragment.cs" />
 		<Compile Include="View\Login\LoginActivity.cs" />
 		<Compile Include="Settings\SettingsActivity.cs" />
-		<Compile Include="Content\FavoritesRecyclerFragment.cs" />
-		<Compile Include="Content\ContentRecyclerFragmentBase.cs" />
 		<Compile Include="Framework\Widgets\FlipAnimator.cs" />
 		<Compile Include="Framework\Utilities\Extensions\ViewExtensions.cs" />
+		<Compile Include="View\Content\ContentRecyclerAdapter.cs" />
+		<Compile Include="View\Content\ContentRecyclerFragment.cs" />
+		<Compile Include="View\Content\ContentRecyclerFragmentBase.cs" />
+		<Compile Include="View\Content\ContentViewHolder.cs" />
+		<Compile Include="View\Content\FavoritesRecyclerFragment.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="Resources\AboutResources.txt" />
@@ -285,7 +285,6 @@
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
 		<Folder Include="Resources\color\" />
-		<Folder Include="Content\" />
 		<Folder Include="Providers\" />
 		<Folder Include="View\" />
 		<Folder Include="View\User\" />
@@ -293,6 +292,7 @@
 		<Folder Include="Resources\xml\" />
 		<Folder Include="View\Login\" />
 		<Folder Include="Resources\animator\" />
+		<Folder Include="View\Content\" />
 	</ItemGroup>
 	<ItemGroup>
 		<GoogleServicesJson Include="google-services.json" />
