@@ -8,7 +8,7 @@ Android: [![Build status][droid-build]][mobile-center]
 Producer is a mobile content management system that allows audio and video artist to create and share content with fans.
 
 #### iOS
-![ios-login](https://github.com/technicalpoets/producer/raw/master/images/Screenshot%202017-10-03%2009.43.44.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/master/images/Screenshot%202017-10-03%2009.42.47.png "ios-content")
+![ios-login](https://github.com/technicalpoets/producer/raw/docs-1/images/ios-login.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/docs-1/images/ios-content-list.png "ios-content")
 :-------------------------:|:-------------------------:
 
 #### Android
@@ -46,6 +46,7 @@ After that, you'll need to navigate to the Notification Hub in Azure and upload 
 
 
 ## Azure
+
 Once you're Azure services are configured you should be able to see on your subscription the following resources:
 
 - Website
@@ -58,7 +59,7 @@ All resources should be grouped by the Resource group, e.g. Producer.
 
 It's time to open Producer App and configure the settings properly.
 
-![ios-login](https://github.com/technicalpoets/producer/raw/docs-1/images/app-dialog-settings-producer.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/docs-1/images/app-configure-settings-producer.png?raw=true "ios-content")
+![ios-login](https://github.com/technicalpoets/producer/raw/docs-1/images/ios-dialog-settings-producer.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/docs-1/images/ios-configure-settings-producer.png?raw=true "ios-content")
 :-------------------------:|:-------------------------:
 
 ### **Mobile Center**
