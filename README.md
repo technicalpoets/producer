@@ -46,13 +46,54 @@ After that, you'll need to navigate to the Notification Hub in Azure and upload 
 
 
 ## Azure
+Once you're Azure services are configured you should be able to see on your subscription the following resources:
 
-### Authentication
+- Website
+- DocumentDB
+- Microsoft.Media
+- Microsoft.Storage
+- Microsoft.NotificationHubs
 
-### Azure Notification Hubs
+All resources should be grouped by the Resource group, e.g. Producer.
+
+It's time to open Producer App and configure the settings properly.
+
+![ios-login](https://github.com/technicalpoets/producer/raw/docs-1/images/app-dialog-settings-producer.png?raw=true "ios-login") | ![ios-content](https://github.com/technicalpoets/producer/raw/docs-1/images/app-configure-settings-producer.png?raw=true "ios-content")
+:-------------------------:|:-------------------------:
+
+### **Mobile Center**
+
+Mobile Center application key is required to enable the crash and analytics features, to configure Mobile Center is necessary go to: mobile.azure.com and sign up with any of the following credentials:
+
+- GitHub
+- Microsoft Account
+- Facebook
+- Google
+- Mobile Center Account
+
+For more information about how to [create an App on Mobile Center][create-an-app-on-mobile-center].
+
+Once the iOS project has been created on Mobile Center, need to go to the project settings and get the App Secret Key, then configure it in our mobile app settings in MOBILE CENTER APP SECRET setting.
+
+### **Functions**
+
+TODO..
+
+### **DocumentDB** (Cosmos DB)
+
+In your Azure subscription you should be able to see a Cosmos DB resource under our resource group.
+
+Select the Cosmos DB resource and press Keys settings to get the service URI.
+
+Once we get the URI, then configure it in our mobile app settings in in AZURE DOCUMENTDB URL setting.
+
+### **Notification Hub**
+
+### **Authentication**
 
 
-## Visual Studio Mobile Center
+
+
 
 
 
@@ -68,3 +109,5 @@ After that, you'll need to navigate to the Notification Hub in Azure and upload 
 [ios-push-cert]:https://docs.microsoft.com/en-us/azure/notification-hubs/notification-hubs-ios-apple-push-notification-apns-get-started#register-your-app-for-push-notifications
 [ios-push-cert-provisioning]:https://docs.microsoft.com/en-us/azure/notification-hubs/notification-hubs-ios-apple-push-notification-apns-get-started#create-a-provisioning-profile-for-the-app
 [ios-push-cert-upload]:https://docs.microsoft.com/en-us/azure/notification-hubs/xamarin-notification-hubs-ios-push-notification-apns-get-started#configure-your-notification-hub
+
+[create-an-app-on-mobile-center]:https://docs.microsoft.com/en-us/mobile-center/sdk/getting-started/xamarin
