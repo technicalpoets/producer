@@ -109,6 +109,20 @@
                     }
                 },
                 {
+                    "type": "config",
+                    "name": "authsettings",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                    ],
+                    "properties": {
+                        "enabled": true,
+                        "unauthenticatedClientAction": 1,
+                        "tokenStoreEnabled": true,
+                        "defaultProvider": 2,
+                    }
+                },
+                {
                     "type": "sourcecontrols",
                     "name": "web",
                     "apiVersion": "2015-08-01",
