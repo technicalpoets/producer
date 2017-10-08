@@ -81,7 +81,7 @@
                         "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
-                        "WEBSITE_CONTENTSHARE": "[concat(toLower(parameters('siteName')), 'a644')]",
+                        "WEBSITE_CONTENTSHARE": "[concat(variables('siteNameLower'), 'a644')]",
                         "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
                         "FUNCTIONS_EXTENSION_VERSION": "~1",
                         "PROJECT": "Producer/Producer.Functions",
