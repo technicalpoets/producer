@@ -6,6 +6,7 @@ namespace Producer.iOS
 {
 	public class BaseNc : UINavigationController
 	{
+
 		public BaseNc (IntPtr handle) : base (handle) { }
 
 

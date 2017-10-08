@@ -24,17 +24,6 @@ namespace Producer.iOS
 		}
 
 
-		//public override void ViewDidAppear (bool animated)
-		//{
-		//	base.ViewDidAppear (animated);
-
-		//	if (!Settings.EndpointConfigured)
-		//	{
-		//		this.ShowSettingsAlert ();
-		//	}
-		//}
-
-
 		void AuthorizationRequestHandler (bool authorized, NSError error)
 		{
 			if (authorized)

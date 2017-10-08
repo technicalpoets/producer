@@ -220,10 +220,30 @@ namespace Producer.iOS
 				else
 				{
 					Settings.AzureSiteName = text;
+
+					Task.Run (async () =>
+					{
+						if (await ProducerClient.Shared.UpdateAppSettings ())
+						{
+							InitializeContent ();
+						}
+					});
 				}
 			}));
 
-			Window.RootViewController.PresentViewController (alertController, true, null);
+			if (Window.RootViewController is UINavigationController root)
+			{
+				if (root.TopViewController is UIAlertController alert)
+				{
+
+				}
+				else
+				{
+					root.PresentViewController (alertController, true, null);
+				}
+			}
+
+			//Window.RootViewController.PresentViewController (alertController, true, null);
 
 			//var root = Window.RootViewController;
 

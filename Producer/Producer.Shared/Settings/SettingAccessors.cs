@@ -152,12 +152,10 @@ namespace Producer
 		public static bool SetSettingsConfig (AppSettings settings)
 		{
 			var valid = !string.IsNullOrEmpty (settings?.DocumentDbUrl?.Host) &&
-						!string.IsNullOrEmpty (settings?.MobileCenterKey) &&
 						!string.IsNullOrEmpty (settings?.NotificationsName) &&
 						!string.IsNullOrEmpty (settings?.NotificationsConnectionString);
 
 			DocumentDbUrl = settings?.DocumentDbUrl;
-			MobileCenterKey = settings?.MobileCenterKey;
 			NotificationsName = settings?.NotificationsName;
 			NotificationsConnectionString = settings?.NotificationsConnectionString;
 
