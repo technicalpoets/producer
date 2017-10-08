@@ -16,7 +16,7 @@
         }
     },
     "variables": {
-        "siteNameLower": "[toLower(parameters('siteName')]",
+        "siteNameLower": "[toLower(parameters('siteName'))]",
         "documentDbName": "[concat(variables('siteNameLower'), 'documentdb')]",
         "mediaServiceName": "[concat(variables('siteNameLower'), 'media')]",
         "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
