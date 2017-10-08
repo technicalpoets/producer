@@ -1,6 +1,7 @@
 ﻿using System;
 using Foundation;
 using UIKit;
+using System.Linq;
 
 namespace Producer.iOS
 {
@@ -53,7 +54,7 @@ namespace Producer.iOS
 		}
 
 
-		public static void ShowSettinsAlert (this UIViewController viewController, string alertTitle = "Configure App", string alertMessage = "You must add your Azure information to Settings before using the app.")
+		public static void ShowSettingsAlert (this UIViewController viewController, string alertTitle = "Configure App", string alertMessage = "You must add your Azure information to Settings before using the app.")
 		{
 			var alertController = UIAlertController.Create (alertTitle, alertMessage, UIAlertControllerStyle.Alert);
 

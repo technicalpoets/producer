@@ -16,11 +16,12 @@
         }
     },
     "variables": {
-        "documentDbName": "[concat('documentdb', uniqueString(resourceGroup().id))]",
-        "mediaServiceName": "[concat('media', uniqueString(resourceGroup().id))]",
-        "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
-        "namespaceName": "[concat('namespace', uniqueString(resourceGroup().id))]",
-        "notificationHubName": "[concat('hub', uniqueString(resourceGroup().id))]",
+        "siteNameLower": "[toLower(parameters('siteName')]",
+        "documentDbName": "[concat(variables('siteNameLower'), 'documentdb')]",
+        "mediaServiceName": "[concat(variables('siteNameLower'), 'media')]",
+        "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
+        "namespaceName": "[concat(variables('siteNameLower'), 'namespace')]",
+        "notificationHubName": "[concat(variables('siteNameLower'), 'hub')]",
         "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]",
     },
     "resources": [

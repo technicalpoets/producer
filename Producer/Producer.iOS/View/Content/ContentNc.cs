@@ -20,27 +20,25 @@ namespace Producer.iOS
 		{
 			base.ViewDidLoad ();
 
-			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
+			ClientAuthManager.Shared.AuthorizationChanged += HandleClientAuthChanged;
 		}
 
 
-		public override void ViewDidAppear (bool animated)
-		{
-			base.ViewDidAppear (animated);
+		//public override void ViewDidAppear (bool animated)
+		//{
+		//	base.ViewDidAppear (animated);
 
-			if (!Settings.HasUrls)
-			{
-				this.ShowSettinsAlert ();
-			}
-		}
+		//	if (!Settings.EndpointConfigured)
+		//	{
+		//		this.ShowSettingsAlert ();
+		//	}
+		//}
 
 
-		void authorizationRequestHandler (bool authorized, NSError error)
+		void AuthorizationRequestHandler (bool authorized, NSError error)
 		{
 			if (authorized)
 			{
-				Log.Debug ($"RegisterForRemoteNotifications");
-
 				BeginInvokeOnMainThread (() => UIApplication.SharedApplication.RegisterForRemoteNotifications ());
 			}
 			else
@@ -50,17 +48,17 @@ namespace Producer.iOS
 		}
 
 
-		void handleClientAuthChanged (object s, ClientAuthDetails e)
+		void HandleClientAuthChanged (object sender, ClientAuthDetails authDetails)
 		{
 			Task.Run (async () =>
 			{
-				if (e == null)
+				if (authDetails == null)
 				{
 					ProducerClient.Shared.ResetUser ();
 				}
 				else
 				{
-					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
+					await ProducerClient.Shared.AuthenticateUser (authDetails.Token, authDetails.AuthCode);
 				}
 
 				await ContentClient.Shared.GetAllAvContent ();

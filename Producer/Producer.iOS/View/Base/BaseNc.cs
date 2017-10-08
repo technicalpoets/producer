@@ -24,6 +24,5 @@ namespace Producer.iOS
 		{
 			this.UpdateStatusBarView (traitCollection);
 		}
-
 	}
 }
