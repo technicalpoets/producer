@@ -39,6 +39,7 @@
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
+                "name": "[parameters('siteName')]",
             },
             "sku": {
                 "name": "Y1",
@@ -56,8 +57,8 @@
             "location": "[resourceGroup().location]",
             "properties": {
                 "name": "[parameters('siteName')]",
-                "clientAffinityEnabled": false,
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
+                "clientAffinityEnabled": false
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('siteName'))]",
@@ -77,12 +78,66 @@
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
                     ]
                 },
+
+                {
+                    "type": "config",
+                    "name": "connectionstrings",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]"
+
+                    ],
+                    "properties": {
+                        "MS_NotificationHubConnectionString": {
+                            "value": "[listKeys(resourceId('Microsoft.NotificationHubs/namespaces/notificationHubs/authorizationRules', variables('namespaceName'), variables('notificationHubName'), 'DefaultFullSharedAccessSignature'), providers('Microsoft.NotificationHubs', 'namespaces/notificationHubs').apiVersions[0]).primaryConnectionString]",
+                            "type": "custom"
+                        },
+                        "MS_AzureStorageAccountConnectionString": {
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]",
+                            "type": "custom"
+                        }
+                    }
+                },
+
+                {
+                    "type": "providers/links",
+                    "name": "Microsoft.Resources/SiteToHub",
+                    "apiVersion": "2015-01-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
+                    ],
+                    "properties": {
+                        "targetId": "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]"
+                    }
+                },
+
+                {
+                    "type": "config",
+                    "name": "authsettings",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                    ],
+                    "properties": {
+                        "enabled": true,
+                        "unauthenticatedClientAction": 1,
+                        "tokenStoreEnabled": true,
+                        "defaultProvider": 2
+                    }
+                },
+
                 {
                     "type": "config",
                     "name": "appsettings",
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                        "[resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName'))]"
                     ],
                     "properties": {
                         "PROJECT": "Producer/Producer.Functions",
@@ -108,32 +163,7 @@
                         "EmbeddedSocialKey": ""
                     }
                 },
-                {
-                    "type": "config",
-                    "name": "authsettings",
-                    "apiVersion": "2015-08-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
-                    ],
-                    "properties": {
-                        "enabled": true,
-                        "unauthenticatedClientAction": 1,
-                        "tokenStoreEnabled": true,
-                        "defaultProvider": 2,
-                    }
-                },
-                {
-                    "type": "providers/links",
-                    "name": "Microsoft.Resources/SiteToHub",
-                    "apiVersion": "2015-01-01",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
-                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
-                    ],
-                    "properties": {
-                        "targetId": "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]"
-                    }
-                },
+
                 {
                     "type": "sourcecontrols",
                     "name": "web",
@@ -141,7 +171,8 @@
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
                         "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'web')]",
-                        "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]"
+                        "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'appsettings')]",
+                        "[resourceId('Microsoft.Web/Sites/config', parameters('siteName'), 'connectionstrings')]"
                     ],
                     "properties": {
                         "repoUrl": "[parameters('repoURL')]",
@@ -151,6 +182,7 @@
                 }
             ]
         },
+
         {
             "type": "Microsoft.DocumentDb/databaseAccounts",
             "kind": "GlobalDocumentDB",
@@ -177,12 +209,14 @@
             },
             "dependsOn": []
         },
+
         {
             "type": "Microsoft.Media/mediaservices",
             "name": "[variables('mediaServiceName')]",
             "apiVersion": "2015-10-01",
             "location": "[resourceGroup().location]",
             "properties": {
+                "name": "[variables('mediaServiceName')]",
                 "storageAccounts": [
                     {
                         "isPrimary": true,
@@ -194,28 +228,33 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ]
         },
+
         {
             "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2017-06-01",
+            "kind": "Storage",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_GRS",
                 "tier": "Standard"
             },
-            "kind": "Storage",
-            "name": "[variables('storageAccountName')]",
-            "apiVersion": "2017-06-01",
-            "location": "[resourceGroup().location]",
-            "properties": {},
+            "properties": {
+                "name": "[variables('storageAccountName')]"
+            },
             "dependsOn": []
         },
+
         {
             "type": "Microsoft.NotificationHubs/namespaces",
-            "sku": {
-                "name": "Free"
-            },
             "name": "[variables('namespaceName')]",
             "apiVersion": "2017-04-01",
             "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Free"
+            },
             "properties": {
+                "name": "[variables('namespaceName')]",
                 "namespaceType": "NotificationHub"
             },
             "resources": [
@@ -225,6 +264,7 @@
                     "apiVersion": "2017-04-01",
                     "location": "[resourceGroup().location]",
                     "properties": {
+                        "name": "[variables('notificationHubName')]",
                         "authorizationRules": []
                     },
                     "dependsOn": [
