@@ -51,7 +51,7 @@
                 "capacity": 0
             }
         },
-        
+
         {
             "type": "Microsoft.Web/Sites",
             "kind": "functionapp",
@@ -70,17 +70,6 @@
                 "[resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName'))]"
             ],
             "resources": [
-                {
-                    "type": "config",
-                    "name": "web",
-                    "apiVersion": "2016-08-01",
-                    "properties": {
-                        "siteAuthEnabled": true
-                    },
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
-                    ]
-                },
 
                 {
                     "type": "config",
@@ -110,10 +99,23 @@
                     "apiVersion": "2015-01-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
-                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]"
                     ],
                     "properties": {
                         "targetId": "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]"
+                    }
+                },
+
+                {
+                    "type": "config",
+                    "name": "pushsettings",
+                    "apiVersion": "2015-08-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
+                    ],
+                    "properties": {
+                        "isPushEnabled": true
                     }
                 },
 
