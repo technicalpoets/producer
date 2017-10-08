@@ -14,10 +14,11 @@
         "branch": {
             "type": "string"
         },
-        "adminEmails": {
+        "producerEmails": {
             "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "Google account email addresses for the app admins."
+                "description": "Google account email addresses for the instances producers."
             }
         }
     },
@@ -102,8 +103,8 @@
                         "AzureMediaServicesKey": "[listKeys(resourceId('Microsoft.Media/mediaservices', variables('mediaServiceName')), providers('Microsoft.Media', 'mediaservices').apiVersions[0]).primaryKey]",
                         "RemoteDocumentDbKey": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', variables('documentDbName')), '2015-04-08').primaryMasterKey]",
                         "RemoteDocumentDbUrl": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('documentDbName'))).documentEndpoint]",
-                        "AppAdminEmails": "[parameters('adminEmails')]",
-                        "AppProducerEmails": "",
+                        "AppAdminEmails": "",
+                        "AppProducerEmails": "[parameters('producerEmails')]",
                         "EmbeddedSocialKey": ""
                     }
                 },
