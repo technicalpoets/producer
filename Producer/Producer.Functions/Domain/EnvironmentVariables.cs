@@ -20,6 +20,8 @@ namespace Producer.Functions
 
 		public static readonly string NotificationHubName = Environment.GetEnvironmentVariable (AzureWebJobsNotificationHubName);
 
+		public static readonly string NotificationHubConnectionString = Environment.GetEnvironmentVariable (AzureWebJobsNotificationHubsConnectionString);
+
 		public static readonly string [] Admins = Environment.GetEnvironmentVariable (AppAdminEmails).ToLower ().Trim (';').Split (';');
 
 		public static readonly string [] Producers = Environment.GetEnvironmentVariable (AppProducerEmails).ToLower ().Trim (';').Split (';');

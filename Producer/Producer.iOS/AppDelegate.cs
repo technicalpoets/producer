@@ -122,7 +122,7 @@ namespace Producer.iOS
 			{
 				if (err != null)
 				{
-					Log.Debug ($"Error: {err.Description}");
+					Log.Error ($"{err.Description}");
 				}
 				else
 				{
@@ -199,9 +199,72 @@ namespace Producer.iOS
 		}
 
 
+		public void ShowConfigAlert (string alertTitle = "Configure App", string alertMessage = "Enter the \"Site Name\" used when deploying the to Azure:")
+		{
+			var alertController = UIAlertController.Create (alertTitle, alertMessage, UIAlertControllerStyle.Alert);
+
+			alertController.AddTextField (textField =>
+			{
+				textField.Placeholder = "Site Name";
+				textField.ReturnKeyType = UIReturnKeyType.Done;
+			});
+
+			alertController.AddAction (UIAlertAction.Create ("Done", UIAlertActionStyle.Default, obj =>
+			{
+				var text = alertController.TextFields?.FirstOrDefault ()?.Text;
+
+				if (string.IsNullOrEmpty (text))
+				{
+					ShowConfigAlert ();
+				}
+				else
+				{
+					Settings.AzureSiteName = text;
+
+					Task.Run (async () =>
+					{
+						if (await ProducerClient.Shared.UpdateAppSettings ())
+						{
+							InitializeContent ();
+						}
+					});
+				}
+			}));
+
+			if (Window.RootViewController is UINavigationController root)
+			{
+				if (root.TopViewController is UIAlertController alert)
+				{
+
+				}
+				else
+				{
+					root.PresentViewController (alertController, true, null);
+				}
+			}
+
+			//Window.RootViewController.PresentViewController (alertController, true, null);
+
+			//var root = Window.RootViewController;
+
+			//if (root is UINavigationController container)
+			//{
+			//	container.TopViewController.PresentViewController (alertController, true, null);
+			//}
+			//else
+			//{
+			//	root.PresentViewController (alertController, true, null);
+			//}
+		}
+
+
 		void InitializeContent ()
 		{
-			if (Settings.HasUrls && !ContentClient.Shared.Initialized)
+			if (!Settings.EndpointConfigured)
+			{
+				ShowConfigAlert ();
+			}
+			else if (!ContentClient.Shared.Initialized)
 			{
 				Task.Run (async () =>
 				{

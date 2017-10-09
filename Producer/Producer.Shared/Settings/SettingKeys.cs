@@ -16,6 +16,8 @@ namespace Producer
 
 		public const string GitCommitHash = nameof (GitCommitHash);
 
+		public const string AzureSiteName = nameof (AzureSiteName);
+
 		public const string RemoteFunctionsUrl = nameof (RemoteFunctionsUrl);
 
 		public const string RemoteDocumentDbUrl = nameof (RemoteDocumentDbUrl);

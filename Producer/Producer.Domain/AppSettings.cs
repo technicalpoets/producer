@@ -6,8 +6,6 @@ namespace Producer
 	{
 		public Uri DocumentDbUrl { get; set; }
 
-		public string MobileCenterKey { get; set; }
-
 		public string NotificationsName { get; set; }
 
 		public string NotificationsConnectionString { get; set; }

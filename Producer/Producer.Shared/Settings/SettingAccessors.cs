@@ -38,9 +38,31 @@ namespace Producer
 		public static string GitHash => StringForKey (SettingsKeys.GitCommitHash);
 
 
+		public static string AzureSiteName
+		{
+			get => StringForKey (SettingsKeys.AzureSiteName);
+			set => SetSetting (SettingsKeys.AzureSiteName, value ?? string.Empty);
+		}
+
+
+		public static bool HasAzureSiteName => !string.IsNullOrEmpty (AzureSiteName);
+
+
 		public static string RemoteFunctionsUrl
 		{
-			get => StringForKey (SettingsKeys.RemoteFunctionsUrl);
+			get
+			{
+				var url = StringForKey (SettingsKeys.RemoteFunctionsUrl);
+
+				if (string.IsNullOrEmpty (url) && HasAzureSiteName)
+				{
+					url = $"{AzureSiteName}.azurewebsites.net";
+
+					SetSetting (SettingsKeys.RemoteFunctionsUrl, url);
+				}
+
+				return url;
+			}
 			set => SetSetting (SettingsKeys.RemoteFunctionsUrl, value ?? string.Empty);
 		}
 
@@ -85,10 +107,11 @@ namespace Producer
 
 				return _documentDbUrl;
 			}
+			set => RemoteDocumentDbUrl = value?.Host;
 		}
 
 
-		public static bool HasUrls => DocumentDbUrl != null && FunctionsUrl != null;
+		public static bool EndpointConfigured => HasAzureSiteName && DocumentDbUrl != null && FunctionsUrl != null;
 
 
 		public static string NotificationsName
@@ -123,6 +146,20 @@ namespace Producer
 		{
 			get => StringForKey (SettingsKeys.UserReferenceKey);
 			set => SetSetting (SettingsKeys.UserReferenceKey, value ?? "anonymous");
+		}
+
+
+		public static bool SetSettingsConfig (AppSettings settings)
+		{
+			var valid = !string.IsNullOrEmpty (settings?.DocumentDbUrl?.Host) &&
+						!string.IsNullOrEmpty (settings?.NotificationsName) &&
+						!string.IsNullOrEmpty (settings?.NotificationsConnectionString);
+
+			DocumentDbUrl = settings?.DocumentDbUrl;
+			NotificationsName = settings?.NotificationsName;
+			NotificationsConnectionString = settings?.NotificationsConnectionString;
+
+			return valid;
 		}
 
 

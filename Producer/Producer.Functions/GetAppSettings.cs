@@ -11,10 +11,9 @@ namespace Producer.Functions
 {
 	public static class GetAppSettings
 	{
-		static Uri DocumentDbUri = EnvironmentVariables.DocumentDbUri;
-		static string MobileCenterKey = "";// EnvironmentVariables.MobileCenterKey;
-		static string NotificationsName = EnvironmentVariables.NotificationHubName;
-		static string NotificationsConnectionString = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString;
+		static readonly Uri DocumentDbUrl = EnvironmentVariables.DocumentDbUri;
+		static readonly string NotificationsName = EnvironmentVariables.NotificationHubName;
+		static readonly string NotificationsConnectionString = EnvironmentVariables.NotificationHubConnectionString;
 
 
 		[FunctionName (nameof (GetAppSettings))]
@@ -25,8 +24,7 @@ namespace Producer.Functions
 			{
 				return req.CreateResponse (HttpStatusCode.OK, new AppSettings
 				{
-					DocumentDbUrl = DocumentDbUri,
-					MobileCenterKey = MobileCenterKey,
+					DocumentDbUrl = DocumentDbUrl,
 					NotificationsName = NotificationsName,
 					NotificationsConnectionString = NotificationsConnectionString
 				});

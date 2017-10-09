@@ -97,6 +97,11 @@ namespace Producer.Shared
 		{
 			try
 			{
+				if (!Settings.HasAzureSiteName)
+				{
+					throw new InvalidOperationException ("`Settings.AzureAppName` must have a value before getting or updating app settings");
+				}
+
 				NetworkIndicator.ToggleVisibility (true);
 
 				var response = await HttpClient.GetAsync (Routes.GetAppSettings);
@@ -120,6 +125,9 @@ namespace Producer.Shared
 				NetworkIndicator.ToggleVisibility (false);
 			}
 		}
+
+
+		public async Task<bool> UpdateAppSettings () => Settings.SetSettingsConfig (await GetAppSettings ());
 
 
 		public Task Publish<T> (T content, UserRoles? publishTo)
