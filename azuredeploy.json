@@ -23,28 +23,24 @@
         },
         "firebaseAuthClientId": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "Google account email addresses for the instances producers."
             }
         },
         "firebaseAuthClientSecret": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "Google account email addresses for the instances producers."
             }
         },
         "firebaseNotificationsServerKey": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "API key is used to authenticate with Google Cloud Messaging."
             }
         },
         "firebaseNotificationsSenderId": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "Google account email addresses for the instances producers."
             }
