@@ -94,17 +94,55 @@ namespace Producer.Droid
 
 		protected override void OnItemClick (View view, MusicAsset item, int position)
 		{
-			//var partner = item;//DisplayPartners [position];
-			//var partnerLogoImageView = view.FindViewById<AppCompatImageView> (Resource.Id.partner_logo);
-
-			//var detailIntent = new Intent (Context, typeof (PartnerDetailActivity));
-			////var intentData = IntentData.Partner.Create (partner.Id, partner.Name, partner.PartnerTier);
-			//var intentData = IntentData.Create (partner.Id, partner.Name, partner.PartnerTier);
-			//detailIntent.PutIntentData (intentData);
-
-			//TransitionToActivity (detailIntent, partnerLogoImageView);
-
 			//TODO: play media
+			if (ContentClient.Shared.Initialized)// || AssetPersistenceManager.Shared.DownloadState (asset) == MusicAssetDownloadState.Downloaded)
+			{
+				if (item.Music.ContentType == AvContentTypes.Video)
+				{
+					//playerViewController = new AVPlayerViewController ();
+
+					//PresentViewController (playerViewController, true, null);
+				}
+
+				// we're already on the main tread, this prevents hanging while playback starts
+				Activity.RunOnUiThread (() =>
+				{
+					//var playing = AssetPlaybackManager.Shared.TogglePlayback (item);
+
+					//if (playing && indexPathCache != indexPath) Track.Play (item.Music);
+
+					//if (indexPathCache != null && indexPathCache != indexPath && tableView.IndexPathsForVisibleRows.Contains (indexPathCache)
+					//	&& tableView.CellAt (indexPathCache) is ContentMusicTvCell oldCell)
+					//{
+					//	oldCell.SetPlaying (false);
+					//}
+
+					//indexPathCache = indexPath;
+
+					//if (item.Music.ContentType == AvContentTypes.Audio)
+					//{
+					//	if (NavigationController.ToolbarHidden)
+					//	{
+					//		NavigationController.SetToolbarHidden (false, true);
+					//	}
+
+					//	cell.SetPlaying (playing);
+
+					//	var items = ToolbarItems;
+
+					//	items [0] = playing ? pauseButton : playButton;
+
+					//	//items [2].Title = asset.Music.DisplayName;
+					//	titleButton.Title = asset.Music.DisplayName;
+
+					//	SetToolbarItems (items, true);
+					//}
+					//else if (!NavigationController.ToolbarHidden)
+					//{
+					//	NavigationController.SetToolbarHidden (true, false);
+					//}
+				});
+			}
 		}
 
 
