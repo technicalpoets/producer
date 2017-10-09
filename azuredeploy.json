@@ -47,14 +47,12 @@
         },
         "applePushNotificationsCertificate": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "A certificate (in base 64 format) provided by Apple on the iOS Provisioning Portal"
             }
         },
         "applePushNotificationsCertificateKey": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "The Certificate Key provided by the iOS Provisioning Portal when registering the application"
             }
