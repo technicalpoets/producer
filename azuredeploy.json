@@ -30,7 +30,7 @@
         "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
         "namespaceName": "[concat(variables('siteNameLower'), 'namespace')]",
         "notificationHubName": "[concat(variables('siteNameLower'), 'hub')]",
-        "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]",
+        "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]"
     },
 
     "resources": [
@@ -41,7 +41,7 @@
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "name": "[parameters('siteName')]",
+                "name": "[parameters('siteName')]"
             },
             "sku": {
                 "name": "Y1",
@@ -95,7 +95,7 @@
 
                 {
                     "type": "providers/links",
-                    "name": "Microsoft.Resources/SiteToHub",
+                    "name": "[concat(variables('siteName'), '/Microsoft.Resources/SiteToHub')]",
                     "apiVersion": "2015-01-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
@@ -112,7 +112,7 @@
                     "apiVersion": "2015-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
-                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]",
+                        "[resourceId('Microsoft.NotificationHubs/namespaces/NotificationHubs', variables('namespaceName'), variables('notificationHubName'))]"
                     ],
                     "properties": {
                         "isPushEnabled": true
@@ -194,6 +194,7 @@
             "name": "[variables('documentDbName')]",
             "apiVersion": "2015-04-08",
             "location": "[resourceGroup().location]",
+            "scale": null,
             "tags": {
                 "defaultExperience": "DocumentDB"
             },
@@ -213,24 +214,6 @@
                 ]
             },
             "dependsOn": []
-        },
-
-        {
-            "type": "Microsoft.Media/mediaservices",
-            "name": "[variables('mediaServiceName')]",
-            "apiVersion": "2015-10-01",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "storageAccounts": [
-                    {
-                        "isPrimary": true,
-                        "id": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-                    }
-                ]
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-            ]
         },
 
         {
@@ -254,6 +237,8 @@
             "name": "[variables('namespaceName')]",
             "apiVersion": "2017-04-01",
             "location": "[resourceGroup().location]",
+            "tags": {},
+            "scale": null,
             "sku": {
                 "name": "Free"
             },
@@ -267,6 +252,7 @@
                     "name": "[variables('notificationHubName')]",
                     "apiVersion": "2017-04-01",
                     "location": "[resourceGroup().location]",
+                    "scale": null,
                     "properties": {
                         "name": "[variables('notificationHubName')]",
                         "authorizationRules": []
@@ -276,8 +262,28 @@
                     ]
                 }
             ]
+        },
+
+        {
+            "type": "Microsoft.Media/mediaservices",
+            "name": "[variables('mediaServiceName')]",
+            "apiVersion": "2015-10-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "storageAccounts": [
+                    {
+                        "isPrimary": true,
+                        "id": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ]
         }
     ],
+
     "outputs": {
         "FunctionsUrl": {
             "type": "string",
