@@ -79,22 +79,21 @@ namespace Producer.Droid
 		}
 
 
-		void handleClientAuthChanged (object sender, ClientAuthDetails e)
+		void handleClientAuthChanged (object sender, ClientAuthDetails authDetails)
 		{
-			Log.Debug ($"Authenticated: {e}");
+			Log.Debug ($"Authenticated: {authDetails}");
 
 			Task.Run (async () =>
 			{
-				if (e == null)
+				if (authDetails == null)
 				{
 					ProducerClient.Shared.ResetUser ();
 				}
 				else
 				{
-					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
+					await ProducerClient.Shared.AuthenticateUser (authDetails.Token, authDetails.AuthCode);
 				}
 
-				//todo Activity.RunOnUiThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}
