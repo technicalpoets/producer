@@ -20,6 +20,42 @@
             "metadata": {
                 "description": "Google account email addresses for the instances producers."
             }
+        },
+        "firebaseAuthClientId": {
+            "type": "string",
+            "metadata": {
+                "description": "Google account email addresses for the instances producers."
+            }
+        },
+        "firebaseAuthClientSecret": {
+            "type": "string",
+            "metadata": {
+                "description": "Google account email addresses for the instances producers."
+            }
+        },
+        "firebaseNotificationsServerKey": {
+            "type": "string",
+            "metadata": {
+                "description": "API key is used to authenticate with Google Cloud Messaging."
+            }
+        },
+        "firebaseNotificationsSenderId": {
+            "type": "string",
+            "metadata": {
+                "description": "Google account email addresses for the instances producers."
+            }
+        },
+        "applePushNotificationsCertificate": {
+            "type": "string",
+            "metadata": {
+                "description": "A certificate (in base 64 format) provided by Apple on the iOS Provisioning Portal"
+            }
+        },
+        "applePushNotificationsCertificateKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The Certificate Key provided by the iOS Provisioning Portal when registering the application"
+            }
         }
     },
 
@@ -30,7 +66,8 @@
         "storageAccountName": "[concat(variables('siteNameLower'), 'storage')]",
         "namespaceName": "[concat(variables('siteNameLower'), 'namespace')]",
         "notificationHubName": "[concat(variables('siteNameLower'), 'hub')]",
-        "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]"
+        "functionAppUrl": "[concat(parameters('siteName'),'.azurewebsites.net')]",
+        "versions.hubs": "[providers('Microsoft.NotificationHubs', 'namespaces').apiVersions[0]]"
     },
 
     "resources": [
@@ -122,7 +159,7 @@
                 {
                     "type": "config",
                     "name": "authsettings",
-                    "apiVersion": "2015-08-01",
+                    "apiVersion": "2016-08-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
                     ],
@@ -130,7 +167,9 @@
                         "enabled": true,
                         "unauthenticatedClientAction": 1,
                         "tokenStoreEnabled": true,
-                        "defaultProvider": 2
+                        "defaultProvider": 2,
+                        "googleClientId": "[parameters('firebaseAuthClientId')]",
+                        "googleClientSecret": "[parameters('firebaseAuthClientSecret')]"
                     }
                 },
 
@@ -235,7 +274,7 @@
         {
             "type": "Microsoft.NotificationHubs/namespaces",
             "name": "[variables('namespaceName')]",
-            "apiVersion": "2017-04-01",
+            "apiVersion": "[variables('versions.hubs')]",
             "location": "[resourceGroup().location]",
             "tags": {},
             "scale": null,
@@ -250,12 +289,25 @@
                 {
                     "type": "notificationHubs",
                     "name": "[variables('notificationHubName')]",
-                    "apiVersion": "2017-04-01",
+                    "apiVersion": "[variables('versions.hubs')]",
                     "location": "[resourceGroup().location]",
                     "scale": null,
                     "properties": {
                         "name": "[variables('notificationHubName')]",
-                        "authorizationRules": []
+                        "authorizationRules": [],
+                        "gcmCredential": {
+                            "properties": {
+                                "googleApiKey": "[parameters('firebaseNotificationsServerKey')]",
+                                "gcmEndpoint": "https://android.googleapis.com/gcm/send"
+                            }
+                        },
+                        "apnsCredential": {
+                            "properties": {
+                                "apnsCertificate": "[parameters('applePushNotificationsCertificate')]",
+                                "certificateKey": "[parameters('applePushNotificationsCertificateKey')]",
+                                "endpoint": "gateway.sandbox.push.apple.com"
+                            }
+                        }
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.NotificationHubs/namespaces', variables('namespaceName'))]"
