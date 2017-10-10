@@ -27,7 +27,7 @@ namespace Producer.Functions
 		[FunctionName (nameof (PublishContent))]
 		public static async Task<HttpResponseMessage> Run (
 			[HttpTrigger (AuthorizationLevel.Anonymous, Routes.Post, Route = Routes.PublishContent)] DocumentUpdatedMessage updateMessage,
-			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString, Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
+			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString, /*Platform = NotificationPlatform.Apns,*/ TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
 			log.Info (updateMessage?.ToString ());
@@ -53,13 +53,11 @@ namespace Producer.Functions
 
 			try
 			{
-				FunctionExtensions.HasValueOrThrow (updateMessage?.CollectionId, "CollectionId");
+				FunctionExtensions.HasValueOrThrow (updateMessage?.CollectionId, DocumentUpdatedMessage.CollectionIdKey);
 
-				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();
+				var template = PushTemplate.FromMessage (updateMessage);
 
-				log.Info ($"Sending Notification payload: {payload}");
-
-				await notification.AddAsync (new AppleNotification (payload));
+				await notification.AddAsync (new TemplateNotification (template.GetProperties ()));
 
 				throw new HttpResponseException (HttpStatusCode.Accepted);
 			}

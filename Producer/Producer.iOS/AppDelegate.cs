@@ -118,7 +118,7 @@ namespace Producer.iOS
 
 			var tags = new NSSet (tagArray);
 
-			notificationHub.RegisterNativeAsync (deviceToken, tags, err =>
+			notificationHub.RegisterTemplateAsync (deviceToken, nameof (PushTemplate), PushTemplate.iOS, "0", tags, err =>
 			{
 				if (err != null)
 				{
@@ -131,6 +131,20 @@ namespace Producer.iOS
 					Log.Debug ($"Successfully Registered for Notifications. (device token: {token})");
 				}
 			});
+
+			//notificationHub.RegisterNativeAsync (deviceToken, tags, err =>
+			//{
+			//	if (err != null)
+			//	{
+			//		Log.Error ($"{err.Description}");
+			//	}
+			//	else
+			//	{
+			//		var token = deviceToken.ToString ().Replace (" ", string.Empty).Trim ('<', '>');
+
+			//		Log.Debug ($"Successfully Registered for Notifications. (device token: {token})");
+			//	}
+			//});
 		}
 
 
