@@ -282,9 +282,8 @@
 		<AndroidResource Include="Resources\layout\Login.axml" />
 		<AndroidResource Include="Resources\layout\User.axml" />
 		<AndroidResource Include="Resources\menu\menu_logout.axml" />
-		<AndroidResource Include="Resources\menu\menu_compose.axml" />
-		<AndroidResource Include="Resources\drawable\i_settings.xml" />
-		<AndroidResource Include="Resources\menu\menu_settings.xml" />
+		<AndroidResource Include="Resources\drawable\ic_settings.xml" />
+		<AndroidResource Include="Resources\menu\menu_main.xml" />
 		<AndroidResource Include="Resources\xml\preferences.xml" />
 		<AndroidResource Include="Resources\layout\Settings.axml" />
 		<AndroidResource Include="Resources\menu\menu_action_content.xml" />
@@ -300,6 +299,8 @@
 		<AndroidResource Include="Resources\drawable\bg_circle.xml" />
 		<AndroidResource Include="Resources\drawable\ic_done.xml" />
 		<AndroidResource Include="Resources\layout\EditTextDialog.axml" />
+		<AndroidResource Include="Resources\drawable\ic_account_circle.xml" />
+		<AndroidResource Include="Resources\drawable\ic_create.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />

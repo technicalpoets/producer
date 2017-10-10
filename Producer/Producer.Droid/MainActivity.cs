@@ -45,7 +45,7 @@ namespace Producer.Droid
 
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
-			SupportActionBar.SetDisplayHomeAsUpEnabled (true);
+			//SupportActionBar.SetDisplayHomeAsUpEnabled (true);
 			//SupportActionBar.sethom
 
 			//final Drawable upArrow = getResources ().getDrawable (R.drawable.abc_ic_ab_back_mtrl_am_alpha);
@@ -135,14 +135,17 @@ namespace Producer.Droid
 		{
 			switch (item.ItemId)
 			{
+				case Resource.Id.action_profile:
+					profileButtonClicked ();
+					return true;
 				case Resource.Id.action_settings:
 					StartActivity (typeof (SettingsActivity));
-					break;
+					return true;
 				case Resource.Id.action_compose:
 					return true;
 				case Android.Resource.Id.Home:
-					profileButtonClicked ();
-					return true;
+
+					return false;
 			}
 
 			return base.OnOptionsItemSelected (item);
@@ -160,8 +163,8 @@ namespace Producer.Droid
 		public override bool OnCreateOptionsMenu (IMenu menu)
 		{
 			this.menu = menu;
-			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
-			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
+			MenuInflater.Inflate (Resource.Menu.menu_main, menu);
+			//MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
 
 			return base.OnCreateOptionsMenu (menu);
 		}
@@ -247,21 +250,21 @@ namespace Producer.Droid
 
 		void profileButtonClicked ()
 		{
-			RunOnUiThread (() =>
-			{
-				ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.Login;
-				ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
-				ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
+			//RunOnUiThread (() =>
+			//{
+			ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.Login;
+			ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
+			ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
 
-				if (ProducerClient.Shared.User == null)
-				{
-					StartActivity (typeof (LoginActivity));
-				}
-				else
-				{
-					StartActivity (typeof (UserActivity));
-				}
-			});
+			if (ProducerClient.Shared.User == null)
+			{
+				StartActivity (typeof (LoginActivity));
+			}
+			else
+			{
+				StartActivity (typeof (UserActivity));
+			}
+			//});
 		}
 	}
 }
