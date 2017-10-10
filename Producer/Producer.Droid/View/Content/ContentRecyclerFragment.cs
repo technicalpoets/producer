@@ -51,9 +51,10 @@ namespace Producer.Droid
 		{
 			if (Assets?.Count == 0 && ContentClient.Shared.AvContent.Count > 0)
 			{
-				var content = ContentClient.Shared.AvContent [UserRoles.General].Where (m => m.HasId && m.HasRemoteAssetUri)
-																			  .Select (s => AssetPersistenceManager.Shared.GetMusicAsset (s))
-																			  .ToList ();
+				var content = ContentClient.Shared.AvContent [UserRoles.General]
+										   .Where (m => m.HasId && m.HasRemoteAssetUri)
+										   .Select (s => AssetPersistenceManager.Shared.GetMusicAsset (s))
+										   .ToList ();
 
 				Activity.RunOnUiThread (() => ContentAdapter.SetItems (content));
 			}

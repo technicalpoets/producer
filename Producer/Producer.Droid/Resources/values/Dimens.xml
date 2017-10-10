@@ -35,4 +35,6 @@
 	<!--	<dimen name="image_final_width">32dp</dimen>-->
 	<dimen
 		name="spacing_normal">16dp</dimen>
+	<dimen
+		name="content_padding_normal">16dp</dimen>
 </resources>

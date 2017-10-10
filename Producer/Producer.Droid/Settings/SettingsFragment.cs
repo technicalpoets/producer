@@ -18,6 +18,7 @@ namespace Producer.Droid
 			FindPreference (SettingsKeys.VersionDescription).Summary = Settings.VersionDescription;
 		}
 
+
 		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
 			var view = base.OnCreateView (inflater, container, savedInstanceState);
@@ -29,10 +30,12 @@ namespace Producer.Droid
 			return view;
 		}
 
+
 		public override void OnCreateOptionsMenu (IMenu menu, MenuInflater inflater)
 		{
 			base.OnCreateOptionsMenu (menu, inflater);
 		}
+
 
 		public override void OnResume ()
 		{
@@ -48,6 +51,7 @@ namespace Producer.Droid
 			}
 		}
 
+
 		public override void OnPause ()
 		{
 			base.OnPause ();
@@ -60,6 +64,7 @@ namespace Producer.Droid
 				}
 			}
 		}
+
 
 		void handlePreferenceChange (object sender, Preference.PreferenceChangeEventArgs e)
 		{

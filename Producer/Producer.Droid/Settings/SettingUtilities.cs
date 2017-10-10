@@ -7,7 +7,6 @@ namespace Producer
 {
 	public static partial class Settings
 	{
-
 		const string zero = "0";
 
 		#region Utilities
@@ -100,9 +99,7 @@ namespace Producer
 
 		public static DateTime DateTimeForKey (string key)
 		{
-			DateTime outDateTime;
-
-			return DateTime.TryParse (StringForKey (key), out outDateTime) ? outDateTime : DateTime.MinValue;
+			return DateTime.TryParse (StringForKey (key), out DateTime outDateTime) ? outDateTime : DateTime.MinValue;
 		}
 
 

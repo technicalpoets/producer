@@ -2,10 +2,8 @@ using System.Collections.Generic;
 
 namespace Producer
 {
-
-	public static class SettingsKeys
+	public static partial class SettingsKeys
 	{
-
 		#region Visible Settings
 
 		public const string VersionDescription = nameof (VersionDescription);

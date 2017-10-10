@@ -128,6 +128,9 @@ namespace Producer
 		}
 
 
+		public static bool NotificationsConfigured => !string.IsNullOrEmpty (NotificationsName) && !string.IsNullOrEmpty (NotificationsConnectionString);
+
+
 		public static string EmbeddedSocialKey
 		{
 			get => StringForKey (SettingsKeys.EmbeddedSocialKey);

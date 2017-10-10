@@ -42,4 +42,6 @@
 		name="action_download">Download</string>
 	<string
 		name="action_favorite">Favorite</string>
+	<string
+		name="site_name">Site Name</string>
 </resources>

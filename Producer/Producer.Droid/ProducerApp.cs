@@ -35,8 +35,6 @@ namespace Producer.Droid
 			//((MediaManagerImplementation) CrossMediaManager.Current).MediaSessionManager = new MediaSessionManager (Context, typeof (ExoPlayerAudioService));
 			//var exoPlayer = new ExoPlayerAudioImplementation (((MediaManagerImplementation) CrossMediaManager.Current).MediaSessionManager);
 			//CrossMediaManager.Current.AudioPlayer = exoPlayer;
-
-
 		}
 	}
 }

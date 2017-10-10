@@ -68,18 +68,6 @@
 		</Reference>
 		<Reference Include="System.IO.Compression" />
 		<Reference Include="System.Xml.Linq" />
-		<Reference Include="Microsoft.Data.Edm">
-			<HintPath>..\packages\Microsoft.Data.Edm.5.8.2\lib\netstandard1.1\Microsoft.Data.Edm.dll</HintPath>
-		</Reference>
-		<Reference Include="System.Spatial">
-			<HintPath>..\packages\System.Spatial.5.8.2\lib\netstandard1.1\System.Spatial.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Data.OData">
-			<HintPath>..\packages\Microsoft.Data.OData.5.8.2\lib\netstandard1.1\Microsoft.Data.OData.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.DocumentDB.Core">
-			<HintPath>..\packages\Microsoft.Azure.DocumentDB.Core.1.5.0\lib\netstandard1.6\Microsoft.Azure.DocumentDB.Core.dll</HintPath>
-		</Reference>
 		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
@@ -101,33 +89,6 @@
 		</Reference>
 		<Reference Include="Xamarin.GooglePlayServices.Auth">
 			<HintPath>..\packages\Xamarin.GooglePlayServices.Auth.42.1021.1\lib\MonoAndroid70\Xamarin.GooglePlayServices.Auth.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.WindowsAzure.Storage">
-			<HintPath>..\packages\WindowsAzure.Storage.8.4.0\lib\netstandard1.3\Microsoft.WindowsAzure.Storage.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Android.Bindings">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Android.Bindings.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Analytics.Android.Bindings">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.Analytics.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Analytics.Android.Bindings.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Analytics">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.Analytics.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Analytics.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Crashes.Android.Bindings">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.Android.Bindings.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Crashes">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Distribute.Android.Bindings">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.Android.Bindings.dll</HintPath>
-		</Reference>
-		<Reference Include="Microsoft.Azure.Mobile.Distribute">
-			<HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.15.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.dll</HintPath>
 		</Reference>
 		<Reference Include="Xamarin.Android.Support.Annotations">
 			<HintPath>..\packages\Xamarin.Android.Support.Annotations.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.Annotations.dll</HintPath>
@@ -189,6 +150,57 @@
 		<Reference Include="ExoPlayer">
 			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.2.5.3\lib\MonoAndroid\ExoPlayer.dll</HintPath>
 		</Reference>
+		<Reference Include="Xamarin.GooglePlayServices.Iid">
+		  <HintPath>..\packages\Xamarin.GooglePlayServices.Iid.42.1021.1\lib\MonoAndroid70\Xamarin.GooglePlayServices.Iid.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Firebase.Common">
+		  <HintPath>..\packages\Xamarin.Firebase.Common.42.1021.1\lib\MonoAndroid70\Xamarin.Firebase.Common.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Firebase.Iid">
+		  <HintPath>..\packages\Xamarin.Firebase.Iid.42.1021.1\lib\MonoAndroid70\Xamarin.Firebase.Iid.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Firebase.Messaging">
+		  <HintPath>..\packages\Xamarin.Firebase.Messaging.42.1021.1\lib\MonoAndroid70\Xamarin.Firebase.Messaging.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Android.Bindings">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Android.Bindings.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Analytics.Android.Bindings">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.Analytics.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Analytics.Android.Bindings.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Analytics">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.Analytics.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Analytics.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Crashes.Android.Bindings">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.Android.Bindings.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Crashes">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.Crashes.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Crashes.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Distribute.Android.Bindings">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.Android.Bindings.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.Mobile.Distribute">
+		  <HintPath>..\packages\Microsoft.Azure.Mobile.Distribute.0.16.0\lib\MonoAndroid403\Microsoft.Azure.Mobile.Distribute.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.WindowsAzure.Storage">
+		  <HintPath>..\packages\WindowsAzure.Storage.8.5.0\lib\netstandard1.3\Microsoft.WindowsAzure.Storage.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Data.Edm">
+		  <HintPath>..\packages\Microsoft.Data.Edm.5.8.3\lib\netstandard1.1\Microsoft.Data.Edm.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Spatial">
+		  <HintPath>..\packages\System.Spatial.5.8.3\lib\netstandard1.1\System.Spatial.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Data.OData">
+		  <HintPath>..\packages\Microsoft.Data.OData.5.8.3\lib\netstandard1.1\Microsoft.Data.OData.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Azure.DocumentDB.Core">
+		  <HintPath>..\packages\Microsoft.Azure.DocumentDB.Core.1.5.1\lib\netstandard1.6\Microsoft.Azure.DocumentDB.Core.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Include="MainActivity.cs" />
@@ -235,6 +247,12 @@
 		<Compile Include="View\Content\ContentRecyclerFragmentBase.cs" />
 		<Compile Include="View\Content\ContentViewHolder.cs" />
 		<Compile Include="View\Content\FavoritesRecyclerFragment.cs" />
+		<Compile Include="Services\ProducerFirebaseInstanceIdService.cs" />
+		<Compile Include="Services\ProducerFirebaseMessagingService.cs" />
+		<Compile Include="Framework\Utilities\Extensions\ActivityExtensions.cs" />
+		<Compile Include="Services\RegistrationIntentService.cs" />
+		<Compile Include="Settings\SettingsKeys.cs" />
+		<Compile Include="Settings\SettingsAccessors.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="Resources\AboutResources.txt" />
@@ -281,6 +299,7 @@
 		<AndroidResource Include="Resources\drawable\bg_list_row.xml" />
 		<AndroidResource Include="Resources\drawable\bg_circle.xml" />
 		<AndroidResource Include="Resources\drawable\ic_done.xml" />
+		<AndroidResource Include="Resources\layout\EditTextDialog.axml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
@@ -293,6 +312,7 @@
 		<Folder Include="View\Login\" />
 		<Folder Include="Resources\animator\" />
 		<Folder Include="View\Content\" />
+		<Folder Include="Services\" />
 	</ItemGroup>
 	<ItemGroup>
 		<GoogleServicesJson Include="google-services.json" />
@@ -320,4 +340,8 @@
 	<Import Project="..\packages\Xamarin.Android.Support.v7.AppCompat.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.v7.AppCompat.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.AppCompat.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.v7.AppCompat.targets')" />
 	<Import Project="..\packages\Xamarin.Android.Support.Design.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.Design.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Design.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.Design.targets')" />
 	<Import Project="..\packages\Xamarin.Android.Support.v7.CardView.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.v7.CardView.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.CardView.25.4.0.2\build\MonoAndroid70\Xamarin.Android.Support.v7.CardView.targets')" />
+	<Import Project="..\packages\Xamarin.GooglePlayServices.Iid.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Iid.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Iid.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Iid.targets')" />
+	<Import Project="..\packages\Xamarin.Firebase.Common.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Common.targets" Condition="Exists('..\packages\Xamarin.Firebase.Common.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Common.targets')" />
+	<Import Project="..\packages\Xamarin.Firebase.Iid.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Iid.targets" Condition="Exists('..\packages\Xamarin.Firebase.Iid.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Iid.targets')" />
+	<Import Project="..\packages\Xamarin.Firebase.Messaging.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Messaging.targets" Condition="Exists('..\packages\Xamarin.Firebase.Messaging.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Messaging.targets')" />
 </Project>

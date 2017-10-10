@@ -62,9 +62,14 @@ namespace Producer.Droid
 
 				RefreshTask = Task.Run (async () =>
 				{
-					await ContentClient.Shared.GetAllAvContent ();
+					if (await Settings.IsConfigured ())
+					{
+						Log.Debug ($"User : {ProducerClient.Shared.User?.ToString ()}");
 
-					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+						await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+
+						await ContentClient.Shared.GetAllAvContent ();
+					}
 				});
 			}
 
