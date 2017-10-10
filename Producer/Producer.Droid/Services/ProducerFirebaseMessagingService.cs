@@ -1,5 +1,7 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Firebase.Messaging;
+using Producer.Shared;
 
 namespace Producer.Droid.Services
 {
@@ -7,10 +9,43 @@ namespace Producer.Droid.Services
 	[IntentFilter (new [] { "com.google.firebase.MESSAGING_EVENT" })]
 	public class ProducerFirebaseMessagingService : FirebaseMessagingService
 	{
-		public override void OnMessageReceived (RemoteMessage message)
+		bool processingNotification;
+
+		public async override void OnMessageReceived (RemoteMessage message)
 		{
-			Log.Debug ($"From: {message.From}");
-			Log.Debug ($"Notification Message Body: {message.GetNotification ().Body}");
+			//Log.Debug ($"From: {message.From}");
+			//Log.Debug ($"Notification Message Body: {message.GetNotification ().Body}");
+
+
+			// if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr) { }
+
+			if (processingNotification)
+			{
+				Log.Debug ($"Already processing notificaiton. Returning...");
+				return;
+			}
+
+			processingNotification = true;
+
+			Log.Debug ($"Get All AvContent Async...");
+
+			try
+			{
+				//refresh content - this will generate an AvContentChanged event the UI will pick up
+				await ContentClient.Shared.GetAllAvContent ();
+
+				//DeleteLocalUploads ();
+
+				Log.Debug ($"Finished Getting Data.");
+			}
+			catch (Exception ex)
+			{
+				Log.Error ($"FAILED TO GET NEW DATA :: {ex.Message}");
+			}
+			finally
+			{
+				processingNotification = false;
+			}
 		}
 	}
 }
