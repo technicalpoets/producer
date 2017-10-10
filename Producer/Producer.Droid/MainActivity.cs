@@ -7,7 +7,6 @@ using Android.Views;
 using Android.Widget;
 using Producer.Auth;
 using Producer.Domain;
-using Producer.Droid.Providers;
 using Producer.Droid.Services;
 using Producer.Shared;
 using System.Threading.Tasks;
@@ -45,12 +44,6 @@ namespace Producer.Droid
 
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
-			//SupportActionBar.SetDisplayHomeAsUpEnabled (true);
-			//SupportActionBar.sethom
-
-			//final Drawable upArrow = getResources ().getDrawable (R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
 
 			setupViewPager ();
 
@@ -164,7 +157,6 @@ namespace Producer.Droid
 		{
 			this.menu = menu;
 			MenuInflater.Inflate (Resource.Menu.menu_main, menu);
-			//MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
 
 			return base.OnCreateOptionsMenu (menu);
 		}
@@ -209,7 +201,7 @@ namespace Producer.Droid
 		{
 			if (this.CheckPlayServicesAvailable ())
 			{
-				// Start IntentService to register this application with FCM.
+				// Start RegistrationIntentService to register this application with Azure Notification Hub.
 				StartService (new Intent (this, typeof (RegistrationIntentService)));
 			}
 		}
@@ -230,20 +222,14 @@ namespace Producer.Droid
 			tabLayout.SetupWithViewPager (viewPager);
 
 			PagerAdapter.FillTabLayout (tabLayout);
-			//ClientAuthManager.Shared.InitializeAuthProviders (this);
 
 			viewPager.PageSelected += (sender, e) =>
 			{
-
-				//Tier = (PartnerTiers)e.Position;
-
 				////update the query listener
 				//var fragment = PagerAdapter.GetFragmentAtPosition (e.Position);
 				//queryListener = (SearchView.IOnQueryTextListener)fragment;
 
 				//searchView?.SetOnQueryTextListener (queryListener);
-
-				//UpdateColors (Tier);
 			};
 		}
 
