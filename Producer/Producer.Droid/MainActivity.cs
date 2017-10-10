@@ -250,8 +250,6 @@ namespace Producer.Droid
 
 		void profileButtonClicked ()
 		{
-			//RunOnUiThread (() =>
-			//{
 			ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.Login;
 			ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
 			ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
@@ -264,7 +262,6 @@ namespace Producer.Droid
 			{
 				StartActivity (typeof (UserActivity));
 			}
-			//});
 		}
 	}
 }

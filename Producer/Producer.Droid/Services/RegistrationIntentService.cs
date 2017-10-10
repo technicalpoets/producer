@@ -51,7 +51,7 @@ namespace Producer.Droid.Services
 				{
 					Log.Debug ($"Previously Registered Successfully - RegId : {regId}");
 
-					registerWithHub (fcmToken);
+					registerWithHub (fcmToken, true);
 				}
 			}
 			catch (Exception e)
@@ -63,13 +63,13 @@ namespace Producer.Droid.Services
 		}
 
 
-		void registerWithHub (string fcmToken)
+		void registerWithHub (string fcmToken, bool checkTags = false)
 		{
 			var tagArray = ProducerClient.Shared.UserRole.GetTagArray ();
 			var tags = string.Join (ConstantStrings.Comma, tagArray);
 			var savedTags = Settings.NotificationTags;
 
-			if (string.IsNullOrEmpty (savedTags) || savedTags != tags)
+			if (!checkTags || checkTags && (string.IsNullOrEmpty (savedTags) || savedTags != tags))
 			{
 				hub = new NotificationHub (Settings.NotificationsName, Settings.NotificationsConnectionString, this);
 
