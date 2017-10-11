@@ -77,9 +77,9 @@ namespace Producer.Droid.Services
 
 				// If you want to use tags...
 				// Refer to : https://azure.microsoft.com/en-us/documentation/articles/notification-hubs-routing-tag-expressions/
-				var regID = hub.Register (fcmToken, tags).RegistrationId;
+				//var regID = hub.Register (fcmToken, tags).RegistrationId;
 
-				//var regID = hub.RegisterTemplate (fcmToken, nameof (PushTemplate), PushTemplate.Android, tags).RegistrationId;
+				var regID = hub.RegisterTemplate (fcmToken, nameof (PushTemplate), PushTemplate.Android, tagArray).RegistrationId;
 
 				Settings.RegistrationId = regID;
 				Settings.FcmToken = fcmToken;
