@@ -31,7 +31,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\UnixDateTimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Routes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Notifications\ApsPayload.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
