@@ -210,8 +210,8 @@ namespace Producer.Droid
 		void setupViewPager ()
 		{
 			PagerAdapter = new TabFragmentPagerAdapter (this, SupportFragmentManager);
-			PagerAdapter.AddFragment (new ContentRecyclerFragment ());
-			PagerAdapter.AddFragment (new FavoritesRecyclerFragment ());
+			PagerAdapter.AddFragment (new ContentRecyclerFragment (), false);
+			PagerAdapter.AddFragment (new FavoritesRecyclerFragment (), false);
 
 			var viewPager = FindViewById<ViewPager> (Resource.Id.main_viewPager);
 			viewPager.Adapter = PagerAdapter;
@@ -222,6 +222,7 @@ namespace Producer.Droid
 			tabLayout.SetupWithViewPager (viewPager);
 
 			PagerAdapter.FillTabLayout (tabLayout);
+			SupportActionBar.Title = PagerAdapter.GetTabFragment (0).Title;
 
 			viewPager.PageSelected += (sender, e) =>
 			{
@@ -230,6 +231,10 @@ namespace Producer.Droid
 				//queryListener = (SearchView.IOnQueryTextListener)fragment;
 
 				//searchView?.SetOnQueryTextListener (queryListener);
+
+				var tabFragment = PagerAdapter.GetTabFragment (e.Position);
+
+				SupportActionBar.Title = tabFragment.Title;
 			};
 		}
 

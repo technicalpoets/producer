@@ -1,38 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<dimen
-		name="icon_width_height">40dp</dimen>
+		name="icon_width_height">32dp</dimen>
 	<dimen
-		name="icon_padded_width_height">40dp</dimen>
+		name="icon_padded_width_height">32dp</dimen>
 	<dimen
 		name="icon_text">22dp</dimen>
 	<dimen
 		name="tab_min_height">56dp</dimen>
-	<dimen
-		name="card_corner_radius">6dp</dimen>
-	<dimen
-		name="card_elevation">4dp</dimen>
-	<dimen
-		name="card_padding">8dp</dimen>
-	<dimen
-		name="card_v_margin">4dp</dimen>
-	<dimen
-		name="card_h_margin">10dp</dimen>
-	<!-- FastScroll recycler -->
-	<dimen
-		name="fastscroll_popup_size">72dp</dimen>
-	<dimen
-		name="fastscroll_popup_text_size">48dp</dimen>
-	<dimen
-		name="fastscroll_thumb_min_width">0dp</dimen>
-	<dimen
-		name="fastscroll_thumb_max_width">4dp</dimen>
-	<dimen
-		name="fastscroll_thumb_height">32dp</dimen>
-	<dimen
-		name="fastscroll_thumb_touch_inset">-24dp</dimen>
-	<!-- Avatar behavior -->
-	<!--	<dimen name="image_final_width">32dp</dimen>-->
 	<dimen
 		name="spacing_normal">16dp</dimen>
 	<dimen

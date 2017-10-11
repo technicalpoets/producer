@@ -9,9 +9,11 @@
 		<item
 			name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item
-			name="colorAccent">@color/accent</item>
+			name="colorAccent">@color/colorAccent</item>
 		<item
-			name="android:textColorPrimary">@color/primary_text</item>
+			name="android:textColorPrimary">@color/primaryText</item>
+		<item
+			name="android:textColorSecondary">@color/primaryLight</item>
 		<item
 			name="colorButtonNormal">@color/primary</item>
 		<item
@@ -27,10 +29,25 @@
 			name="android:windowContentTransitions">true</item>
 	</style>
 	<!-- Toolbar theme -->
-	<!--<style name="ToolbarTheme" parent="Widget.AppCompat.Toolbar">
-    <item name="colorPrimary">?attr/tierHighlightColor</item>
-    <item name="colorPrimaryDark">?attr/tierHighlightColor</item>
-  </style>-->
+	<style
+		name="ToolbarTheme"
+		parent="Widget.AppCompat.Toolbar">
+		<!-- android:textColorPrimary is the  color of the title text in the Toolbar, in the Theme.AppCompat theme:  -->
+		<item
+			name="android:textColorPrimary">@color/primaryText</item>
+		<!-- actionMenuTextColor is the color of the text of
+	        action (menu) items in the Toolbar, at least in the
+	        Theme.AppCompat theme.
+	        For some reason, they already get the textColorPrimary
+	        when running on API 21, but not on older versions of
+	        Android, so this is only necessary to support older
+	        Android versions.-->
+		<item
+			name="actionMenuTextColor">@color/colorAccent</item>
+		<!-- android:textColorSecondary is the color of the menu overflow icon (three vertical dots) -->
+		<item
+			name="android:textColorSecondary">@color/colorAccent</item>
+	</style>
 	<!-- TabLayout style -->
 	<style
 		name="CustomTabLayout"

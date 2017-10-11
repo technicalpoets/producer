@@ -3,7 +3,7 @@
     android:id="@+id/contentCell"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="80dp"
+    android:minHeight="70dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"

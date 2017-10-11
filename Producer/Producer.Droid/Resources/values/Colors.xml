@@ -3,30 +3,28 @@
 	<color
 		name="bg_action_mode">#757575</color>
 	<color
-		name="bg_circle_default">#666666</color>
-	<color
 		name="row_normal">#333333</color>
 	<color
-		name="row_activated">#CC3333</color>
+		name="row_activated">#E44F50</color>
 	<!-- Producer Theme Colors -->
 	<color
 		name="primary">#000000</color>
 	<color
-		name="colorPrimaryDark">#AD1414</color>
+		name="colorPrimaryDark">#000000</color>
 	<color
-		name="primary_light">#499ed7</color>
+		name="primaryLight">#CCCCCC</color>
 	<color
-		name="colorControlNormal">#CC3333</color>
+		name="colorControlNormal">#E44F50</color>
 	<color
-		name="accent">#9E9E9E</color>
+		name="colorAccent">#E44F50</color>
 	<color
-		name="primary_text">#CCCCCC</color>
+		name="primaryText">#CCCCCC</color>
 	<color
 		name="secondary_text">#757575</color>
 	<color
-		name="icons">#CC3333</color>
+		name="icons">#E44F50</color>
 	<color
-		name="navigationBarColor">#CC3333</color>
+		name="navigationBarColor">#E44F50</color>
 	<color
 		name="divider">#BDBDBD</color>
 </resources>

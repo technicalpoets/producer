@@ -12,10 +12,20 @@ namespace Producer.Droid
 	/// </summary>
 	public class TabFragmentPagerAdapter : BaseFragmentPagerAdapter
 	{
+		class TabConfig
+		{
+			public Fragment Fragment { get; set; }
+
+			public string Title { get; set; }
+
+			public int IconResource { get; set; }
+
+			public bool ShowTitle { get; set; }
+		}
+
 		Context context;
-		List<Fragment> fragments = new List<Fragment> ();
-		readonly List<string> titles = new List<string> ();
-		readonly List<int> icons = new List<int> ();
+
+		List<TabConfig> tabList = new List<TabConfig> ();
 
 
 		public TabFragmentPagerAdapter (Context context, FragmentManager manager) : base (manager)
@@ -24,18 +34,22 @@ namespace Producer.Droid
 		}
 
 
-		public void AddFragment (Fragment fragment, string title = "", int iconDrawable = -1)
+		public void AddFragment (Fragment fragment, string title = "", int iconDrawable = -1, bool showTitle = true)
 		{
-			fragments.Add (fragment);
-			titles.Add (title);
-			icons.Add (iconDrawable);
+			tabList.Add (new TabConfig
+			{
+				Fragment = fragment,
+				Title = title,
+				IconResource = iconDrawable,
+				ShowTitle = showTitle
+			});
 		}
 
 
-		public void AddFragment<TFragment> (TFragment fragment)
+		public void AddFragment<TFragment> (TFragment fragment, bool showTitle = true)
 			where TFragment : Fragment, ITabFragment
 		{
-			AddFragment (fragment, fragment.Title, fragment.Icon);
+			AddFragment (fragment, fragment.Title, fragment.Icon, showTitle);
 		}
 
 
@@ -43,20 +57,26 @@ namespace Producer.Droid
 		{
 			get
 			{
-				return fragments.Count;
+				return tabList.Count;
 			}
 		}
 
 
 		public override Fragment GetItem (int position)
 		{
-			return fragments [position];
+			return tabList [position].Fragment;
+		}
+
+
+		public ITabFragment GetTabFragment (int position)
+		{
+			return (ITabFragment) GetItem (position);
 		}
 
 
 		public override Java.Lang.ICharSequence GetPageTitleFormatted (int position)
 		{
-			return new Java.Lang.String (titles [position]);
+			return new Java.Lang.String (tabList [position].Title);
 		}
 
 
@@ -73,9 +93,16 @@ namespace Producer.Droid
 			var tabText = tabItemView.FindViewById<TextView> (Resource.Id.tabText);
 			var tabImage = tabItemView.FindViewById<ImageView> (Resource.Id.tabIcon);
 
-			tabText.Text = titles [position];
+			var tab = tabList [position];
 
-			var icon = icons [position];
+			tabText.Text = tab.Title;
+
+			if (!tab.ShowTitle)
+			{
+				tabText.Visibility = ViewStates.Gone;
+			}
+
+			var icon = tab.IconResource;
 
 			if (icon > -1)
 			{
