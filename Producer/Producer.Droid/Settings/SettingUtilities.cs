@@ -7,8 +7,7 @@ namespace Producer
 {
 	public static partial class Settings
 	{
-
-		const string zero = "0";
+		const string Zero = "0";
 
 		#region Utilities
 
@@ -51,6 +50,7 @@ namespace Producer
 				{
 					sharedPreferencesEditor.PutInt (key, value);
 				}
+
 				sharedPreferencesEditor.Commit ();
 			}
 		}
@@ -67,19 +67,16 @@ namespace Producer
 		}
 
 
-
 		public static int Int32ForKey (string key, bool fromString = true)
 		{
 			using (var sharedPreferences = PreferenceManager.GetDefaultSharedPreferences (Application.Context))
 			{
 				if (fromString)
 				{
-					return int.Parse (sharedPreferences.GetString (key, zero));
+					return int.Parse (sharedPreferences.GetString (key, Zero));
 				}
-				else
-				{
-					return Convert.ToInt32 (sharedPreferences.GetInt (key, 0));
-				}
+
+				return sharedPreferences.GetInt (key, 0);
 			}
 		}
 
@@ -100,9 +97,7 @@ namespace Producer
 
 		public static DateTime DateTimeForKey (string key)
 		{
-			DateTime outDateTime;
-
-			return DateTime.TryParse (StringForKey (key), out outDateTime) ? outDateTime : DateTime.MinValue;
+			return DateTime.TryParse (StringForKey (key), out DateTime outDateTime) ? outDateTime : DateTime.MinValue;
 		}
 
 

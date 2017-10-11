@@ -6,19 +6,17 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/main.appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="wrap_content">
         <android.support.v7.widget.Toolbar
             android:id="@+id/main.toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:elevation="4dp"
             app:layout_collapseMode="pin"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ToolbarTheme" />
         <android.support.design.widget.TabLayout
             android:id="@+id/main.tabLayout"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
             style="@style/CustomTabLayout" />
     </android.support.design.widget.AppBarLayout>
     <android.support.v4.view.ViewPager

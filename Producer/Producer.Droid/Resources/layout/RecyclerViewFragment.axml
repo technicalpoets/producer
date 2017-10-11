@@ -3,9 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="4dp"
-    android:paddingStart="4dp"
-    android:paddingEnd="4dp">
+    android:paddingTop="4dp">
 <!--<partners.droid.FastScrollRecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

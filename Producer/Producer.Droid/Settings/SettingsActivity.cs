@@ -1,16 +1,6 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+﻿using Android.App;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.V7.App;
-using Android.Views;
-using Android.Widget;
 
 namespace Producer.Droid
 {
@@ -24,8 +14,8 @@ namespace Producer.Droid
 			SetContentView (Resource.Layout.Settings);
 
 			FragmentManager.BeginTransaction ()
-			.Add (Resource.Id.fragment_container, new SettingsFragment ())
-			.Commit ();
+						   .Add (Resource.Id.fragment_container, new SettingsFragment ())
+						   .Commit ();
 		}
 	}
 }

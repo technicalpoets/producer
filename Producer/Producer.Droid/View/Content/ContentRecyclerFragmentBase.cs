@@ -41,24 +41,6 @@ namespace Producer.Droid
 		}
 
 
-		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-		{
-			var view = base.OnCreateView (inflater, container, savedInstanceState);
-
-			//color our scrollbar & popup according to the Tier
-			//if (RecyclerView is FastScrollRecyclerView)
-			//{
-			//var color = Tier.GetColor (Activity);
-			//var recycler = (FastScrollRecyclerView)RecyclerView;
-			//recycler.SetThumbActiveColor (color);
-			//recycler.SetTrackInactiveColor (color);
-			//recycler.SetPopupBackgroundColor (color);
-			//}
-
-			return view;
-		}
-
-
 		#region implemented abstract/virtual members of RecyclerViewFragment
 
 
@@ -76,13 +58,16 @@ namespace Producer.Droid
 			//check if the shared RefreshTask has been set, since we're sharing data between fragments
 			if (RefreshTask == null)
 			{
-				//TODO: determine if we need to lock() or otherwise thread sync
-
 				RefreshTask = Task.Run (async () =>
 				{
-					await ContentClient.Shared.GetAllAvContent ();
+					if (await Settings.IsConfigured ())
+					{
+						Log.Debug ($"Content refresh started (ContentClient.Shared.GetAllAvContent) :: User : {ProducerClient.Shared.User?.ToString ()}");
 
-					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+						await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+
+						await ContentClient.Shared.GetAllAvContent ();
+					}
 				});
 			}
 
@@ -112,17 +97,55 @@ namespace Producer.Droid
 
 		protected override void OnItemClick (View view, MusicAsset item, int position)
 		{
-			//var partner = item;//DisplayPartners [position];
-			//var partnerLogoImageView = view.FindViewById<AppCompatImageView> (Resource.Id.partner_logo);
-
-			//var detailIntent = new Intent (Context, typeof (PartnerDetailActivity));
-			////var intentData = IntentData.Partner.Create (partner.Id, partner.Name, partner.PartnerTier);
-			//var intentData = IntentData.Create (partner.Id, partner.Name, partner.PartnerTier);
-			//detailIntent.PutIntentData (intentData);
-
-			//TransitionToActivity (detailIntent, partnerLogoImageView);
-
 			//TODO: play media
+			if (ContentClient.Shared.Initialized)// || AssetPersistenceManager.Shared.DownloadState (asset) == MusicAssetDownloadState.Downloaded)
+			{
+				if (item.Music.ContentType == AvContentTypes.Video)
+				{
+					//playerViewController = new AVPlayerViewController ();
+
+					//PresentViewController (playerViewController, true, null);
+				}
+
+				// we're already on the main tread, this prevents hanging while playback starts
+				Activity.RunOnUiThread (() =>
+				{
+					//var playing = AssetPlaybackManager.Shared.TogglePlayback (item);
+
+					//if (playing && indexPathCache != indexPath) Track.Play (item.Music);
+
+					//if (indexPathCache != null && indexPathCache != indexPath && tableView.IndexPathsForVisibleRows.Contains (indexPathCache)
+					//	&& tableView.CellAt (indexPathCache) is ContentMusicTvCell oldCell)
+					//{
+					//	oldCell.SetPlaying (false);
+					//}
+
+					//indexPathCache = indexPath;
+
+					//if (item.Music.ContentType == AvContentTypes.Audio)
+					//{
+					//	if (NavigationController.ToolbarHidden)
+					//	{
+					//		NavigationController.SetToolbarHidden (false, true);
+					//	}
+
+					//	cell.SetPlaying (playing);
+
+					//	var items = ToolbarItems;
+
+					//	items [0] = playing ? pauseButton : playButton;
+
+					//	//items [2].Title = asset.Music.DisplayName;
+					//	titleButton.Title = asset.Music.DisplayName;
+
+					//	SetToolbarItems (items, true);
+					//}
+					//else if (!NavigationController.ToolbarHidden)
+					//{
+					//	NavigationController.SetToolbarHidden (true, false);
+					//}
+				});
+			}
 		}
 
 
@@ -183,7 +206,7 @@ namespace Producer.Droid
 		{
 			mode.MenuInflater.Inflate (Resource.Menu.menu_action_content, menu);
 
-			// disable swipe refresh if action mode is enabled
+			//disable pull to refresh if action mode is enabled
 			SwipeRefreshLayout.Enabled = false;
 
 			return true;
