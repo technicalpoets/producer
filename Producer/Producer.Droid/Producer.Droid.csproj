@@ -304,6 +304,17 @@
 		<AndroidResource Include="Resources\drawable\ic_account_circle.xml" />
 		<AndroidResource Include="Resources\drawable\ic_create.xml" />
 		<AndroidResource Include="Resources\drawable\ic_content_audio.xml" />
+		<AndroidResource Include="Resources\drawable\i_content_video.xml" />
+		<AndroidResource Include="Resources\drawable\i_download.xml" />
+		<AndroidResource Include="Resources\drawable\i_play.xml" />
+		<AndroidResource Include="Resources\drawable\i_segment_andrew.xml" />
+		<AndroidResource Include="Resources\drawable\i_segment_saved.xml" />
+		<AndroidResource Include="Resources\drawable\i_tab_andrew.xml" />
+		<AndroidResource Include="Resources\drawable\i_tab_compose.xml" />
+		<AndroidResource Include="Resources\drawable\i_tab_produce.xml" />
+		<AndroidResource Include="Resources\drawable\i_tab_profile.xml" />
+		<AndroidResource Include="Resources\drawable\i_tab_record.xml" />
+		<AndroidResource Include="Resources\drawable\i_tab_saved.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
