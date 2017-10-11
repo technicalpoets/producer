@@ -15,6 +15,9 @@ namespace Producer.iOS
 		[Outlet]
 		UIKit.UISegmentedControl segmentControl { get; set; }
 
+		[Action ("refreshValueChanged:")]
+		partial void refreshValueChanged (Foundation.NSObject sender);
+
 		[Action ("segmentControlValueChanged:")]
 		partial void segmentControlValueChanged (Foundation.NSObject sender);
 		

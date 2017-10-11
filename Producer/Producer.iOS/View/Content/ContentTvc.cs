@@ -125,6 +125,8 @@ namespace Producer.iOS
 
 				PresentViewController (userNc, true, null);
 			}
+
+			Log.Debug (RefreshControl?.ToString ());
 		}
 
 
@@ -239,19 +241,7 @@ namespace Producer.iOS
 
 		partial void refreshValueChanged (NSObject sender)
 		{
-			Task.Run (async () =>
-			{
-				await ContentClient.Shared.GetAllAvContent ();
-
-				BeginInvokeOnMainThread (() =>
-				{
-					TableView.ReloadData ();
-
-					var refreshControl = sender as UIRefreshControl;
-
-					refreshControl?.EndRefreshing ();
-				});
-			});
+			Task.Run (() => ContentClient.Shared.GetAllAvContent ());
 		}
 
 
@@ -393,7 +383,15 @@ namespace Producer.iOS
 
 			allAssets?.Sort ((x, y) => y.Music.Timestamp.CompareTo (x.Music.Timestamp));
 
-			BeginInvokeOnMainThread (() => { TableView.ReloadData (); });
+			BeginInvokeOnMainThread (() =>
+			{
+				TableView.ReloadData ();
+
+				if (RefreshControl?.Refreshing ?? false)
+				{
+					RefreshControl.EndRefreshing ();
+				}
+			});
 		}
 
 
