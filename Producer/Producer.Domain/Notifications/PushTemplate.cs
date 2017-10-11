@@ -4,8 +4,8 @@ namespace Producer.Domain
 {
 	public class PushTemplate
 	{
-		public static string iOS = "{'aps':{'alert':{'title':'$(Title)','body':'$(Body)'},'content-available':#(ContentAvailable)},'collectionId':'$(CollectionId)'}";
-		public static string Android = "{'notification':{'title':'$(Title)','body':'$(Body)'},'data':{'content-available':#(ContentAvailable),'collectionId':'$(CollectionId)'}";
+		public static string iOS = "{\"aps\":{\"alert\":{\"title\":\"$(Title)\",\"body\":\"$(Body)\"},\"content-available\":\"#(ContentAvailable)\"},\"collectionId\":\"$(CollectionId)\"}";
+		public static string Android = "{\"notification\":{\"title\":\"$(Title)\",\"body\":\"$(Body)\"},\"data\":{\"content-available\":\"#(ContentAvailable)\",\"collectionId\":\"$(CollectionId)\"}";
 
 		public string Title { get; set; }
 		public string Body { get; set; }

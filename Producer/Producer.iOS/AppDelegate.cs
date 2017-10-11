@@ -11,6 +11,7 @@ using WindowsAzure.Messaging;
 using Producer.Auth;
 using Producer.Domain;
 using Producer.Shared;
+using System.Globalization;
 
 namespace Producer.iOS
 {
@@ -118,7 +119,9 @@ namespace Producer.iOS
 
 			var tags = new NSSet (tagArray);
 
-			notificationHub.RegisterTemplateAsync (deviceToken, nameof (PushTemplate), PushTemplate.iOS, "0", tags, err =>
+			var expire = DateTime.Now.AddDays (90).ToString (CultureInfo.CreateSpecificCulture ("en-US"));
+
+			notificationHub.RegisterTemplateAsync (deviceToken, nameof (PushTemplate), PushTemplate.iOS, expire, tags, err =>
 			{
 				if (err != null)
 				{
@@ -131,20 +134,6 @@ namespace Producer.iOS
 					Log.Debug ($"Successfully Registered for Notifications. (device token: {token})");
 				}
 			});
-
-			//notificationHub.RegisterNativeAsync (deviceToken, tags, err =>
-			//{
-			//	if (err != null)
-			//	{
-			//		Log.Error ($"{err.Description}");
-			//	}
-			//	else
-			//	{
-			//		var token = deviceToken.ToString ().Replace (" ", string.Empty).Trim ('<', '>');
-
-			//		Log.Debug ($"Successfully Registered for Notifications. (device token: {token})");
-			//	}
-			//});
 		}
 
 
