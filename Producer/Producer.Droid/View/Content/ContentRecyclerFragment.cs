@@ -17,10 +17,10 @@ namespace Producer.Droid
 		#region ITabFragment Members
 
 
-		public string Title => "Content";
+		public string Title => "Media";
 
 
-		public int Icon => Resource.Drawable.ic_tabbar_resources;
+		public int Icon => Resource.Drawable.ic_segment_andrew;
 
 
 		#endregion
@@ -79,7 +79,7 @@ namespace Producer.Droid
 				Activity.RunOnUiThread (() => ContentAdapter.SetItems (content));
 			}
 
-			Log.Debug ("Load Content");
+			Log.Debug ("Content updated in ContentRecyclerFragment");
 		}
 
 

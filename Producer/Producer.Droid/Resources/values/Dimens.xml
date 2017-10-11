@@ -3,11 +3,9 @@
 	<dimen
 		name="icon_width_height">32dp</dimen>
 	<dimen
-		name="icon_padded_width_height">32dp</dimen>
+		name="tab_height">60dp</dimen>
 	<dimen
-		name="icon_text">22dp</dimen>
-	<dimen
-		name="tab_min_height">56dp</dimen>
+		name="row_height">70dp</dimen>
 	<dimen
 		name="spacing_normal">16dp</dimen>
 	<dimen

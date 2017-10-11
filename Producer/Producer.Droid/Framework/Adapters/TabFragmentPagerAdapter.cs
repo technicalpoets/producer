@@ -28,6 +28,13 @@ namespace Producer.Droid
 		List<TabConfig> tabList = new List<TabConfig> ();
 
 
+		/// <summary>
+		/// Gets or sets the resource ID of the Tab item layout to use.  Defaults to <c>Resource.Layout.StackedTabLayout</c>.
+		/// </summary>
+		/// <value>The tab layout resource identifier.</value>
+		public int TabViewResourceId { get; set; } = Resource.Layout.StackedTabLayout;
+
+
 		public TabFragmentPagerAdapter (Context context, FragmentManager manager) : base (manager)
 		{
 			this.context = context;
@@ -85,11 +92,10 @@ namespace Producer.Droid
 		/// </summary>
 		/// <returns>The tab view.</returns>
 		/// <param name="position">Position.</param>
-		/// <param name="tabViewResourceId">The resource ID of the Tab item layout to use.  Defaults to <c>Resource.Layout.StackedTabLayout</c>.</param>
-		public virtual View InflateTabView (int position, int tabViewResourceId = Resource.Layout.StackedTabLayout)
+		public virtual View InflateTabView (int position)
 		{
 			//get the item view and set the text + icon/image
-			var tabItemView = LayoutInflater.From (context).Inflate (tabViewResourceId, null);
+			var tabItemView = LayoutInflater.From (context).Inflate (TabViewResourceId, null);
 			var tabText = tabItemView.FindViewById<TextView> (Resource.Id.tabText);
 			var tabImage = tabItemView.FindViewById<ImageView> (Resource.Id.tabIcon);
 
@@ -100,14 +106,19 @@ namespace Producer.Droid
 			if (!tab.ShowTitle)
 			{
 				tabText.Visibility = ViewStates.Gone;
+				tabImage.LayoutParameters.Height = ViewGroup.LayoutParams.MatchParent;
 			}
 
 			var icon = tab.IconResource;
 
 			if (icon > -1)
 			{
-				tabImage.SetBackgroundResource (icon);
+				tabImage.SetImageResource (icon);
+
+				//tabImage.SetBackgroundResource (icon);
 			}
+
+			tabItemView.LayoutParameters = new ViewGroup.LayoutParams (ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
 
 			if (position == 0)
 			{

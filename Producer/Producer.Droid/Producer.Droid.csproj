@@ -276,9 +276,6 @@
 		<AndroidResource Include="Resources\color\tabbar_text.xml" />
 		<AndroidResource Include="Resources\values\Colors.xml" />
 		<AndroidResource Include="Resources\values\Dimens.xml" />
-		<AndroidResource Include="Resources\drawable\ic_tabbar_resources.xml" />
-		<AndroidResource Include="Resources\drawable\vd_resources_selected.xml" />
-		<AndroidResource Include="Resources\drawable\vd_resources.xml" />
 		<AndroidResource Include="Resources\layout\Main.axml" />
 		<AndroidResource Include="Resources\layout\ContentCell.axml" />
 		<AndroidResource Include="Resources\layout\Login.axml" />
@@ -291,7 +288,6 @@
 		<AndroidResource Include="Resources\menu\menu_action_content.xml" />
 		<AndroidResource Include="Resources\drawable\ic_cloud_download.xml" />
 		<AndroidResource Include="Resources\drawable\ic_favorite_border.xml" />
-		<AndroidResource Include="Resources\drawable\ic_album.xml" />
 		<AndroidResource Include="Resources\values\Integer.xml" />
 		<AndroidResource Include="Resources\animator\flip_left_in.xml" />
 		<AndroidResource Include="Resources\animator\flip_left_out.xml" />

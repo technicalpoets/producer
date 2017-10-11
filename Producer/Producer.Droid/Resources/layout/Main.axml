@@ -17,8 +17,6 @@
             app:popupTheme="@style/ToolbarTheme" />
         <android.support.design.widget.TabLayout
             android:id="@+id/main.tabLayout"
-            app:tabMode="fixed"
-            app:tabGravity="fill"
             style="@style/CustomTabLayout" />
     </android.support.design.widget.AppBarLayout>
     <android.support.v4.view.ViewPager

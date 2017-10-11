@@ -58,13 +58,11 @@ namespace Producer.Droid
 			//check if the shared RefreshTask has been set, since we're sharing data between fragments
 			if (RefreshTask == null)
 			{
-				//TODO: determine if we need to lock() or otherwise thread sync
-
 				RefreshTask = Task.Run (async () =>
 				{
 					if (await Settings.IsConfigured ())
 					{
-						Log.Debug ($"User : {ProducerClient.Shared.User?.ToString ()}");
+						Log.Debug ($"Content refresh started (ContentClient.Shared.GetAllAvContent) :: User : {ProducerClient.Shared.User?.ToString ()}");
 
 						await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
 

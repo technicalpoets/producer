@@ -75,12 +75,11 @@ namespace Producer.Droid.Services
 
 				Log.Debug ($"Registering with Azure Notification Hub '{Settings.NotificationsName}' with Tags ({tags})");
 
-				// If you want to use tags...
+				//Register our device token from FCM with the Azure Notification Hub
 				// Refer to : https://azure.microsoft.com/en-us/documentation/articles/notification-hubs-routing-tag-expressions/
-				//var regID = hub.Register (fcmToken, tags).RegistrationId;
-
 				var regID = hub.RegisterTemplate (fcmToken, nameof (PushTemplate), PushTemplate.Android, tagArray).RegistrationId;
 
+				//store all of these things so we can determine in the future if we need to re-register
 				Settings.RegistrationId = regID;
 				Settings.FcmToken = fcmToken;
 				Settings.NotificationTags = tags;

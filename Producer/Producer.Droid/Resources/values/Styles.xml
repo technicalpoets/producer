@@ -55,7 +55,7 @@
 		<item
 			name="android:layout_width">match_parent</item>
 		<item
-			name="android:layout_height">@dimen/tab_min_height</item>
+			name="android:layout_height">@dimen/tab_height</item>
 		<item
 			name="tabIndicatorColor">@color/colorControlNormal</item>
 		<item

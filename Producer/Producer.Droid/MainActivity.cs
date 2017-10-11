@@ -232,8 +232,8 @@ namespace Producer.Droid
 
 				//searchView?.SetOnQueryTextListener (queryListener);
 
+				//swap the title into the app bar title rather than including it in the tab
 				var tabFragment = PagerAdapter.GetTabFragment (e.Position);
-
 				SupportActionBar.Title = tabFragment.Title;
 			};
 		}
