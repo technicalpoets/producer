@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Android.App;
+using Android.OS;
 using Firebase.Messaging;
 using Producer.Domain;
 using Producer.Shared;
@@ -15,30 +16,25 @@ namespace Producer.Droid.Services
 
 		public async override void OnMessageReceived (RemoteMessage message)
 		{
-			//Log.Debug ($"From: {message.From}");
-			//Log.Debug ($"Notification Message Body: {message.GetNotification ().Body}");
-
-
-			// if (userInfo.TryGetValue (new NSString ("collectionId"), out NSObject nsObj) && nsObj is NSString nsStr) { }
-
 			if (processingNotification)
 			{
-				Log.Debug ($"Already processing notificaiton. Returning...");
+				Log.Debug ($"Already processing notification. Returning...");
 				return;
 			}
 
 			processingNotification = true;
-
-			Log.Debug ($"Get All AvContent Async...");
+			Log.Debug ($"Processing new RemoteMessage :: sender: {message.From}");
 
 			try
 			{
+				Log.Debug ($"Get All AvContent Async...");
+
 				//refresh content - this will generate an AvContentChanged event the UI will pick up
 				await ContentClient.Shared.GetAllAvContent ();
 
 				DeleteLocalUploads ();
 
-				Log.Debug ($"Finished Getting Data.");
+				Log.Debug ($"Finished Getting AvContent Data.");
 			}
 			catch (Exception ex)
 			{
@@ -47,6 +43,26 @@ namespace Producer.Droid.Services
 			finally
 			{
 				processingNotification = false;
+			}
+
+			var notification = message.GetNotification ();
+
+			if (notification != null)
+			{
+				//Log.Debug ("Sending ContentPublished notification");
+
+				//if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+				//{
+				//	this.GetChannelNotification (NotificationChannels.ContentPublished.Id, notification.Title, notification.Body)
+				//		.SetLaunchActivity (typeof (MainActivity))
+				//		.Send ();
+				//}
+				//else
+				//{
+				//	this.GetNotification (notification.Title, notification.Body)
+				//		.SetLaunchActivity (typeof (MainActivity))
+				//		.Send ();
+				//}
 			}
 		}
 

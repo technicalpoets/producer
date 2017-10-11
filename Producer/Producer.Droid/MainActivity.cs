@@ -173,6 +173,7 @@ namespace Producer.Droid
 				 .SetTitle (alertTitle)
 				 .SetMessage (alertMessage)
 				 .SetView (view)
+				 .SetCancelable (false)
 				 .SetPositiveButton ("OK", async (sender, e) =>
 				 {
 					 var text = textView.Text;

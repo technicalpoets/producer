@@ -60,12 +60,6 @@
 		<Reference Include="Mono.Android" />
 		<Reference Include="System.Net.Http" />
 		<Reference Include="Java.Interop" />
-		<Reference Include="Plugin.VersionTracking.Abstractions">
-			<HintPath>..\packages\Plugin.VersionTracking.1.0.1\lib\MonoAndroid10\Plugin.VersionTracking.Abstractions.dll</HintPath>
-		</Reference>
-		<Reference Include="Plugin.VersionTracking">
-			<HintPath>..\packages\Plugin.VersionTracking.1.0.1\lib\MonoAndroid10\Plugin.VersionTracking.dll</HintPath>
-		</Reference>
 		<Reference Include="System.IO.Compression" />
 		<Reference Include="System.Xml.Linq" />
 		<Reference Include="Microsoft.CSharp" />
@@ -201,6 +195,12 @@
 		<Reference Include="Microsoft.Azure.DocumentDB.Core">
 		  <HintPath>..\packages\Microsoft.Azure.DocumentDB.Core.1.5.1\lib\netstandard1.6\Microsoft.Azure.DocumentDB.Core.dll</HintPath>
 		</Reference>
+		<Reference Include="Plugin.VersionTracking.Abstractions">
+		  <HintPath>..\packages\Plugin.VersionTracking.2.0.1\lib\MonoAndroid10\Plugin.VersionTracking.Abstractions.dll</HintPath>
+		</Reference>
+		<Reference Include="Plugin.VersionTracking">
+		  <HintPath>..\packages\Plugin.VersionTracking.2.0.1\lib\MonoAndroid10\Plugin.VersionTracking.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Include="MainActivity.cs" />
@@ -248,11 +248,13 @@
 		<Compile Include="View\Content\ContentViewHolder.cs" />
 		<Compile Include="View\Content\FavoritesRecyclerFragment.cs" />
 		<Compile Include="Services\ProducerFirebaseInstanceIdService.cs" />
-		<Compile Include="Services\ProducerFirebaseMessagingService.cs" />
 		<Compile Include="Framework\Utilities\Extensions\ActivityExtensions.cs" />
 		<Compile Include="Services\RegistrationIntentService.cs" />
 		<Compile Include="Settings\SettingsKeys.cs" />
 		<Compile Include="Settings\SettingsAccessors.cs" />
+		<Compile Include="Notifications\NotificationChannels.cs" />
+		<Compile Include="Notifications\NotificationUtility.cs" />
+		<Compile Include="Services\ProducerFirebaseMessagingService.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="Resources\AboutResources.txt" />
@@ -314,6 +316,7 @@
 		<Folder Include="Resources\animator\" />
 		<Folder Include="View\Content\" />
 		<Folder Include="Services\" />
+		<Folder Include="Notifications\" />
 	</ItemGroup>
 	<ItemGroup>
 		<GoogleServicesJson Include="google-services.json" />
@@ -321,7 +324,6 @@
 	<Import Project="..\Producer.Domain\Producer.Domain.projitems" Label="Shared" Condition="Exists('..\Producer.Domain\Producer.Domain.projitems')" />
 	<Import Project="..\Producer.Shared\Producer.Shared.projitems" Label="Shared" Condition="Exists('..\Producer.Shared\Producer.Shared.projitems')" />
 	<Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-	<Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
 	<Import Project="..\packages\Xamarin.GooglePlayServices.Basement.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Basement.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Basement.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Basement.targets')" />
 	<Import Project="..\packages\Xamarin.GooglePlayServices.Tasks.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Tasks.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Tasks.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Tasks.targets')" />
 	<Import Project="..\packages\Xamarin.GooglePlayServices.Base.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Base.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Base.42.1021.1\build\MonoAndroid70\Xamarin.GooglePlayServices.Base.targets')" />
@@ -345,4 +347,5 @@
 	<Import Project="..\packages\Xamarin.Firebase.Common.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Common.targets" Condition="Exists('..\packages\Xamarin.Firebase.Common.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Common.targets')" />
 	<Import Project="..\packages\Xamarin.Firebase.Iid.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Iid.targets" Condition="Exists('..\packages\Xamarin.Firebase.Iid.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Iid.targets')" />
 	<Import Project="..\packages\Xamarin.Firebase.Messaging.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Messaging.targets" Condition="Exists('..\packages\Xamarin.Firebase.Messaging.42.1021.1\build\MonoAndroid70\Xamarin.Firebase.Messaging.targets')" />
+	<Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
 </Project>
