@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:versionCode="278"
+	android:versionCode="280"
 	android:versionName="0.1.0"
 	package="com.xamarin.producer">
 	<uses-sdk

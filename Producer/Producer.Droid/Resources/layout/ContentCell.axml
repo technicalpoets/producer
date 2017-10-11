@@ -40,7 +40,7 @@
                 android:id="@+id/icon_content"
                 android:layout_width="@dimen/icon_padded_width_height"
                 android:layout_height="@dimen/icon_padded_width_height"
-                android:src="@drawable/ic_album" />
+                android:src="@drawable/ic_content_audio" />
         </RelativeLayout>
     </RelativeLayout>
     <LinearLayout
@@ -49,20 +49,19 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/icon_container"
         android:layout_centerVertical="true"
-        android:paddingStart="14dp"
-        android:paddingTop="4dp"
+        android:paddingStart="16dp"
+        android:paddingTop="3dp"
         android:paddingBottom="4dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/contentTitle"
             android:layout_marginBottom="5dp"
-            android:textSize="22sp"
-            android:textColor="@android:color/black" />
+            android:textSize="20sp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/contentArtist"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
     </LinearLayout>
 </RelativeLayout>

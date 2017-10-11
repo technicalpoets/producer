@@ -1,58 +1,32 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<color
-		name="fastscroll_thumb_inactive_color">#009688</color>
-	<color
-		name="fastscroll_thumb_active_color">#009688</color>
-	<color
 		name="bg_action_mode">#757575</color>
 	<color
 		name="bg_circle_default">#666666</color>
 	<color
-		name="row_activated">#e0e0e0</color>
-	<!-- Xamarin Material Palette -->
+		name="row_normal">#333333</color>
 	<color
-		name="primary">#2980B9</color>
+		name="row_activated">#CC3333</color>
+	<!-- Producer Theme Colors -->
 	<color
-		name="primary_dark">#1e5d87</color>
+		name="primary">#000000</color>
+	<color
+		name="colorPrimaryDark">#AD1414</color>
 	<color
 		name="primary_light">#499ed7</color>
 	<color
+		name="colorControlNormal">#CC3333</color>
+	<color
 		name="accent">#9E9E9E</color>
 	<color
-		name="primary_text">#212121</color>
+		name="primary_text">#CCCCCC</color>
 	<color
 		name="secondary_text">#757575</color>
 	<color
-		name="icons">#FFFFFF</color>
+		name="icons">#CC3333</color>
+	<color
+		name="navigationBarColor">#CC3333</color>
 	<color
 		name="divider">#BDBDBD</color>
-	<color
-		name="xamarin_50">#f0f7fc</color>
-	<color
-		name="xamarin_100">#b1d6ee</color>
-	<color
-		name="xamarin_200">#83bde4</color>
-	<color
-		name="xamarin_300">#499ed7</color>
-	<color
-		name="xamarin_400">#3091d1</color>
-	<color
-		name="xamarin_500">#2980b9</color>
-	<color
-		name="xamarin_600">#236fa0</color>
-	<color
-		name="xamarin_700">#1e5d87</color>
-	<color
-		name="xamarin_800">#184c6e</color>
-	<color
-		name="xamarin_900">#133b55</color>
-	<color
-		name="xamarin_A100">#f0f7fc</color>
-	<color
-		name="xamarin_A200">#b1d6ee</color>
-	<color
-		name="xamarin_A400">#3091d1</color>
-	<color
-		name="xamarin_A700">#1e5d87</color>
 </resources>

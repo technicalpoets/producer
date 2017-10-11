@@ -303,6 +303,7 @@
 		<AndroidResource Include="Resources\layout\EditTextDialog.axml" />
 		<AndroidResource Include="Resources\drawable\ic_account_circle.xml" />
 		<AndroidResource Include="Resources\drawable\ic_create.xml" />
+		<AndroidResource Include="Resources\drawable\ic_content_audio.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />

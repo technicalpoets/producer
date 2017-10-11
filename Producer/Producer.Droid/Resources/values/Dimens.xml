@@ -3,7 +3,7 @@
 	<dimen
 		name="icon_width_height">40dp</dimen>
 	<dimen
-		name="icon_padded_width_height">46dp</dimen>
+		name="icon_padded_width_height">40dp</dimen>
 	<dimen
 		name="icon_text">22dp</dimen>
 	<dimen
