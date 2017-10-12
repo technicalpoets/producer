@@ -10,7 +10,7 @@ using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Producer.Droid
 {
-	[Activity (Label = "UserActivity")]
+	[Activity (Label = "Profile", ParentActivity = typeof (MainActivity))]
 	public class UserActivity : BaseActivity
 #if NC_AUTH_GOOGLE
 	//, GoogleApiClient.IOnConnectionFailedListener//AppCompatActivity
@@ -29,7 +29,7 @@ namespace Producer.Droid
 			SupportActionBar.SetDisplayShowTitleEnabled (false); //we'll use a custom title
 			SupportActionBar.SetDisplayHomeAsUpEnabled (true);
 
-			toolbarTitle.Text = "Profile";
+			toolbarTitle.Text = this.Title;
 
 #if NC_AUTH_GOOGLE
 			//ClientAuthManager.Shared.InitializeAuthProviders (this);
