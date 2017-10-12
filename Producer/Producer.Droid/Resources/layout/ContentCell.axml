@@ -26,7 +26,7 @@
                 android:layout_height="@dimen/icon_width_height"
                 android:src="@drawable/bg_circle" />
             <ImageView
-                android:layout_width="25dp"
+                android:layout_width="20dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:src="@drawable/ic_done" />
@@ -38,8 +38,8 @@
             android:layout_centerInParent="true">
             <ImageView
                 android:id="@+id/icon_content"
-                android:layout_width="@dimen/icon_width_height"
-                android:layout_height="@dimen/icon_width_height"
+                android:layout_width="@dimen/icon_padded_width_height"
+                android:layout_height="@dimen/icon_padded_width_height"
                 android:src="@drawable/ic_content_audio" />
         </RelativeLayout>
     </RelativeLayout>

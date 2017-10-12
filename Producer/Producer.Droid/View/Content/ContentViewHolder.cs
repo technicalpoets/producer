@@ -14,6 +14,7 @@ namespace Producer.Droid
 		TextView title;
 		TextView artist;
 		RelativeLayout iconContainer, iconBack, iconFront;
+		ImageView iconContent;
 
 		//static UpdatableForegroundColorSpan locationColorSpan;
 		//static RelativeSizeSpan locationSizeSpan;
@@ -39,6 +40,7 @@ namespace Producer.Droid
 		{
 			title = rootView.FindViewById<TextView> (Resource.Id.contentTitle);
 			artist = rootView.FindViewById<TextView> (Resource.Id.contentArtist);
+			iconContent = rootView.FindViewById<ImageView> (Resource.Id.icon_content);
 			iconContainer = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_container);
 			iconBack = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_back);
 			iconFront = rootView.FindViewById<RelativeLayout> (Resource.Id.icon_front);
@@ -53,6 +55,16 @@ namespace Producer.Droid
 
 			title.SetText (data.Music.DisplayName, TextView.BufferType.Normal);
 			artist.SetText (data.Music.Description, TextView.BufferType.Normal);
+
+			switch (data.Music.ContentType)
+			{
+				case AvContentTypes.Audio:
+					iconContent.SetImageResource (Resource.Drawable.ic_content_audio);
+					break;
+				case AvContentTypes.Video:
+					iconContent.SetImageResource (Resource.Drawable.ic_content_video);
+					break;
+			}
 
 			ApplyIconAnimation (selected, animateSelection);
 

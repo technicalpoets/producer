@@ -20,7 +20,7 @@ namespace Producer.Droid
 		public string Title => "Media";
 
 
-		public int Icon => Resource.Drawable.ic_segment_andrew;
+		public int Icon => Resource.Drawable.ic_tab_media;
 
 
 		#endregion

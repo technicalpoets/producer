@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
 	<dimen
-		name="icon_width_height">32dp</dimen>
+		name="icon_width_height">24dp</dimen>
+	<dimen
+		name="icon_padded_width_height">32dp</dimen>
 	<dimen
 		name="tab_height">60dp</dimen>
 	<dimen

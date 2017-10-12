@@ -20,6 +20,9 @@ namespace Producer.Droid
 	{
 		TabFragmentPagerAdapter PagerAdapter;
 		IMenu menu;
+		TextView toolbarTitle;
+
+		//TODO: fix action mode title color
 
 
 		protected override void OnCreate (Bundle savedInstanceState)
@@ -29,22 +32,28 @@ namespace Producer.Droid
 			Bootstrap.Run ();
 
 			//read in extra keys/values from the incoming intent
-			if (Intent.Extras != null)
-			{
-				foreach (var key in Intent.Extras.KeySet ())
-				{
-					var value = Intent.Extras.GetString (key);
-					Log.Debug ($"Key: {key} Value: {value}");
-				}
-			}
+			//if (Intent.Extras != null)
+			//{
+			//	foreach (var key in Intent.Extras.KeySet ())
+			//	{
+			//		var value = Intent.Extras.GetString (key);
+			//		Log.Debug ($"Key: {key} Value: {value}");
+			//	}
+			//}
 
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
-			var toolbar = FindViewById<Toolbar> (Resource.Id.main_toolbar);
+
+			//config toolbar
+			var toolbar = FindViewById<Toolbar> (Resource.Id.toolbar);
+			toolbarTitle = toolbar.FindViewById<TextView> (Resource.Id.toolbar_title);
+			toolbar.SetNavigationIcon (Resource.Drawable.ic_tab_profile);
 
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
+			SupportActionBar.SetDisplayShowTitleEnabled (false); //we'll use a custom title
 
+			//set up tabs + view pager
 			setupViewPager ();
 
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
@@ -127,17 +136,11 @@ namespace Producer.Droid
 		{
 			switch (item.ItemId)
 			{
-				case Resource.Id.action_profile:
+				case Android.Resource.Id.Home: //profile icon/menu item
 					profileButtonClicked ();
-					return true;
-				case Resource.Id.action_settings:
-					StartActivity (typeof (SettingsActivity));
 					return true;
 				case Resource.Id.action_compose:
 					return true;
-				case Android.Resource.Id.Home:
-
-					return false;
 			}
 
 			return base.OnOptionsItemSelected (item);
@@ -222,7 +225,7 @@ namespace Producer.Droid
 			tabLayout.SetupWithViewPager (viewPager);
 
 			PagerAdapter.FillTabLayout (tabLayout);
-			SupportActionBar.Title = PagerAdapter.GetTabFragment (0).Title;
+			toolbarTitle.Text = PagerAdapter.GetTabFragment (0).Title;
 
 			viewPager.PageSelected += (sender, e) =>
 			{
@@ -234,7 +237,8 @@ namespace Producer.Droid
 
 				//swap the title into the app bar title rather than including it in the tab
 				var tabFragment = PagerAdapter.GetTabFragment (e.Position);
-				SupportActionBar.Title = tabFragment.Title;
+				//SupportActionBar.Title = tabFragment.Title;
+				toolbarTitle.Text = tabFragment.Title;
 			};
 		}
 

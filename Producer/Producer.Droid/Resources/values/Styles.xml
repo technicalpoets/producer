@@ -5,7 +5,7 @@
 		name="Theme.Producer"
 		parent="Theme.AppCompat.NoActionBar">
 		<item
-			name="colorPrimary">@color/primary</item>
+			name="colorPrimary">@color/colorPrimary</item>
 		<item
 			name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item
@@ -15,7 +15,7 @@
 		<item
 			name="android:textColorSecondary">@color/primaryLight</item>
 		<item
-			name="colorButtonNormal">@color/primary</item>
+			name="colorButtonNormal">@color/colorPrimary</item>
 		<item
 			name="android:navigationBarColor">@color/navigationBarColor</item>
 		<item
@@ -24,6 +24,8 @@
 			name="windowActionModeOverlay">true</item>
 		<item
 			name="android:actionModeBackground">@color/bg_action_mode</item>
+		<item
+			name="actionMenuTextColor">@android:color/white</item>
 		<!-- enable window content transitions -->
 		<item
 			name="android:windowContentTransitions">true</item>
@@ -57,7 +59,7 @@
 		<item
 			name="android:layout_height">@dimen/tab_height</item>
 		<item
-			name="tabIndicatorColor">@color/colorControlNormal</item>
+			name="tabIndicatorColor">@color/colorAccent</item>
 		<item
 			name="android:layout_alignParentBottom">true</item>
 		<item

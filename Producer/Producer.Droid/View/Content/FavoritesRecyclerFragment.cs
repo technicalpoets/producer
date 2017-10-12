@@ -8,7 +8,7 @@
 		public string Title => "Favorites";
 
 
-		public int Icon => Resource.Drawable.ic_segment_saved;
+		public int Icon => Resource.Drawable.ic_tab_favorites;
 
 
 		#endregion

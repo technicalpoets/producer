@@ -1,14 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <resources>
-	<color
-		name="bg_action_mode">#757575</color>
-	<color
-		name="row_normal">#333333</color>
-	<color
-		name="row_activated">#E44F50</color>
 	<!-- Producer Theme Colors -->
 	<color
-		name="primary">#000000</color>
+		name="colorPrimary">#000000</color>
 	<color
 		name="colorPrimaryDark">#000000</color>
 	<color
@@ -22,9 +16,16 @@
 	<color
 		name="secondary_text">#757575</color>
 	<color
-		name="icons">#E44F50</color>
-	<color
 		name="navigationBarColor">#E44F50</color>
+	<!-- Other, non-theme colors -->
+	<color
+		name="bg_action_mode">#E44F50</color>
+	<color
+		name="row_normal">#333333</color>
+	<color
+		name="row_activated">#000000</color>
 	<color
 		name="divider">#BDBDBD</color>
+	<color
+		name="icons">#E44F50</color>
 </resources>
