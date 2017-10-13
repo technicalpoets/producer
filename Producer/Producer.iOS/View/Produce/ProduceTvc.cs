@@ -161,7 +161,6 @@ namespace Producer.iOS
 		}
 
 
-
 		void handleAlertControllerActionEditItem (UIAlertAction obj)
 		{
 			var asset = content [indexPathCache.Row];
@@ -239,7 +238,6 @@ namespace Producer.iOS
 				Task.Run (() => ContentClient.Shared.DeleteAvContent (asset));
 			}
 		}
-
 
 
 		#endregion
