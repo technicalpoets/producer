@@ -20,12 +20,17 @@
 			name="android:navigationBarColor">@color/navigationBarColor</item>
 		<item
 			name="colorControlNormal">@color/colorControlNormal</item>
+		<!-- ActionMode styling -->
 		<item
 			name="windowActionModeOverlay">true</item>
 		<item
 			name="android:actionModeBackground">@color/bg_action_mode</item>
 		<item
 			name="actionMenuTextColor">@android:color/white</item>
+		<item
+			name="actionModeStyle">@style/Widget.ActionMode</item>
+		<item
+			name="actionModeCloseDrawable">@drawable/ic_arrow_back</item>
 		<!-- enable window content transitions -->
 		<item
 			name="android:windowContentTransitions">true</item>
@@ -49,6 +54,19 @@
 		<!-- android:textColorSecondary is the color of the menu overflow icon (three vertical dots) -->
 		<item
 			name="android:textColorSecondary">@color/colorAccent</item>
+	</style>
+	<!-- ActionMode styling -->
+	<style
+		name="Widget.ActionMode"
+		parent="@style/Widget.AppCompat.ActionMode">
+		<item
+			name="titleTextStyle">@style/Theme.Producer.ActionBar.TitleTextStyle</item>
+	</style>
+	<style
+		name="Theme.Producer.ActionBar.TitleTextStyle"
+		parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+		<item
+			name="android:textColor">@android:color/white</item>
 	</style>
 	<!-- TabLayout style -->
 	<style

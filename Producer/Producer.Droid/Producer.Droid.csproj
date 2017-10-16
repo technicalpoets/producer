@@ -314,6 +314,7 @@
 		<AndroidResource Include="Resources\drawable\ic_tab_andrew_selected.xml" />
 		<AndroidResource Include="Resources\drawable\ic_tab_saved_selected.xml" />
 		<AndroidResource Include="Resources\drawable\ic_tab_favorites.xml" />
+		<AndroidResource Include="Resources\drawable\ic_arrow_back.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
