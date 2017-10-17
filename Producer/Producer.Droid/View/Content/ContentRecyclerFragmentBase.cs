@@ -41,6 +41,15 @@ namespace Producer.Droid
 		}
 
 
+		public override void OnViewCreated (View view, Bundle savedInstanceState)
+		{
+			base.OnViewCreated (view, savedInstanceState);
+
+			//no other way to theme the SwipeRefreshLayout currently :(
+			SwipeRefreshLayout.SetColorSchemeResources (Resource.Color.colorAccent);
+		}
+
+
 		#region implemented abstract/virtual members of RecyclerViewFragment
 
 
@@ -56,15 +65,18 @@ namespace Producer.Droid
 		protected override Task LoadData ()
 		{
 			//check if the shared RefreshTask has been set, since we're sharing data between fragments
-			if (RefreshTask == null)
+			if (RefreshTask.IsNullFinishCanceledOrFaulted ())
 			{
-				//TODO: determine if we need to lock() or otherwise thread sync
-
 				RefreshTask = Task.Run (async () =>
 				{
-					await ContentClient.Shared.GetAllAvContent ();
+					if (await Settings.IsConfigured ())
+					{
+						Log.Debug ($"Content refresh started (ContentClient.Shared.GetAllAvContent) :: User : {ProducerClient.Shared.User?.ToString ()}");
 
-					await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+						await AssetPersistenceManager.Shared.RestorePersistenceManagerAsync (ContentClient.Shared.AvContent [UserRoles.General]);
+
+						await ContentClient.Shared.GetAllAvContent ();
+					}
 				});
 			}
 

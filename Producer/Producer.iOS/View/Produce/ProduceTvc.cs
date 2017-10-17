@@ -83,6 +83,12 @@ namespace Producer.iOS
 		}
 
 
+		partial void refreshValueChanged (NSObject sender)
+		{
+			Task.Run (() => ContentClient.Shared.GetAllAvContent ());
+		}
+
+
 		partial void segmentControlValueChanged (NSObject sender)
 		{
 			Settings.ProducerListSelectedRole = (int) segmentControl.SelectedSegment;
@@ -100,7 +106,18 @@ namespace Producer.iOS
 		}
 
 
-		void handleAvContentChanged (object sender, UserRoles e) => BeginInvokeOnMainThread (() => { TableView.ReloadData (); });
+		void handleAvContentChanged (object sender, UserRoles e)
+		{
+			BeginInvokeOnMainThread (() =>
+			{
+				TableView.ReloadData ();
+
+				if (RefreshControl?.Refreshing ?? false)
+				{
+					RefreshControl.EndRefreshing ();
+				}
+			});
+		}
 
 
 		#region TableCell Action Handlers
@@ -144,7 +161,6 @@ namespace Producer.iOS
 		}
 
 
-
 		void handleAlertControllerActionEditItem (UIAlertAction obj)
 		{
 			var asset = content [indexPathCache.Row];
@@ -153,9 +169,7 @@ namespace Producer.iOS
 			{
 				var composeNc = Storyboard.Instantiate<ComposeNc> ();
 
-				var composeVc = composeNc?.TopViewController as ComposeVc;
-
-				if (composeVc != null)
+				if (composeNc?.TopViewController is ComposeVc composeVc)
 				{
 					composeVc.SetData (asset);
 
@@ -224,7 +238,6 @@ namespace Producer.iOS
 				Task.Run (() => ContentClient.Shared.DeleteAvContent (asset));
 			}
 		}
-
 
 
 		#endregion

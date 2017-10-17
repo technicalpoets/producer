@@ -1,8 +1,4 @@
-﻿using System;
-using Android.OS;
-using Android.Views;
-
-namespace Producer.Droid
+﻿namespace Producer.Droid
 {
 	public class FavoritesRecyclerFragment : ContentRecyclerFragmentBase, ITabFragment
 	{
@@ -12,7 +8,7 @@ namespace Producer.Droid
 		public string Title => "Favorites";
 
 
-		public int Icon => Resource.Drawable.ic_tabbar_resources;
+		public int Icon => Resource.Drawable.ic_tab_favorites;
 
 
 		#endregion

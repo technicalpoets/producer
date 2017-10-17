@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<menu
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+		android:id="@+id/action_settings"
+		android:icon="@drawable/ic_settings"
+		app:showAsAction="always"
+		android:title="Settings">
+	</item>
+	<item
+		android:id="@+id/action_logout"
+		app:showAsAction="always"
+		android:title="@string/user_logout">
+	</item>
+</menu>

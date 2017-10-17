@@ -101,6 +101,48 @@ namespace Producer.Shared
 			}
 
 			await RefreshAvContentAsync ();
+
+			async Task RefreshAvContentAsync ()
+			{
+				try
+				{
+					Expression<Func<AvContent, bool>> predicate = null;
+
+					switch (UserRole)
+					{
+						case UserRoles.General:
+							predicate = c => c.PublishedTo == UserRoles.General;
+							break;
+						case UserRoles.Insider:
+							predicate = c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider;
+							break;
+						case UserRoles.Producer:
+						case UserRoles.Admin:
+							predicate = c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider || c.PublishedTo == UserRoles.Producer;
+							break;
+					}
+
+					var content = await Get (predicate);
+
+					AvContent = content.GroupBy (c => c.PublishedTo).ToDictionary (g => g.Key, g => g.OrderByDescending (i => i.Timestamp).ToList ());
+
+					if (!AvContent.ContainsKey (UserRoles.General)) AvContent [UserRoles.General] = new List<AvContent> ();
+					if (!AvContent.ContainsKey (UserRoles.Insider)) AvContent [UserRoles.Insider] = new List<AvContent> ();
+					if (!AvContent.ContainsKey (UserRoles.Producer)) AvContent [UserRoles.Producer] = new List<AvContent> ();
+
+
+					initialDataLoad = true;
+
+					AvContentChanged?.Invoke (this, UserRole);
+
+					Settings.ContentDataCache = JsonConvert.SerializeObject (AvContent);
+				}
+				catch (Exception ex)
+				{
+					Log.Error (ex);
+					throw;
+				}
+			}
 		}
 
 
@@ -172,49 +214,6 @@ namespace Producer.Shared
 			}
 
 			var deletedItem = await Delete (item);
-		}
-
-
-		async Task RefreshAvContentAsync ()
-		{
-			try
-			{
-				Expression<Func<AvContent, bool>> predicate = null;
-
-				switch (UserRole)
-				{
-					case UserRoles.General:
-						predicate = c => c.PublishedTo == UserRoles.General;
-						break;
-					case UserRoles.Insider:
-						predicate = c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider;
-						break;
-					case UserRoles.Producer:
-					case UserRoles.Admin:
-						predicate = c => c.PublishedTo == UserRoles.General || c.PublishedTo == UserRoles.Insider || c.PublishedTo == UserRoles.Producer;
-						break;
-				}
-
-				var content = await Get (predicate);
-
-				AvContent = content.GroupBy (c => c.PublishedTo).ToDictionary (g => g.Key, g => g.OrderByDescending (i => i.Timestamp).ToList ());
-
-				if (!AvContent.ContainsKey (UserRoles.General)) AvContent [UserRoles.General] = new List<AvContent> ();
-				if (!AvContent.ContainsKey (UserRoles.Insider)) AvContent [UserRoles.Insider] = new List<AvContent> ();
-				if (!AvContent.ContainsKey (UserRoles.Producer)) AvContent [UserRoles.Producer] = new List<AvContent> ();
-
-
-				initialDataLoad = true;
-
-				AvContentChanged?.Invoke (this, UserRole);
-
-				Settings.ContentDataCache = JsonConvert.SerializeObject (AvContent);
-			}
-			catch (Exception ex)
-			{
-				Log.Error (ex);
-				throw;
-			}
 		}
 
 

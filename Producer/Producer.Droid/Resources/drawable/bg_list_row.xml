@@ -5,5 +5,5 @@
 		android:drawable="@color/row_activated"
 		android:state_activated="true" />
 	<item
-		android:drawable="@android:color/transparent" />
+		android:drawable="@color/row_normal" />
 </selector>

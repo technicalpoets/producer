@@ -1,15 +1,15 @@
-using System.Threading.Tasks;
-
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
 using Android.Views;
-
+using Android.Widget;
 using Producer.Auth;
 using Producer.Domain;
+using Producer.Droid.Services;
 using Producer.Shared;
+using System.Threading.Tasks;
 
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
@@ -19,8 +19,8 @@ namespace Producer.Droid
 	public class MainActivity : BaseActivity
 	{
 		TabFragmentPagerAdapter PagerAdapter;
-		static IMenu _menu;
-
+		IMenu menu;
+		TextView toolbarTitle;
 
 
 		protected override void OnCreate (Bundle savedInstanceState)
@@ -29,30 +29,48 @@ namespace Producer.Droid
 
 			Bootstrap.Run ();
 
+			//read in extra keys/values from the incoming intent
+			//if (Intent.Extras != null)
+			//{
+			//	foreach (var key in Intent.Extras.KeySet ())
+			//	{
+			//		var value = Intent.Extras.GetString (key);
+			//		Log.Debug ($"Key: {key} Value: {value}");
+			//	}
+			//}
+
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
-			var toolbar = FindViewById<Toolbar> (Resource.Id.main_toolbar);
+
+			//config toolbar
+			var toolbar = FindViewById<Toolbar> (Resource.Id.toolbar);
+			toolbarTitle = toolbar.FindViewById<TextView> (Resource.Id.toolbar_title);
+			toolbar.SetNavigationIcon (Resource.Drawable.ic_tab_profile);
 
 			//Toolbar will now take on default Action Bar characteristics
 			SetSupportActionBar (toolbar);
-			SupportActionBar.SetDisplayHomeAsUpEnabled (true);
+			SupportActionBar.SetDisplayShowTitleEnabled (false); //we'll use a custom title
 
-			//final Drawable upArrow = getResources ().getDrawable (R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-			//upArrow.setColorFilter (getResources ().getColor (android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-			//getSupportActionBar ().setHomeAsUpIndicator (upArrow);
-
+			//set up tabs + view pager
 			setupViewPager ();
 
 			ClientAuthManager.Shared.AuthorizationChanged += handleClientAuthChanged;
 			ProducerClient.Shared.CurrentUserChanged += handleCurrentUserChanged;
+
+			RegisterForNotifications ();
 		}
 
 
-		protected override void OnResume ()
+		protected override async void OnResume ()
 		{
 			base.OnResume ();
 
 			checkCompose ();
+
+			if (!await Settings.IsConfigured ())
+			{
+				ShowConfigAlert ();
+			}
 		}
 
 
@@ -68,22 +86,21 @@ namespace Producer.Droid
 		}
 
 
-		void handleClientAuthChanged (object sender, ClientAuthDetails e)
+		void handleClientAuthChanged (object sender, ClientAuthDetails authDetails)
 		{
-			Log.Debug ($"Authenticated: {e}");
+			Log.Debug ($"Authenticated: {authDetails}");
 
 			Task.Run (async () =>
 			{
-				if (e == null)
+				if (authDetails == null)
 				{
 					ProducerClient.Shared.ResetUser ();
 				}
 				else
 				{
-					await ProducerClient.Shared.AuthenticateUser (e.Token, e.AuthCode);
+					await ProducerClient.Shared.AuthenticateUser (authDetails.Token, authDetails.AuthCode);
 				}
 
-				//todo Activity.RunOnUiThread (() => UNUserNotificationCenter.Current.RequestAuthorization (UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, authorizationRequestHandler));
 				await ContentClient.Shared.GetAllAvContent ();
 			});
 		}
@@ -91,19 +108,22 @@ namespace Producer.Droid
 
 		void handleCurrentUserChanged (object sender, User e)
 		{
-			checkCompose ();
 			Log.Debug ($"User: {e?.ToString ()}");
+
+			checkCompose ();
+
+			RegisterForNotifications ();
 		}
 
 
 		void checkCompose ()
 		{
 			// Check if signed-in user has write access
-			if (_menu != null)
+			if (menu != null)
 			{
 				RunOnUiThread (() =>
 				{
-					var composeItem = _menu.FindItem (Resource.Id.action_compose);
+					var composeItem = menu.FindItem (Resource.Id.action_compose);
 					composeItem?.SetVisible (ProducerClient.Shared.UserRole.CanWrite ());
 				});
 			}
@@ -114,13 +134,10 @@ namespace Producer.Droid
 		{
 			switch (item.ItemId)
 			{
-				case Resource.Id.action_settings:
-					StartActivity (typeof (SettingsActivity));
-					break;
-				case Resource.Id.action_compose:
-					return true;
-				case Android.Resource.Id.Home:
+				case Android.Resource.Id.Home: //profile icon/menu item
 					profileButtonClicked ();
+					return true;
+				case Resource.Id.action_compose:
 					return true;
 			}
 
@@ -138,19 +155,64 @@ namespace Producer.Droid
 
 		public override bool OnCreateOptionsMenu (IMenu menu)
 		{
-			_menu = menu;
-			MenuInflater.Inflate (Resource.Menu.menu_settings, menu);
-			MenuInflater.Inflate (Resource.Menu.menu_compose, menu);
+			this.menu = menu;
+			MenuInflater.Inflate (Resource.Menu.menu_main, menu);
 
 			return base.OnCreateOptionsMenu (menu);
+		}
+
+
+		public void ShowConfigAlert (string alertTitle = "Configure App", string alertMessage = "Enter the \"Site Name\" used when deploying the to Azure:")
+		{
+			Settings.BeginConfig ();
+
+			var view = LayoutInflater.FromContext (this).Inflate (Resource.Layout.EditTextDialog, FindViewById<ViewGroup> (Android.Resource.Id.Content), false);
+			var textView = view.FindViewById<AutoCompleteTextView> (Resource.Id.input);
+			textView.Hint = Resources.GetString (Resource.String.site_name);
+
+			var builder = new AlertDialog.Builder (this)
+				 .SetTitle (alertTitle)
+				 .SetMessage (alertMessage)
+				 .SetView (view)
+				 .SetCancelable (false)
+				 .SetPositiveButton ("OK", async (sender, e) =>
+				 {
+					 var text = textView.Text;
+
+					 if (string.IsNullOrEmpty (text))
+					 {
+						 ShowConfigAlert ();
+					 }
+					 else
+					 {
+						 Settings.AzureSiteName = text;
+
+						 await ProducerClient.Shared.UpdateAppSettings ();
+
+						 Settings.CompleteConfig ();
+
+						 RegisterForNotifications ();
+					 }
+				 })
+				 .Show ();
+		}
+
+
+		void RegisterForNotifications ()
+		{
+			if (this.CheckPlayServicesAvailable ())
+			{
+				// Start RegistrationIntentService to register this application with Azure Notification Hub.
+				StartService (new Intent (this, typeof (RegistrationIntentService)));
+			}
 		}
 
 
 		void setupViewPager ()
 		{
 			PagerAdapter = new TabFragmentPagerAdapter (this, SupportFragmentManager);
-			PagerAdapter.AddFragment (new ContentRecyclerFragment ());
-			PagerAdapter.AddFragment (new FavoritesRecyclerFragment ());
+			PagerAdapter.AddFragment (new ContentRecyclerFragment (), false);
+			PagerAdapter.AddFragment (new FavoritesRecyclerFragment (), false);
 
 			var viewPager = FindViewById<ViewPager> (Resource.Id.main_viewPager);
 			viewPager.Adapter = PagerAdapter;
@@ -161,41 +223,38 @@ namespace Producer.Droid
 			tabLayout.SetupWithViewPager (viewPager);
 
 			PagerAdapter.FillTabLayout (tabLayout);
-			//ClientAuthManager.Shared.InitializeAuthProviders (this);
+			toolbarTitle.Text = PagerAdapter.GetTabFragment (0).Title;
 
 			viewPager.PageSelected += (sender, e) =>
 			{
-
-				//Tier = (PartnerTiers)e.Position;
-
 				////update the query listener
 				//var fragment = PagerAdapter.GetFragmentAtPosition (e.Position);
 				//queryListener = (SearchView.IOnQueryTextListener)fragment;
 
 				//searchView?.SetOnQueryTextListener (queryListener);
 
-				//UpdateColors (Tier);
+				//swap the title into the app bar title rather than including it in the tab
+				var tabFragment = PagerAdapter.GetTabFragment (e.Position);
+				//SupportActionBar.Title = tabFragment.Title;
+				toolbarTitle.Text = tabFragment.Title;
 			};
 		}
 
 
 		void profileButtonClicked ()
 		{
-			RunOnUiThread (() =>
-			{
-				ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.Login;
-				ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
-				ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
+			ClientAuthManager.Shared.AuthActivityLayoutResId = Resource.Layout.Login;
+			ClientAuthManager.Shared.GoogleWebClientResId = Resource.String.default_web_client_id;
+			ClientAuthManager.Shared.GoogleButtonResId = Resource.Id.sign_in_button;
 
-				if (ProducerClient.Shared.User == null)
-				{
-					StartActivity (typeof (LoginActivity));
-				}
-				else
-				{
-					StartActivity (typeof (UserActivity));
-				}
-			});
+			if (ProducerClient.Shared.User == null)
+			{
+				StartActivity (typeof (LoginActivity));
+			}
+			else
+			{
+				StartActivity (typeof (UserActivity));
+			}
 		}
 	}
 }

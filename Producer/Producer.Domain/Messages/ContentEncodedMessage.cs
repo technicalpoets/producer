@@ -10,6 +10,13 @@ namespace Producer.Domain
 			: base (documentId, collectionId, UserRoles.Producer)
 		{ }
 
+		[Newtonsoft.Json.JsonConstructor]
+		public ContentEncodedMessage (string documentId, string collectionId, string remoteAssetUri)
+			: base (documentId, collectionId, UserRoles.Producer)
+		{
+			RemoteAssetUri = remoteAssetUri;
+		}
+
 		public void SetRemoteAssetUri (Uri remoteAssetUri)
 		{
 			if (remoteAssetUri == null) throw new ArgumentNullException (nameof (remoteAssetUri));
@@ -22,7 +29,6 @@ namespace Producer.Domain
 
 			RemoteAssetUri = uriBuilder.Uri.AbsoluteUri;
 		}
-
 
 		public override string ToString ()
 		{

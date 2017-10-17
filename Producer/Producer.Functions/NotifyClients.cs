@@ -15,7 +15,7 @@ namespace Producer.Functions
 		[FunctionName (nameof (NotifyClients))]
 		public static async Task Run (
 			[QueueTrigger (MessageQueues.DocumentUpdate, Connection = EnvironmentVariables.AzureWebJobsStorage)] DocumentUpdatedMessage updateMessage,
-			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString, Platform = NotificationPlatform.Apns, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
+			[NotificationHub (ConnectionStringSetting = EnvironmentVariables.AzureWebJobsNotificationHubsConnectionString, TagExpression = "{NotificationTags}")] IAsyncCollector<Notification> notification,
 			TraceWriter log)
 		{
 			try
@@ -24,11 +24,9 @@ namespace Producer.Functions
 
 				FunctionExtensions.HasValueOrThrow (updateMessage?.CollectionId, DocumentUpdatedMessage.CollectionIdKey);
 
-				var payload = ApsPayload.Create (updateMessage.Title, updateMessage.Message, updateMessage.CollectionId).Serialize ();
+				var template = PushTemplate.FromMessage (updateMessage);
 
-				log.Info (payload);
-
-				await notification.AddAsync (new AppleNotification (payload));
+				await notification.AddAsync (new TemplateNotification (template.GetProperties ()));
 			}
 			catch (Exception ex)
 			{

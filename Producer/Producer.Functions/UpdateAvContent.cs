@@ -18,6 +18,8 @@ namespace Producer.Functions
 		{
 			try
 			{
+				log.Info (contentMessage.ToString ());
+
 				FunctionExtensions.HasValueOrThrow (avContent?.Id, "avContent", $"Unable to find record with Id: {contentMessage?.DocumentId}");
 
 				FunctionExtensions.HasValueOrThrow (contentMessage?.RemoteAssetUri, "RemoteAssetUri");

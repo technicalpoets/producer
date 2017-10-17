@@ -1,6 +1,8 @@
 ﻿using System;
 using Android.App;
+using Android.Graphics;
 using Android.Runtime;
+using Android.Support.V4.App;
 //using Plugin.MediaManager;
 //using Plugin.MediaManager.ExoPlayer;
 //using Plugin.MediaManager.MediaSession;
@@ -36,6 +38,8 @@ namespace Producer.Droid
 			//var exoPlayer = new ExoPlayerAudioImplementation (((MediaManagerImplementation) CrossMediaManager.Current).MediaSessionManager);
 			//CrossMediaManager.Current.AudioPlayer = exoPlayer;
 
+
+			this.InitNotificationChannels ();
 
 		}
 	}

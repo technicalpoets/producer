@@ -4,16 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="4dp">
-<!--<partners.droid.FastScrollRecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:fastScrollHideDelay="600"
-        app:fastScrollAlwaysEnabled="false"
-        app:fastScrollPopupBackgroundColor="?attr/colorAccent"
-        app:fastScrollPopupTextColor="@android:color/white"
-        app:fastScrollThumbActiveColor="?attr/colorAccent"
-        app:fastScrollThumbInactiveColor="?attr/colorAccent" />-->
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
