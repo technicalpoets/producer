@@ -22,8 +22,6 @@ namespace Producer.Droid
 		IMenu menu;
 		TextView toolbarTitle;
 
-		//TODO: fix action mode title color
-
 
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
