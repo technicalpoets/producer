@@ -8,6 +8,8 @@ namespace Producer.Droid
 	public class ContentRecyclerAdapter : RecyclerViewAdapter<MusicAsset, ContentViewHolder>//, FastScrollRecyclerView.ISectionedAdapter
 	{
 		Action<View, MusicAsset, int> ItemIconClick;
+		Action<View, MusicAsset> ItemClick;
+
 
 		public ContentRecyclerAdapter (IList<MusicAsset> dataSet) : base (dataSet)
 		{
@@ -21,16 +23,18 @@ namespace Producer.Droid
 			var viewHolder = new ContentViewHolder (rootView);
 
 			viewHolder.SetIconClickHandler (OnIconClick);
+			viewHolder.SetItemClickHandler (OnItemClick);
 
 			return viewHolder;
 		}
 
 
 		public void SetIconClickHandler (Action<View, MusicAsset, int> handler) => ItemIconClick = handler;
+		public void SetItemClickHandler (Action<View, MusicAsset> handler) => ItemClick = handler;
 
 
 		void OnIconClick (View view, int position) => ItemIconClick?.Invoke (view, GetItem (position), position);
-
+		void OnItemClick (View view, MusicAsset data) => ItemClick?.Invoke (view, data);
 
 		//#region FastScrollRecyclerView.ISectionedAdapter Members
 

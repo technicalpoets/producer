@@ -44,4 +44,8 @@
 		name="action_favorite">Favorite</string>
 	<string
 		name="site_name">Site Name</string>
+	<string name="test_content_url"><![CDATA[https://producermedia.streaming.mediaservices.windows.net/1519a78a-fb13-43dd-a76c-054c64ce3da5/Andrew%20Promo%20(Smith\'s%206-17-15%20-%20Sam%20King%20Edit)-1.ism/manifest(format=m3u8-aapl)]]></string>
+  	<string name="content_url"><![CDATA[http://rmcdn.2mdn.net/MotifFiles/html/1248596/android_1330378998288.mp4]]></string>
+  	<string name="ad_tag_url"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=]]></string>
+
 </resources>

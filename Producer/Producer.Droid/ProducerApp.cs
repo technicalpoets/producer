@@ -3,6 +3,8 @@ using Android.App;
 using Android.Graphics;
 using Android.Runtime;
 using Android.Support.V4.App;
+using Com.Google.Android.Exoplayer2.Upstream;
+using Com.Google.Android.Exoplayer2.Util;
 //using Plugin.MediaManager;
 //using Plugin.MediaManager.ExoPlayer;
 //using Plugin.MediaManager.MediaSession;
@@ -42,5 +44,17 @@ namespace Producer.Droid
 			this.InitNotificationChannels ();
 
 		}
+
+		public IDataSourceFactory BuildDataSourceFactory (DefaultBandwidthMeter bandwidthMeter)
+		{
+			return new DefaultDataSourceFactory (this, bandwidthMeter,
+				BuildHttpDataSourceFactory (bandwidthMeter));
+		}
+
+		public IHttpDataSourceFactory BuildHttpDataSourceFactory (DefaultBandwidthMeter bandwidthMeter)
+		{
+			return new DefaultHttpDataSourceFactory (Util.GetUserAgent (this, "ProducerExoPlayer"), bandwidthMeter);
+		}
+
 	}
 }

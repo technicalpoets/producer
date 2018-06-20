@@ -6,6 +6,7 @@ namespace Producer.Droid
 {
 	public abstract class ViewHolder<TData> : RecyclerView.ViewHolder, IViewHolder<TData>, View.IOnClickListener, View.IOnLongClickListener
 	{
+		TData data;
 		Action<View, int> clickHandler;
 		Action<View, int> longClickHandler;
 
@@ -54,7 +55,15 @@ namespace Producer.Droid
 
 
 		//base behavior is to change the row state to activated if it's selected
-		public virtual void SetData (TData data, bool selected, bool animateSelection) => ItemView.Activated = selected;
+		public virtual void SetData (TData data, bool selected, bool animateSelection) 
+		{
+			this.data = data;
+			ItemView.Activated = selected;
+		}
+
+		public TData GetData(){
+			return data;
+		}
 	}
 
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Android.Content;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Views;
@@ -101,12 +102,18 @@ namespace Producer.Droid
 
 			//then add our icon click
 			ContentAdapter.SetIconClickHandler (OnItemIconClick);
+			ContentAdapter.SetItemClickHandler (OnItemClick);
+
 		}
 
 
 		protected override void OnItemClick (View view, MusicAsset item, int position)
 		{
 			//TODO: play media
+			var it = new Intent (Context, typeof(PlayerActivity) );
+			it.PutExtra ("MyData",item.Music.RemoteAssetUri);
+
+			StartActivity (it);
 			if (ContentClient.Shared.Initialized)// || AssetPersistenceManager.Shared.DownloadState (asset) == MusicAssetDownloadState.Downloaded)
 			{
 				if (item.Music.ContentType == AvContentTypes.Video)
