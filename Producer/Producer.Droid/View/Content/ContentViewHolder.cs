@@ -20,6 +20,8 @@ namespace Producer.Droid
 		//static RelativeSizeSpan locationSizeSpan;
 
 		Action<View, int> iconClickHandler;
+		Action<View, MusicAsset> itemClickHandler;
+
 
 
 		public ContentViewHolder (View v) : base (v)
@@ -117,6 +119,10 @@ namespace Producer.Droid
 			iconClickHandler = handler;
 		}
 
+		public void SetItemClickHandler (Action<View, MusicAsset> handler)
+		{
+			itemClickHandler = handler;
+		}
 
 		void ApplyIconAnimation (bool selected, bool animateSelection)
 		{
@@ -153,6 +159,7 @@ namespace Producer.Droid
 				iconClickHandler (iconContainer, AdapterPosition);
 				return;
 			}
+			itemClickHandler (iconContainer, GetData ());
 
 			//call thru to base to handle row click
 			base.OnClick (view);

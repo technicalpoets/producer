@@ -9,7 +9,7 @@
 		<OutputType>Library</OutputType>
 		<RootNamespace>Producer.Droid</RootNamespace>
 		<AssemblyName>Producer.Droid</AssemblyName>
-		<TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
 		<AndroidApplication>True</AndroidApplication>
 		<AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
 		<AndroidResgenClass>Resource</AndroidResgenClass>
@@ -19,6 +19,7 @@
 		<AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
 		<AndroidTlsProvider>
 		</AndroidTlsProvider>
+		<AndroidEnableMultiDex>true</AndroidEnableMultiDex>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DebugSymbols>true</DebugSymbols>
@@ -45,6 +46,7 @@
 		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 		<AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
 		<AndroidTlsProvider>btls</AndroidTlsProvider>
+		<AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
 	</PropertyGroup>
 	<Target Name="VersionBump" BeforeTargets="Build" Condition="'$(OS)'=='Unix'">
 		<Exec Command="/bin/bash '$(ProjectDir)../scripts/manifest_utility.sh' -p '$(ProjectDir)'" />
@@ -125,24 +127,6 @@
 		<Reference Include="Xamarin.Android.Support.v7.CardView">
 			<HintPath>..\packages\Xamarin.Android.Support.v7.CardView.25.4.0.2\lib\MonoAndroid70\Xamarin.Android.Support.v7.CardView.dll</HintPath>
 		</Reference>
-		<Reference Include="ExoPlayer.Core">
-			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.Core.2.5.3\lib\MonoAndroid\ExoPlayer.Core.dll</HintPath>
-		</Reference>
-		<Reference Include="ExoPlayer.Hls">
-			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.Hls.2.5.3\lib\MonoAndroid\ExoPlayer.Hls.dll</HintPath>
-		</Reference>
-		<Reference Include="ExoPlayer.SmoothStreaming">
-			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.SmoothStreaming.2.5.3\lib\MonoAndroid\ExoPlayer.SmoothStreaming.dll</HintPath>
-		</Reference>
-		<Reference Include="ExoPlayer.UI">
-			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.UI.2.5.3\lib\MonoAndroid\ExoPlayer.UI.dll</HintPath>
-		</Reference>
-		<Reference Include="ExoPlayer.Dash">
-			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.Dash.2.5.3\lib\MonoAndroid\ExoPlayer.Dash.dll</HintPath>
-		</Reference>
-		<Reference Include="ExoPlayer">
-			<HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.2.5.3\lib\MonoAndroid\ExoPlayer.dll</HintPath>
-		</Reference>
 		<Reference Include="Xamarin.GooglePlayServices.Iid">
 		  <HintPath>..\packages\Xamarin.GooglePlayServices.Iid.42.1021.1\lib\MonoAndroid70\Xamarin.GooglePlayServices.Iid.dll</HintPath>
 		</Reference>
@@ -200,6 +184,25 @@
 		<Reference Include="Plugin.VersionTracking">
 		  <HintPath>..\packages\Plugin.VersionTracking.2.0.1\lib\MonoAndroid10\Plugin.VersionTracking.dll</HintPath>
 		</Reference>
+		<Reference Include="ExoPlayer.Core">
+		  <HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.Core.2.7.2\lib\monoandroid81\ExoPlayer.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Runtime" />
+		<Reference Include="ExoPlayer.Dash">
+		  <HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.Dash.2.7.2\lib\monoandroid81\ExoPlayer.Dash.dll</HintPath>
+		</Reference>
+		<Reference Include="ExoPlayer.Hls">
+		  <HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.Hls.2.7.2\lib\monoandroid81\ExoPlayer.Hls.dll</HintPath>
+		</Reference>
+		<Reference Include="ExoPlayer.SmoothStreaming">
+		  <HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.SmoothStreaming.2.7.2\lib\monoandroid81\ExoPlayer.SmoothStreaming.dll</HintPath>
+		</Reference>
+		<Reference Include="ExoPlayer.UI">
+		  <HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.UI.2.7.2\lib\monoandroid81\ExoPlayer.UI.dll</HintPath>
+		</Reference>
+		<Reference Include="ExoPlayer">
+		  <HintPath>..\packages\Xam.Plugins.Android.ExoPlayer.2.7.2\lib\monoandroid81\ExoPlayer.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Include="MainActivity.cs" />
@@ -254,6 +257,8 @@
 		<Compile Include="Notifications\NotificationUtility.cs" />
 		<Compile Include="Services\ProducerFirebaseMessagingService.cs" />
 		<Compile Include="View\User\UserActivity.cs" />
+		<Compile Include="View\Content\PlayerActivity.cs" />
+		<Compile Include="Framework\Utilities\PlayerManager.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="Resources\AboutResources.txt" />
@@ -314,6 +319,7 @@
 		<AndroidResource Include="Resources\drawable\ic_tab_saved_selected.xml" />
 		<AndroidResource Include="Resources\drawable\ic_tab_favorites.xml" />
 		<AndroidResource Include="Resources\drawable\ic_arrow_back.xml" />
+		<AndroidResource Include="Resources\layout\Player.axml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
